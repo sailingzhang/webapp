@@ -1,4 +1,5 @@
 export class CactusData {
+    helloword:string;
     constructor(){
 
     }
