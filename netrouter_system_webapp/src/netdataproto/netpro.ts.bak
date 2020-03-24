@@ -1,0 +1,90 @@
+import * as user_pb from '../../../../netproto/ts/user_pb';
+import * as base_pb from '../../../../netproto/ts/base_pb';
+import * as netclient from '../../../../clientplugin/typescript/src/netclient';
+import {GData,ShowUpdateEnum,ActiveTalkIdCls} from '../datamana/datamana'
+
+
+    // Init(addr:string,userid:number,passwd:string):boolean{
+    //     this.NetClient = new netclient.NetRouterCli();
+    //     this.NetClient.Init(addr,userid,passwd);
+    //     this.NetClient.UserData = this;
+    //   //  this.NetClient.RegisterFunArr(registerArr);
+    //   this.NetClient.RegisterFun("Welcome",Welcome);
+    //     this.NetClient.Run();
+    //     return true;
+    // }
+
+    function AssertUserData(data:any):GData{
+        if(!(data instanceof GData)){
+            throw  new Error("instanceof GData err");
+        }
+        return data as GData;
+    }
+
+   export let registerArr:[string,netclient.ProtoFunType][] =[
+        ["Welcome",Welcome],
+        ["TestReply",TestReply],
+        ["TestRequest",TestRequest],
+        ["GetGrpUserReply",GetGrpUserReply]
+    ]
+    
+    
+let gUserData:GData = null;
+ function Welcome(cli:netclient.NetRouterCli,header:base_pb.Header,bodybuff:Uint8Array):boolean{
+        console.log("hello welcome");
+        gUserData = AssertUserData(cli.UserData);
+        let body = base_pb.Welcome.deserializeBinary(bodybuff);
+        gUserData.data.setWelcom("this is is is Welcome");
+        gUserData.data.SetLoginState(header.getToid(),"testname",true);
+        console.log("Welcome:header="+ header.toString()+" body="+ body.getWelcommessage());
+
+       let req = new base_pb.GetGrpUserRequest();
+        cli.SendtoUser(base_pb.ReserveServerId.MANAGERSERVERID,"GetGrpUserRequest",req);
+        return true;
+    }
+    
+function TestReply(cli:netclient.NetRouterCli,header:base_pb.Header,bodybuff:Uint8Array):boolean{
+    console.log("TestReply come");
+    let body = base_pb.TestReply.deserializeBinary(bodybuff);
+    let isGroup = (header.getControlinfo() & base_pb.controlHeaderBit.ISGROUP)?true:false;
+   let updateCls = gUserData.data.historyTalk.GetTalCls(isGroup,header.getFromid());
+//    let updateCls = (gUserData.data.ShowUpdateClsArr[ShowUpdateEnum.ActiveTalkId].updateObj as ActiveTalkIdCls);
+//   updateCls.talk.appendOtherTalk(header.getFromid(),body.getTeststr());
+    updateCls.appendOtherTalk(header.getFromid(),body.getTeststr());
+    return true;
+}
+
+function TestRequest(cli:netclient.NetRouterCli,header:base_pb.Header,bodybuff:Uint8Array):boolean{
+    console.log("TestRequest come");
+    let body = base_pb.TestRequest.deserializeBinary(bodybuff);
+    let isGroup = (header.getControlinfo() & base_pb.controlHeaderBit.ISGROUP)?true:false;
+   let updateCls = gUserData.data.historyTalk.GetTalCls(isGroup,header.getFromid());
+    updateCls.appendOtherTalk(header.getFromid(),body.getTeststr());
+    return true;
+}
+
+function GetGrpUserReply(cli:netclient.NetRouterCli,header:base_pb.Header,bodybuff:Uint8Array):boolean{
+    console.log("GetGrpUserReply enter");
+    let body = base_pb.GetGrpUserReply.deserializeBinary(bodybuff);
+    gUserData.data.SetGrpUserRelationArr(body.getGrpuserrelationsList());
+    gUserData.data.SetUserGrpRelationArr(body.getUsergrprelationsList());
+
+   return true;
+}
+
+
+export class UserOperate{
+    connect:netclient.NetRouterCli;
+    constructor(){
+        this.connect = null;
+    }
+    Init(con:netclient.NetRouterCli){
+        this.connect = con;
+    }
+    GetGrpUserRequest(){
+        
+    }
+
+    
+
+}

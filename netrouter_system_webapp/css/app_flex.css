@@ -1,0 +1,322 @@
+html{
+    height:100%;
+  }
+    
+  body{ 
+    height:100%;
+    margin:0;
+  }
+
+  .hidden{
+    visibility:hidden;
+  }
+  .visible{
+    visibility: visible;
+  }
+
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    background-color: lightgrey;
+}
+
+.flex-item_0{
+    /* background-color: yellow; */
+    width: 100%;
+    height: 15%;
+   margin: 1px;
+   border-bottom: 1px solid #000;
+}
+.flex-item_1{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    /* background-color: blue; */
+    width: 100%;
+    height: 85%;
+   margin: 1px;
+   border-bottom: 1px solid red;
+}
+
+.flex-item_1_0{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    /* background-color: red; */
+    width: 19%;
+    height: 100%;
+   margin: 1px;
+   border-right: 1px solid #000;
+   
+}
+
+.flex-item_1_1{
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+    /* background-color: orange; */
+    width: 80%;
+    height: 100%;
+   margin: 1px;
+}
+
+.flex-item_1_1_0{
+    display: -webkit-flex;
+    display: flex;
+
+    /* background-color:green; */
+    width: 100%;
+    height: 80%;
+   margin: 1px;
+}
+
+.flex-item_1_1_1{
+    display: -webkit-flex;
+    display: flex;
+    /* background-color: brown; */
+    width: 100%;
+    height: 20%;
+   margin: 1px;
+}
+
+.talkwindos-container{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    /* background-color: lightgrey; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+
+}
+
+.talkwindos-othertext{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+
+    /* background-color: red; */
+    width: 59%;
+    height: 60%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    border-right: 1px solid #000;
+}
+
+.talkwindos-othertext-talkmenu{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    
+    /* background-color:purple; */
+    width: 20%;
+    height: 20%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.talkwindos-othertext-talktext{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    
+    /* background-color:white; */
+    width: 100%;
+    height: 80%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.talkwindos-othermedie{
+    /* background-color: yellow; */
+    width: 40%;
+    height: 59%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    border-bottom: 1px solid #000;
+}
+
+.talkwindos-mytext{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    /* background-color: orange; */
+    width: 59%;
+    height: 40%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    border-right: 1px solid #000;
+}
+.talkwindos-mytext-text{
+    /* background-color:yellowgreen; */
+    width: 100%;
+    height: 80%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+.talkwindos-mytext-clear{
+    /* background-color: red; */
+    width: 10%;
+    height: 20%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.talkwindos-mytext-send{
+    /* background-color:blue; */
+    width: 10%;
+    height: 20%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.talkwindos-mymedie{
+    /* background-color: purple; */
+    width: 40%;
+    height: 40%;
+    margin: 0px;
+}
+
+
+.twoVertical_37_container{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    /* background-color: lightgrey; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.twoVertical_3{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 30%;
+    height: 100%;
+    /* background-color:yellow; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+.twoVertical_7{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 70%;
+    height: 100%;
+    /* background-color:blue; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.rollbar{
+    overflow-y:scroll;
+}
+
+
+.loginState{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    /* background-color:brown; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+.loginState_info{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+    height: 79%;
+    /* background-color:lightgreen; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.loginState_button{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 20%;
+    /* background-color:orange; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.head_container{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    /* background-color:white; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.head_login{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    width: 10%;
+    height: 100%;
+    /* background-color:royalblue; */
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    border-right: 1px solid #000;
+}
+
+.paperstyles{
+    width: 100%;
+}
+
+.width100{
+    width: 100%;
+}
+
+.textselect{
+    width: 30%;
+}

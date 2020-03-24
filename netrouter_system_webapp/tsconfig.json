@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es6",
+        "jsx": "react",
+        "experimentalDecorators":true,
+        "baseUrl": ".",
+        "paths": {
+            "MySrc/*": ["./src/*"],
+            "MyUser/*": ["./user/*"],
+            "MyNetProto/*":["../../../src/netproto/ts/*"],
+            "MyClientPlug/*":["../../../src/clientplugin/typescript/*"]
+       },
+    },
+    "include": [
+        "./src/**/*",
+        "./**/*"
+    ]
+}
