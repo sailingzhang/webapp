@@ -4,6 +4,7 @@
       "sourceMap": true,
       "noImplicitAny": true,
       "module": "commonjs",
+      "experimentalDecorators":true,
       "target": "es6",
       "jsx": "react",
       "baseUrl": ".",

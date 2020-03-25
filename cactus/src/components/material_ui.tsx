@@ -11,8 +11,8 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
-
-import {CactusData} from  "../data/cactus_data"
+import { observer } from 'mobx-react';
+import {CactusData,GraphViewShowTypeEnum} from  "../data/cactus_data"
 
 interface CactusArg{
     cactusdata:CactusData
@@ -54,9 +54,10 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
         //console.log("onListClickclickclick");
         // this.userdata.MyUserCli.dataMana.ForbiddenBaseShow();
     }
-    onTestClick(){
-        console.log("this is onTestClick");
+    onTrackingClick(){
+        // console.log("this is onTestClick");
         // this.userupdateObj.UpdateValue(UserGrpahViewShowType.USER_TEST_TYPE,false);
+        this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.Tracking)
     }
     onTestListClick(){
         this.setState({bTestOpen:!this.state.bTestOpen})
@@ -66,7 +67,8 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
         console.log("onTestOneClick");
         // this.userupdateObj.UpdateValue(UserGrpahViewShowType.USER_TEST_TYPE,false);
     }
-    onMarketTradeNodeClick(){
+    onDetectAndClassifyClick(){
+        this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.DetectAndClassify);
         // this.userupdateObj.UpdateValue(UserGrpahViewShowType.USER_MARKET_TRADE_NODE,false);
     }
     render(){
@@ -79,7 +81,7 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
                 <ListItemIcon>
                 <InboxIcon />
                 </ListItemIcon>
-                <ListItemText inset primary={"Market/Trade/Strategy Node"} />
+                <ListItemText inset primary={"Faces"} />
                 {this.state.bTestOpen? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
                 <Collapse in={this.state.bTestOpen} timeout="auto" unmountOnExit>
@@ -88,13 +90,13 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
                 <ListItemIcon>
                 <StarBorder />
                 </ListItemIcon>
-                <ListItemText inset primary="Market And Trade Node" onClick={this.onMarketTradeNodeClick.bind(this)}/>
+                <ListItemText inset primary="Detect And Classify" onClick={this.onDetectAndClassifyClick.bind(this)}/>
                 </ListItem>            
                 <ListItem button className="test">
                 <ListItemIcon>
                 <StarBorder />
                 </ListItemIcon>
-                <ListItemText inset primary="Strategy Node" onClick={this.onTestClick.bind(this)} />
+                <ListItemText inset primary="Tracking" onClick={this.onTrackingClick.bind(this)} />
                 </ListItem>
                 </List>
                 </Collapse>
@@ -103,5 +105,48 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
              </div>
             </div>
         )
+    }
+}
+
+
+
+
+@observer
+export class UserGrpahView extends React.Component<CactusArg>{
+    userdata:CactusData
+    constructor(props:CactusArg){
+        super(props);
+        this.userdata = props.cactusdata;
+    }
+    public render(){
+        if(GraphViewShowTypeEnum.DetectAndClassify ==  this.userdata.GraphViewShowType){
+            return(        
+                // <GrpahView userCli={this.props.MyUserCli}/>
+                <DetectAndClassifyView>
+            )           
+        }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
+            return (
+                <p>track</p>
+            )
+        }
+        else{
+            return (
+                <p>no such type</p>
+            )
+        }
+       // (GrpahViewShowType.GRPUSERTABLE_TYPE == this.props.userCli.dataMana.graphviewShowType)
+
+    }
+}
+
+
+class DetectAndClassifyView extends React.Component<CactusArg>{
+    userdata:CactusData;
+    constructor(props:CactusArg){
+        super(props)
+        this.userdata = props.cactusdata;
+    }
+    public render(){
+        <p>CactusArg</p>
     }
 }

@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import {CactusData} from "./data/cactus_data"
 
 import { Hello } from "./components/Hello";
-import { Head,UserProfileList } from "./components/material_ui";
+import { Head,UserProfileList,UserGrpahView } from "./components/material_ui";
 
 
 // ReactDOM.render(
@@ -28,7 +28,7 @@ ReactDOM.render(
     document.getElementById("profile")
 );
 
-// ReactDOM.render(
-//     <UserGrpahView MyUserCli={gUserClientNet}/>,
-//     document.getElementById("graphview")
-// );
+ReactDOM.render(
+    <UserGrpahView cactusdata={gCatusData}/>,
+    document.getElementById("graphview")
+);
