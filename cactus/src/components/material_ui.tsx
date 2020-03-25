@@ -122,23 +122,25 @@ export class UserGrpahView extends React.Component<CactusArg>{
         if(GraphViewShowTypeEnum.DetectAndClassify ==  this.userdata.GraphViewShowType){
             return(        
                 // <GrpahView userCli={this.props.MyUserCli}/>
-                <DetectAndClassifyView>
+                <DetectAndClassifyView cactusdata={this.userdata} />
+                // <p>detectandclassify</p>
             )           
         }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
             return (
-                <p>track</p>
+                // <p>track</p>
+                <TrackingView cactusdata={this.userdata} />
             )
         }
         else{
             return (
                 <p>no such type</p>
+                
             )
         }
        // (GrpahViewShowType.GRPUSERTABLE_TYPE == this.props.userCli.dataMana.graphviewShowType)
 
     }
 }
-
 
 class DetectAndClassifyView extends React.Component<CactusArg>{
     userdata:CactusData;
@@ -147,6 +149,23 @@ class DetectAndClassifyView extends React.Component<CactusArg>{
         this.userdata = props.cactusdata;
     }
     public render(){
-        <p>CactusArg</p>
+        return(
+            <p>this is DetectAndClassifyView</p>
+        )
     }
-}
+} 
+
+
+
+class TrackingView extends React.Component<CactusArg>{
+    userdata:CactusData;
+    constructor(props:CactusArg){
+        super(props)
+        this.userdata = props.cactusdata;
+    }
+    public render(){
+        return(
+            <p>this is TrackingView</p>
+        )
+    }
+}  
