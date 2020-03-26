@@ -27,7 +27,8 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 
 
 import { observer } from 'mobx-react';
-import {CactusData,GraphViewShowTypeEnum} from  "../data/cactus_data"
+
+import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
 
 interface CactusArg{
     cactusdata:CactusData
@@ -277,28 +278,48 @@ export  function AdvancedGridList() {
 //     );
 //   };
 
-
-  export  class ImageGridList  extends React.Component<CactusArg> {
-    userdata:CactusData;
-    // classes = useStyles();
-    classes:any;
-    constructor(props:CactusArg){
-        super(props);
-        this.userdata = props.cactusdata;
-        this.classes = useStyles();
-    };
-    public render(){
-        return (
-            <div className={this.classes.root}>
-              <GridList cellHeight={160}  className={this.classes.gridList} cols={3}>
-                {tileData.map(tile => (
-                  <GridListTile key={tile.img} cols={tile.cols || 1}>
-                    <img src={tile.img} alt={tile.title} />
-                  </GridListTile>
-                ))}
-              </GridList>
-            </div>
-          );
+interface ImageShowArg{
+  showinfo:DetectAndClassifyImageInfo;
+}
+export  class  ImageShow extends React.Component<ImageShowArg> {
+  constructor(props:ImageShowArg){
+    super(props)
+  }
+  public render(){
+    if("" == this.props.showinfo.img){
+      return (
+        <p>empty image</p>
+      )
+    }else{
+      return(
+        <img src={this.props.showinfo.img} alt={this.props.showinfo.title} />
+      )
+      
     }
+  }
+}
 
-  };
+export  class ImageGridList  extends React.Component<CactusArg> {
+  userdata:CactusData;
+  // classes = useStyles();
+  // classes:any;
+  // console.log("detectAndClassifyArr.size=%d",this.userdata.DetectAndClassifyArr.)
+  
+  constructor(props:CactusArg){
+      super(props);
+      this.userdata = props.cactusdata;
+      // this.classes = useStyles();
+      console.log("detectandclassifyarr.size=%d",this.userdata.DetectAndClassifyArr.length);
+  }
+
+  public render(){
+      return (
+        <GridList cellHeight={160}  cols={3}>
+        {this.userdata.DetectAndClassifyArr.map(tile =>(
+            <ImageShow showinfo={tile} />
+        ))}
+      </GridList>
+        );
+  }
+
+};
