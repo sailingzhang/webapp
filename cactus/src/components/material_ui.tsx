@@ -11,6 +11,21 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
+
+
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import IconButton from '@material-ui/core/IconButton';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+
+
+// import tileData from './tileData';
+
+
+
+
 import { observer } from 'mobx-react';
 import {CactusData,GraphViewShowTypeEnum} from  "../data/cactus_data"
 
@@ -121,8 +136,9 @@ export class UserGrpahView extends React.Component<CactusArg>{
     public render(){
         if(GraphViewShowTypeEnum.DetectAndClassify ==  this.userdata.GraphViewShowType){
             return(        
-                // <GrpahView userCli={this.props.MyUserCli}/>
-                <DetectAndClassifyView cactusdata={this.userdata} />
+                <ImageGridList cactusdata={this.userdata} />
+                // <AdvancedGridList />
+                // <DetectAndClassifyView cactusdata={this.userdata} />
                 // <p>detectandclassify</p>
             )           
         }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
@@ -169,3 +185,120 @@ class TrackingView extends React.Component<CactusArg>{
         )
     }
 }  
+
+
+
+
+
+
+const tileData = [
+    {
+    //   img: '/resource/test1.jpg',
+    img:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585216864993&di=bc0e1e1b4f65ebfdc5dfd985c0510b45&imgtype=0&src=http%3A%2F%2Fimg.61ef.cn%2Fnews%2F201706%2F16%2F2017061606162626.jpg',
+      title: 'Breakfast',
+      author: 'jill111',
+      cols: 2,
+      featured: true,
+    },
+    {
+    //   img: '/resource/test2.jpg',
+        img:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585216864993&di=86e998a645f4ed6545a0aeb32cd33731&imgtype=0&src=http%3A%2F%2Fztd00.photos.bdimg.com%2Fztd%2Fw%3D700%3Bq%3D50%2Fsign%3D348bda24b1389b5038ffe252b50e94e0%2Feac4b74543a98226cda6eb1d8282b9014a90eba1.jpg',
+      title: 'Tasty burger',
+      author: 'director90',
+    },
+]
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'space-around',
+      overflow: 'hidden',
+      backgroundColor: theme.palette.background.paper,
+    },
+    gridList: {
+      width: 500,
+      height: 450,
+      // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+      transform: 'translateZ(0)',
+    },
+    titleBar: {
+      background:
+        'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
+        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+    },
+    icon: {
+      color: 'white',
+    },
+  }),
+);
+
+export  function AdvancedGridList() {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+      <GridList cellHeight={200} spacing={1} className={classes.gridList}>
+        {tileData.map(tile => (
+          <GridListTile key={tile.img} cols={tile.featured ? 2 : 1} rows={tile.featured ? 2 : 1}>
+            <img src={tile.img} alt={tile.title} />
+            <GridListTileBar
+              title={tile.title}
+              titlePosition="top"
+              actionIcon={
+                <IconButton aria-label={`star ${tile.title}`} className={classes.icon}>
+                  <StarBorderIcon />
+                </IconButton>
+              }
+              actionPosition="left"
+              className={classes.titleBar}
+            />
+          </GridListTile>
+        ))}
+      </GridList>
+    </div>
+  );
+};
+
+
+// export  function ImageGridList() {
+//     const classes = useStyles();
+//     return (
+//       <div className={classes.root}>
+//         <GridList cellHeight={160} className={classes.gridList} cols={3}>
+//           {tileData.map(tile => (
+//             <GridListTile key={tile.img} cols={tile.cols || 1}>
+//               <img src={tile.img} alt={tile.title} />
+//             </GridListTile>
+//           ))}
+//         </GridList>
+//       </div>
+//     );
+//   };
+
+
+  export  class ImageGridList  extends React.Component<CactusArg> {
+    userdata:CactusData;
+    // classes = useStyles();
+    classes:any;
+    constructor(props:CactusArg){
+        super(props);
+        this.userdata = props.cactusdata;
+        this.classes = useStyles();
+    };
+    public render(){
+        return (
+            <div className={this.classes.root}>
+              <GridList cellHeight={160}  className={this.classes.gridList} cols={3}>
+                {tileData.map(tile => (
+                  <GridListTile key={tile.img} cols={tile.cols || 1}>
+                    <img src={tile.img} alt={tile.title} />
+                  </GridListTile>
+                ))}
+              </GridList>
+            </div>
+          );
+    }
+
+  };
