@@ -34,6 +34,8 @@ interface CactusArg{
     cactusdata:CactusData
 }
 
+
+@observer
 export class Head extends React.Component<CactusArg>{
     userdata:CactusData;
     constructor(pros:CactusArg){
@@ -55,6 +57,8 @@ export class Head extends React.Component<CactusArg>{
  interface UserProfileListState{
     bTestOpen:boolean;
 }
+
+@observer
 export class UserProfileList extends React.Component<CactusArg,UserProfileListState> {
     userdata:CactusData
     // userupdateObj:ShowUpdateCls 
@@ -159,6 +163,7 @@ export class UserGrpahView extends React.Component<CactusArg>{
     }
 }
 
+@observer
 class DetectAndClassifyView extends React.Component<CactusArg>{
     userdata:CactusData;
     constructor(props:CactusArg){
@@ -173,7 +178,7 @@ class DetectAndClassifyView extends React.Component<CactusArg>{
 } 
 
 
-
+@observer
 class TrackingView extends React.Component<CactusArg>{
     userdata:CactusData;
     constructor(props:CactusArg){
@@ -278,17 +283,53 @@ export  function AdvancedGridList() {
 //     );
 //   };
 
+
+// function onFileSelect(event:React.ChangeEvent<HTMLInputElement>) {
+//   let selectedFile = event.target.files[0];
+//   const reader = new FileReader();
+//   reader.onload = (e) => {
+//       const text = reader.result.toString();
+//       console.log(text);
+//   }
+//   reader.readAsText(selectedFile);
+// }
+
 interface ImageShowArg{
   showinfo:DetectAndClassifyImageInfo;
+  cactusdata:CactusData
 }
+@observer
 export  class  ImageShow extends React.Component<ImageShowArg> {
   constructor(props:ImageShowArg){
     super(props)
   }
+  onChange(evt:React.ChangeEvent<HTMLInputElement>){
+    let selectedFile:File = evt.target.files[0];
+    console.log("select file..=%s",selectedFile.name)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const text = reader.result;
+      //   // this.props.showinfo.img=text as string;
+      //   // this.props.showinfo.setAttribution("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585236413423&di=e5e9c7c7d1d8b7ed63b7a88223c81c00&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Ftransform%2F20150527%2FJvPy-avxeafs8148279.jpg",2);
+      //   // console.log(text);
+      //  let showone = new DetectAndClassifyImageInfo();
+      //  showone.setAttribution(text.toString(),2);
+      // //  showone.setAttribution("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585301212622&di=d1dc16640a18be92e899b47adf531255&imgtype=0&src=http%3A%2F%2Fimg1.cache.netease.com%2Fv%2F2014%2Fzxdh%2F31.jpg",2);
+      //   this.props.cactusdata.AddDetectAndClassify(showone);
+      //   // this.props.cactusdata.AddDetectAndClassify(this.props.cactusdata.DetectAndClassifyArr[0]);
+      this.props.showinfo.setAttribution(text.toString(),2)
+      let addshow = new DetectAndClassifyImageInfo();
+      this.props.cactusdata.AddDetectAndClassify(addshow);
+
+    }
+    reader.readAsDataURL(selectedFile);
+  }
+
   public render(){
     if("" == this.props.showinfo.img){
       return (
-        <p>empty image</p>
+        // <p>empty image</p>
+        <input type="file" onChange={this.onChange.bind(this)}/>
       )
     }else{
       return(
@@ -299,6 +340,7 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
   }
 }
 
+@observer
 export  class ImageGridList  extends React.Component<CactusArg> {
   userdata:CactusData;
   // classes = useStyles();
@@ -316,7 +358,7 @@ export  class ImageGridList  extends React.Component<CactusArg> {
       return (
         <GridList cellHeight={160}  cols={3}>
         {this.userdata.DetectAndClassifyArr.map(tile =>(
-            <ImageShow showinfo={tile} />
+            <ImageShow showinfo={tile} cactusdata={this.userdata}/>
         ))}
       </GridList>
         );
