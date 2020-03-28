@@ -1,5 +1,8 @@
 
 import {observable,action,autorun, configure, reaction} from 'mobx';
+import * as CactusClientPb from "../proto_code/CactusServiceClientPb"
+import * as CactusPb from "../proto_code/cactus_pb"
+import * as grpcWeb from 'grpc-web'
 
 export enum GraphViewShowTypeEnum{
     DetectAndClassify,
@@ -22,6 +25,8 @@ export class  DetectAndClassifyImageInfo{
     @observable    cols:number;
     // @observable    featured: Boolean;
     @observable    faceinfoarr:faceinfo[]
+    
+
 
     constructor(){
         this.img="";
@@ -29,6 +34,7 @@ export class  DetectAndClassifyImageInfo{
         this.cols=0;
         // this.featured=false;
         this.faceinfoarr=[];
+        
         let oneface = new faceinfo();
         oneface.top = 10;
         oneface.left = 10;
@@ -50,6 +56,7 @@ export class CactusData {
 @observable    helloword:string;
 @observable    GraphViewShowType:GraphViewShowTypeEnum;
 @observable    DetectAndClassifyArr:DetectAndClassifyImageInfo[];
+cactusClient:CactusClientPb.CactusClient;
     constructor(){
         this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify;
         this.DetectAndClassifyArr=[];
@@ -63,6 +70,7 @@ export class CactusData {
         // showinfo.cols = 2;
         // this.DetectAndClassifyArr.push(showinfo);
         // this.DetectAndClassifyArr.push(showinfo);
+        this.cactusClient =  new CactusClientPb.CactusClient('http://localhost:8080');
 
 
     }
@@ -70,11 +78,28 @@ export class CactusData {
         console.log("hello world=%s",p1);
         return true;
     }
-@action    public SetGraphViewShowType(type:GraphViewShowTypeEnum){
+
+    private pb_Hello_Rsp(err: grpcWeb.Error, response: CactusPb.HelloRsp){
+        console.log("hello rsp=%s",response.getResponse());
+    }
+@action    
+public SetGraphViewShowType(type:GraphViewShowTypeEnum){
         this.GraphViewShowType = type;
     }
-@action   public  AddDetectAndClassify(one:DetectAndClassifyImageInfo){
+@action   
+public  AddDetectAndClassify(one:DetectAndClassifyImageInfo){
     this.DetectAndClassifyArr.push(one);
+    }
+
+
+
+public pb_Hello_Send(value:string){
+    let req = new CactusPb.HelloReq();
+    req.setAsk("this is web");
+    let metadata = {'custom-header-1': 'value1'}
+    this.cactusClient.hello(req,metadata,this.pb_Hello_Rsp.bind(this));
 }
+
+
     
 }

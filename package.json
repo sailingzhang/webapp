@@ -32,6 +32,8 @@
   "dependencies": {
     "@material-ui/core": "^4.9.7",
     "@material-ui/icons": "^4.9.1",
+    "google-protobuf": "^3.11.4",
+    "grpc-web": "^1.0.7",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
     "react": "^16.13.1",

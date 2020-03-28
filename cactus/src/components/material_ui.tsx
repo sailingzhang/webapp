@@ -328,21 +328,15 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
     console.log("select file..=%s",selectedFile.name)
     const reader = new FileReader();
     reader.onload = (e) => {
-        const text = reader.result;
-      //   // this.props.showinfo.img=text as string;
-      //   // this.props.showinfo.setAttribution("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585236413423&di=e5e9c7c7d1d8b7ed63b7a88223c81c00&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Ftransform%2F20150527%2FJvPy-avxeafs8148279.jpg",2);
-      //   // console.log(text);
-      //  let showone = new DetectAndClassifyImageInfo();
-      //  showone.setAttribution(text.toString(),2);
-      // //  showone.setAttribution("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585301212622&di=d1dc16640a18be92e899b47adf531255&imgtype=0&src=http%3A%2F%2Fimg1.cache.netease.com%2Fv%2F2014%2Fzxdh%2F31.jpg",2);
-      //   this.props.cactusdata.AddDetectAndClassify(showone);
-      //   // this.props.cactusdata.AddDetectAndClassify(this.props.cactusdata.DetectAndClassifyArr[0]);
+      const text = reader.result;
       this.props.showinfo.setAttribution(text.toString(),2)
       let addshow = new DetectAndClassifyImageInfo();
       this.props.cactusdata.AddDetectAndClassify(addshow);
 
     }
     reader.readAsDataURL(selectedFile);
+    this.props.cactusdata.pb_Hello_Send("this is webapp");
+
   }
 
   public render(){
@@ -356,7 +350,7 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
         <div className="ImageShowArg">
           <img src={this.props.showinfo.img} className="full"  />
           {this.props.showinfo.faceinfoarr.map(faceinfo =>(
-                <div className="react_view" style={{top:faceinfo.top,left:faceinfo.left,width:faceinfo.width,height: faceinfo.height}}>
+                <div className="react_view" style={{top:'10%',left:'10%',width:'10%',height:'10%'}} >
                 {faceinfo.name}
                 </div>
         ))}
