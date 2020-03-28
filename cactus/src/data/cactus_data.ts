@@ -6,17 +6,37 @@ export enum GraphViewShowTypeEnum{
     Tracking,
 }
 
+
+class faceinfo{
+    name:string;
+    top:number;
+    left:number;
+    width:number;
+    height:number;
+}
+
 export class  DetectAndClassifyImageInfo{
     @observable    img:string;
-    @observable    title:string;
-    @observable    author: string;
+    // @observable    title:string;
+    // @observable    author: string;
     @observable    cols:number;
-    @observable    featured: Boolean;
+    // @observable    featured: Boolean;
+    @observable    faceinfoarr:faceinfo[]
+
     constructor(){
         this.img="";
-        this.author="";
+        // this.author="";
         this.cols=0;
-        this.featured=false;
+        // this.featured=false;
+        this.faceinfoarr=[];
+        let oneface = new faceinfo();
+        oneface.top = 10;
+        oneface.left = 10;
+        oneface.width = 50;
+        oneface.height= 50;
+
+        oneface.name="test";
+        this.faceinfoarr.push(oneface);
     }
 
 @action  setAttribution(imgarg:string,colsarg:number){

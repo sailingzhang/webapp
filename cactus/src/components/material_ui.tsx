@@ -13,7 +13,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
 
 
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { createStyles, Theme, makeStyles,withStyles  } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
@@ -24,15 +24,35 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 // import tileData from './tileData';
 
 
-
-
 import { observer } from 'mobx-react';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
 
+
+
+const diystyles = {
+  root: {
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+    border: 0,
+    borderRadius: 3,
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    color: 'white',
+    height: 48,
+    padding: '0 30px'
+  },
+  showgraph:{
+    border:12,
+    height:100
+  }
+};
+
+
+
 interface CactusArg{
     cactusdata:CactusData
 }
+
+
 
 
 @observer
@@ -329,11 +349,19 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
     if("" == this.props.showinfo.img){
       return (
         // <p>empty image</p>
-        <input type="file" onChange={this.onChange.bind(this)}/>
+        <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" />
       )
     }else{
       return(
-        <img src={this.props.showinfo.img} alt={this.props.showinfo.title} />
+        <div className="ImageShowArg">
+          <img src={this.props.showinfo.img} className="full"  />
+          {this.props.showinfo.faceinfoarr.map(faceinfo =>(
+                <div className="react_view" style={{top:faceinfo.top,left:faceinfo.left,width:faceinfo.width,height: faceinfo.height}}>
+                {faceinfo.name}
+                </div>
+        ))}
+        </div>
+        
       )
       
     }
@@ -343,6 +371,7 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
 @observer
 export  class ImageGridList  extends React.Component<CactusArg> {
   userdata:CactusData;
+
   // classes = useStyles();
   // classes:any;
   // console.log("detectAndClassifyArr.size=%d",this.userdata.DetectAndClassifyArr.)
@@ -365,3 +394,6 @@ export  class ImageGridList  extends React.Component<CactusArg> {
   }
 
 };
+
+
+export default withStyles(diystyles)(ImageShow);
