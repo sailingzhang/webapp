@@ -20,6 +20,8 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 
+import * as CactusPb from "../proto_code/cactus_pb"
+
 
 // import tileData from './tileData';
 
@@ -323,20 +325,38 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
   constructor(props:ImageShowArg){
     super(props)
   }
+  topercent(fvalue:number){
+    let ret = (fvalue*100).toString()+'%';
+    // console.log("ret=",ret)
+    return ret;
+  }
   onChange(evt:React.ChangeEvent<HTMLInputElement>){
     let selectedFile:File = evt.target.files[0];
     console.log("select file..=%s",selectedFile.name)
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = reader.result;
-      this.props.showinfo.setAttribution(text.toString(),2)
-      let addshow = new DetectAndClassifyImageInfo();
-      this.props.cactusdata.AddDetectAndClassify(addshow);
+    const DetectReader = new FileReader();
+    const ShowReader = new FileReader();
+    let onloadfun = (e:ProgressEvent<FileReader>) => {
+      const pic = e.target.result;
+      if(pic instanceof ArrayBuffer){
+        let req = new CactusPb.FaceDetectAndIdentifyByPicReq();
+        let array = new Uint8Array(pic as ArrayBuffer, 0);       
+        req.setId(this.props.showinfo.id);
+        req.setPicdata(array);
+        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
+        this.props.cactusdata.Send_Hello("this web");
+      }else{
+        this.props.showinfo.setAttribution(pic,2);
+        let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.DetectAndClassifyArr.length);
+        this.props.cactusdata.AddDetectAndClassify(addshow);
+      }
+      
+      // console.log("strpic=",pic.toString());
 
     }
-    reader.readAsDataURL(selectedFile);
-    this.props.cactusdata.pb_Hello_Send("this is webapp");
-
+    DetectReader.onload=onloadfun;
+    ShowReader.onload = onloadfun;
+    DetectReader.readAsArrayBuffer(selectedFile);
+    ShowReader.readAsDataURL(selectedFile);
   }
 
   public render(){
@@ -350,9 +370,12 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
         <div className="ImageShowArg">
           <img src={this.props.showinfo.img} className="full"  />
           {this.props.showinfo.faceinfoarr.map(faceinfo =>(
-                <div className="react_view" style={{top:'10%',left:'10%',width:'10%',height:'10%'}} >
+                <div className="react_view" style={{top:this.topercent(faceinfo.top),left:this.topercent(faceinfo.left),width:this.topercent(faceinfo.width),height:this.topercent(faceinfo.height)}} >
                 {faceinfo.name}
                 </div>
+                // <div className="react_view" style={{top:'10%',left:'10%',width:'50%',height:'50%'}} >
+                // {faceinfo.name}
+                // </div>
         ))}
         </div>
         

@@ -339,13 +339,10 @@ html{
     flex-wrap: wrap;
     display: block;
     position: absolute;
-    border: 1px solid;
+    border: 2px solid;
     border-color:green ;
     color: green;
-    top:10%;
-    left:10%;
-    width: 20%;
-    height: 30%;
+    font-size: large;
     /* top:10px;
     left:10px;
     width: 100px;

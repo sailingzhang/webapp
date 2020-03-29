@@ -1,5 +1,27 @@
 import * as jspb from "google-protobuf"
 
+export class StockPredict1_Configure extends jspb.Message {
+  getModelName(): string;
+  setModelName(value: string): void;
+
+  getModelVersion(): number;
+  setModelVersion(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): StockPredict1_Configure.AsObject;
+  static toObject(includeInstance: boolean, msg: StockPredict1_Configure): StockPredict1_Configure.AsObject;
+  static serializeBinaryToWriter(message: StockPredict1_Configure, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): StockPredict1_Configure;
+  static deserializeBinaryFromReader(message: StockPredict1_Configure, reader: jspb.BinaryReader): StockPredict1_Configure;
+}
+
+export namespace StockPredict1_Configure {
+  export type AsObject = {
+    modelName: string,
+    modelVersion: number,
+  }
+}
+
 export class FaceDetect_Mt_Configure extends jspb.Message {
   getMtcnnModelname(): string;
   setMtcnnModelname(value: string): void;
@@ -79,6 +101,12 @@ export class FaceDetectAndIdentifyByPic_MFK_Configure extends jspb.Message {
   getIsAutoClassify(): boolean;
   setIsAutoClassify(value: boolean): void;
 
+  getAutoVideoNewpersonMaxDistance(): number;
+  setAutoVideoNewpersonMaxDistance(value: number): void;
+
+  getAutoAddtrainMinDistance(): number;
+  setAutoAddtrainMinDistance(value: number): void;
+
   getMaxnumfaceAutoClassfiy(): number;
   setMaxnumfaceAutoClassfiy(value: number): void;
 
@@ -104,6 +132,8 @@ export namespace FaceDetectAndIdentifyByPic_MFK_Configure {
     trainDirectory: string,
     identifyDirectory: string,
     isAutoClassify: boolean,
+    autoVideoNewpersonMaxDistance: number,
+    autoAddtrainMinDistance: number,
     maxnumfaceAutoClassfiy: number,
   }
 }
@@ -130,6 +160,14 @@ export class CactusConfigure extends jspb.Message {
   getModelserver(): string;
   setModelserver(value: string): void;
 
+  getCactusserver(): string;
+  setCactusserver(value: string): void;
+
+  getStockpredict1Configure(): StockPredict1_Configure | undefined;
+  setStockpredict1Configure(value?: StockPredict1_Configure): void;
+  hasStockpredict1Configure(): boolean;
+  clearStockpredict1Configure(): void;
+
   getFacedetectMtConfigure(): FaceDetect_Mt_Configure | undefined;
   setFacedetectMtConfigure(value?: FaceDetect_Mt_Configure): void;
   hasFacedetectMtConfigure(): boolean;
@@ -154,6 +192,8 @@ export class CactusConfigure extends jspb.Message {
 export namespace CactusConfigure {
   export type AsObject = {
     modelserver: string,
+    cactusserver: string,
+    stockpredict1Configure?: StockPredict1_Configure.AsObject,
     facedetectMtConfigure?: FaceDetect_Mt_Configure.AsObject,
     facedetectandidentifybypicMfkConfigure?: FaceDetectAndIdentifyByPic_MFK_Configure.AsObject,
     stockpredict1Modelname: string,
