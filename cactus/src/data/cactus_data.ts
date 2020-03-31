@@ -74,7 +74,11 @@ cactusClient:CactusClientPb.CactusClient;
         // showinfo.cols = 2;
         // this.DetectAndClassifyArr.push(showinfo);
         // this.DetectAndClassifyArr.push(showinfo);
-        this.cactusClient =  new CactusClientPb.CactusClient('http://localhost:8080');
+        let addr = document.location.host.split(":",1);
+        let addr2  = "http://" + addr +":8080";
+        console.log("addr=",addr2);
+        // this.cactusClient =  new CactusClientPb.CactusClient('http://10.12.23.127:8080');
+        this.cactusClient =  new CactusClientPb.CactusClient(addr2);
 
 
     }
