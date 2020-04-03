@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {CactusData} from "./data/cactus_data"
 
-import { Hello } from "./components/Hello";
+import { Hello } from "./components/hello";
 import { Head,UserProfileList,UserGrpahView } from "./components/material_ui";
 
 

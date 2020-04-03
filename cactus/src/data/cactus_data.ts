@@ -135,5 +135,9 @@ public  Send_FaceDetectAndIdentifyByPic_MFK(req:CactusPb.FaceDetectAndIdentifyBy
     this.cactusClient.faceDetectAndIdentifyByPic_MFK(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFK.bind(this));
 }
 
+public  Send_FaceDetectAndIdentifyByPic_MFS(req:CactusPb.FaceDetectAndIdentifyByPicReq){
+    this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFK.bind(this));
+}
+
     
 }

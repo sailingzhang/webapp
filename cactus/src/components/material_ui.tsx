@@ -342,7 +342,7 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
         let array = new Uint8Array(pic as ArrayBuffer, 0);       
         req.setId(this.props.showinfo.id);
         req.setPicdata(array);
-        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
+        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFS(req);
         this.props.cactusdata.Send_Hello("this web");
       }else{
         this.props.showinfo.setAttribution(pic,2);

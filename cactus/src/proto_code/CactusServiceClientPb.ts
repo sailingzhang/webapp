@@ -128,6 +128,28 @@ export class CactusClient {
       callback);
   }
 
+  methodInfoFaceDetectAndIdentifyByPic_MFS = new grpcWeb.AbstractClientBase.MethodInfo(
+    FaceDetectAndIdentifyByPicRsp,
+    (request: FaceDetectAndIdentifyByPicReq) => {
+      return request.serializeBinary();
+    },
+    FaceDetectAndIdentifyByPicRsp.deserializeBinary
+  );
+
+  faceDetectAndIdentifyByPic_MFS(
+    request: FaceDetectAndIdentifyByPicReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: FaceDetectAndIdentifyByPicRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/FaceDetectAndIdentifyByPic_MFS',
+      request,
+      metadata || {},
+      this.methodInfoFaceDetectAndIdentifyByPic_MFS,
+      callback);
+  }
+
   methodInfoIdentifyPersonByThumbnails = new grpcWeb.AbstractClientBase.MethodInfo(
     IdentifyPersonByThumbnailsRsp,
     (request: IdentifyPersonByThumbnailsReq) => {
