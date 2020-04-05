@@ -7,7 +7,8 @@ import * as grpcWeb from 'grpc-web'
 // import * as protobuf from 'google-protobuf'
 
 export enum GraphViewShowTypeEnum{
-    DetectAndClassify,
+    DetectAndClassify_MFK,
+    DetectAndClassify_MFS,
     Tracking,
 }
 
@@ -38,15 +39,6 @@ export class  DetectAndClassifyImageInfo{
         this.cols=0;
         // this.featured=false;
         this.faceinfoarr=[];
-        
-        // let oneface = new faceinfo();
-        // oneface.top =10;
-        // oneface.left = 10;
-        // oneface.width = 50;
-        // oneface.height= 50;
-
-        // oneface.name="test";
-        // this.faceinfoarr.push(oneface);
     }
 
 @action  setAttribution(imgarg:string,colsarg:number){
@@ -59,21 +51,17 @@ export class  DetectAndClassifyImageInfo{
 export class CactusData {
 @observable    helloword:string;
 @observable    GraphViewShowType:GraphViewShowTypeEnum;
-@observable    DetectAndClassifyArr:DetectAndClassifyImageInfo[];
+@observable    MFK_Arr:DetectAndClassifyImageInfo[];
+@observable    MFS_Arr:DetectAndClassifyImageInfo[];
 cactusClient:CactusClientPb.CactusClient;
     constructor(){
-        this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify;
-        this.DetectAndClassifyArr=[];
-        let addshow = new DetectAndClassifyImageInfo(this.DetectAndClassifyArr.length);
-        this.DetectAndClassifyArr.push(addshow);
-
-        // let  showinfo = new DetectAndClassifyImageInfo();
-        // showinfo.img="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1585236413423&di=e5e9c7c7d1d8b7ed63b7a88223c81c00&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Ftransform%2F20150527%2FJvPy-avxeafs8148279.jpg";
-        // showinfo.title="fuck";
-        // showinfo.featured = true;
-        // showinfo.cols = 2;
-        // this.DetectAndClassifyArr.push(showinfo);
-        // this.DetectAndClassifyArr.push(showinfo);
+        this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify_MFS;
+        this.MFK_Arr=[];
+        this.MFS_Arr=[]
+        let addshow = new DetectAndClassifyImageInfo(this.MFK_Arr.length);
+        this.MFK_Arr.push(addshow);
+        let addshow2 = new DetectAndClassifyImageInfo(this.MFS_Arr.length);
+        this.MFS_Arr.push(addshow2);        
         let addr = document.location.host.split(":",1);
         let addr2  = "http://" + addr +":8080";
         console.log("addr=",addr2);
@@ -91,11 +79,34 @@ cactusClient:CactusClientPb.CactusClient;
     private Rsp_Hello(err: grpcWeb.Error, response: CactusPb.HelloRsp){
         console.log("hello rsp=%s",response.getResponse());
     }
+
     private Rsp_FaceDetectAndIdentifyByPic_MFK(err: grpcWeb.Error, response: CactusPb.FaceDetectAndIdentifyByPicRsp){
         console.log("Rsp_FaceDetectAndIdentifyByPic_MFK=",response.toString());
         let faceslist = response.getPersoninfosList();
-        for(let i =this.DetectAndClassifyArr.length -1;i >= 0 ;i--){
-            let one = this.DetectAndClassifyArr[i];
+        for(let i =this.MFK_Arr.length -1;i >= 0 ;i--){
+            let one = this.MFK_Arr[i];
+            if(one.id != response.getId()){
+                console.log("mismatch,srcpersonid=",one.id," facenum=",one.faceinfoarr.length," matchpersonid=",response.getId())
+                continue;
+            }
+            console.log("yeah, find match personid=",response.getId())
+            for(let face of faceslist){
+               let finfo =  new faceinfo();
+               finfo.name = face.getPersonid();
+               finfo.top = face.getTop();
+               finfo.left = face.getLeft();
+               finfo.width = face.getWidth();
+               finfo.height = face.getHeight();
+               one.faceinfoarr.push(finfo);
+            }
+            break;
+        }
+    }
+    private Rsp_FaceDetectAndIdentifyByPic_MFS(err: grpcWeb.Error, response: CactusPb.FaceDetectAndIdentifyByPicRsp){
+        console.log("Rsp_FaceDetectAndIdentifyByPic_MFK=",response.toString());
+        let faceslist = response.getPersoninfosList();
+        for(let i =this.MFS_Arr.length -1;i >= 0 ;i--){
+            let one = this.MFS_Arr[i];
             if(one.id != response.getId()){
                 console.log("mismatch,srcpersonid=",one.id," facenum=",one.faceinfoarr.length," matchpersonid=",response.getId())
                 continue;
@@ -118,8 +129,12 @@ public SetGraphViewShowType(type:GraphViewShowTypeEnum){
         this.GraphViewShowType = type;
     }
 @action   
-public  AddDetectAndClassify(one:DetectAndClassifyImageInfo){
-    this.DetectAndClassifyArr.push(one);
+public  AddDetectAndClassify_MFK(one:DetectAndClassifyImageInfo){
+    this.MFK_Arr.push(one);
+    }
+@action
+public  AddDetectAndClassify_MFS(one:DetectAndClassifyImageInfo){
+    this.MFS_Arr.push(one);
     }
 
 
@@ -136,7 +151,7 @@ public  Send_FaceDetectAndIdentifyByPic_MFK(req:CactusPb.FaceDetectAndIdentifyBy
 }
 
 public  Send_FaceDetectAndIdentifyByPic_MFS(req:CactusPb.FaceDetectAndIdentifyByPicReq){
-    this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFK.bind(this));
+    this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFS.bind(this));
 }
 
     

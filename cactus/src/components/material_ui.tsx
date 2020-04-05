@@ -109,10 +109,12 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
         console.log("onTestOneClick");
         // this.userupdateObj.UpdateValue(UserGrpahViewShowType.USER_TEST_TYPE,false);
     }
-    onDetectAndClassifyClick(){
-        this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.DetectAndClassify);
-        // this.userupdateObj.UpdateValue(UserGrpahViewShowType.USER_MARKET_TRADE_NODE,false);
+    onMFKClick(){
+        this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.DetectAndClassify_MFK);
     }
+    onMFSClick(){
+      this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.DetectAndClassify_MFS);
+  }
     render(){
         return (
             <div>
@@ -128,18 +130,27 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
                 </ListItem>
                 <Collapse in={this.state.bTestOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                <ListItem button className="test" onClick={null}>
-                <ListItemIcon>
-                <StarBorder />
-                </ListItemIcon>
-                <ListItemText inset primary="Detect And Classify" onClick={this.onDetectAndClassifyClick.bind(this)}/>
-                </ListItem>            
-                <ListItem button className="test">
-                <ListItemIcon>
-                <StarBorder />
-                </ListItemIcon>
-                <ListItemText inset primary="Tracking" onClick={this.onTrackingClick.bind(this)} />
-                </ListItem>
+                  <ListItem button className="test" onClick={null}>
+                  <ListItemIcon>
+                  <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText inset primary="Detect And Classify(MFS)" onClick={this.onMFSClick.bind(this)}/>
+                  </ListItem> 
+
+                  <ListItem button className="test" onClick={null}>
+                  <ListItemIcon>
+                  <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText inset primary="Detect And Classify(MFK)" onClick={this.onMFKClick.bind(this)}/>
+                  </ListItem> 
+
+                  <ListItem button className="test">
+                  <ListItemIcon>
+                  <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText inset primary="Tracking" onClick={this.onTrackingClick.bind(this)} />
+                  </ListItem>
+
                 </List>
                 </Collapse>
                 </div>
@@ -161,14 +172,21 @@ export class UserGrpahView extends React.Component<CactusArg>{
         this.userdata = props.cactusdata;
     }
     public render(){
-        if(GraphViewShowTypeEnum.DetectAndClassify ==  this.userdata.GraphViewShowType){
+        if(GraphViewShowTypeEnum.DetectAndClassify_MFK ==  this.userdata.GraphViewShowType){
             return(        
-                <ImageGridList cactusdata={this.userdata} />
+                <ImageGridList_MFK cactusdata={this.userdata} />
                 // <AdvancedGridList />
                 // <DetectAndClassifyView cactusdata={this.userdata} />
                 // <p>detectandclassify</p>
             )           
-        }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
+        }else if(GraphViewShowTypeEnum.DetectAndClassify_MFS ==  this.userdata.GraphViewShowType){
+          return(        
+              <ImageGridList_MFS cactusdata={this.userdata} />
+              // <AdvancedGridList />
+              // <DetectAndClassifyView cactusdata={this.userdata} />
+              // <p>detectandclassify</p>
+          )           
+      }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
             return (
                 // <p>track</p>
                 <TrackingView cactusdata={this.userdata} />
@@ -321,7 +339,7 @@ interface ImageShowArg{
   cactusdata:CactusData
 }
 @observer
-export  class  ImageShow extends React.Component<ImageShowArg> {
+export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
   constructor(props:ImageShowArg){
     super(props)
   }
@@ -342,12 +360,12 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
         let array = new Uint8Array(pic as ArrayBuffer, 0);       
         req.setId(this.props.showinfo.id);
         req.setPicdata(array);
-        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFS(req);
-        this.props.cactusdata.Send_Hello("this web");
+        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
+        // this.props.cactusdata.Send_Hello("this web");
       }else{
         this.props.showinfo.setAttribution(pic,2);
-        let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.DetectAndClassifyArr.length);
-        this.props.cactusdata.AddDetectAndClassify(addshow);
+        let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.MFK_Arr.length);
+        this.props.cactusdata.AddDetectAndClassify_MFK(addshow);
       }
       
       // console.log("strpic=",pic.toString());
@@ -373,9 +391,69 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
                 <div className="react_view" style={{top:this.topercent(faceinfo.top),left:this.topercent(faceinfo.left),width:this.topercent(faceinfo.width),height:this.topercent(faceinfo.height)}} >
                 {faceinfo.name}
                 </div>
-                // <div className="react_view" style={{top:'10%',left:'10%',width:'50%',height:'50%'}} >
-                // {faceinfo.name}
-                // </div>
+        ))}
+        </div>
+        
+      )
+      
+    }
+  }
+}
+
+
+@observer
+export  class  ImageShow_MFS extends React.Component<ImageShowArg> {
+  constructor(props:ImageShowArg){
+    super(props)
+  }
+  topercent(fvalue:number){
+    let ret = (fvalue*100).toString()+'%';
+    // console.log("ret=",ret)
+    return ret;
+  }
+  onChange(evt:React.ChangeEvent<HTMLInputElement>){
+    let selectedFile:File = evt.target.files[0];
+    console.log("select file..=%s",selectedFile.name)
+    const DetectReader = new FileReader();
+    const ShowReader = new FileReader();
+    let onloadfun = (e:ProgressEvent<FileReader>) => {
+      const pic = e.target.result;
+      if(pic instanceof ArrayBuffer){
+        let req = new CactusPb.FaceDetectAndIdentifyByPicReq();
+        let array = new Uint8Array(pic as ArrayBuffer, 0);       
+        req.setId(this.props.showinfo.id);
+        req.setPicdata(array);
+        this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFS(req);
+        // this.props.cactusdata.Send_Hello("this web");
+      }else{
+        this.props.showinfo.setAttribution(pic,2);
+        let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.MFS_Arr.length);
+        this.props.cactusdata.AddDetectAndClassify_MFS(addshow);
+      }
+      
+      // console.log("strpic=",pic.toString());
+
+    }
+    DetectReader.onload=onloadfun;
+    ShowReader.onload = onloadfun;
+    DetectReader.readAsArrayBuffer(selectedFile);
+    ShowReader.readAsDataURL(selectedFile);
+  }
+
+  public render(){
+    if("" == this.props.showinfo.img){
+      return (
+        // <p>empty image</p>
+        <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" />
+      )
+    }else{
+      return(
+        <div className="ImageShowArg">
+          <img src={this.props.showinfo.img} className="full"  />
+          {this.props.showinfo.faceinfoarr.map(faceinfo =>(
+                <div className="react_view" style={{top:this.topercent(faceinfo.top),left:this.topercent(faceinfo.left),width:this.topercent(faceinfo.width),height:this.topercent(faceinfo.height)}} >
+                {faceinfo.name}
+                </div>
         ))}
         </div>
         
@@ -386,25 +464,20 @@ export  class  ImageShow extends React.Component<ImageShowArg> {
 }
 
 @observer
-export  class ImageGridList  extends React.Component<CactusArg> {
+export  class ImageGridList_MFK  extends React.Component<CactusArg> {
   userdata:CactusData;
-
-  // classes = useStyles();
-  // classes:any;
-  // console.log("detectAndClassifyArr.size=%d",this.userdata.DetectAndClassifyArr.)
-  
   constructor(props:CactusArg){
       super(props);
       this.userdata = props.cactusdata;
       // this.classes = useStyles();
-      console.log("detectandclassifyarr.size=%d",this.userdata.DetectAndClassifyArr.length);
+      console.log("detectandclassifyarr.size=%d",this.userdata.MFK_Arr.length);
   }
 
   public render(){
       return (
         <GridList cellHeight={160}  cols={3}>
-        {this.userdata.DetectAndClassifyArr.map(tile =>(
-            <ImageShow showinfo={tile} cactusdata={this.userdata}/>
+        {this.userdata.MFK_Arr.map(tile =>(
+            <ImageShow_MFK showinfo={tile} cactusdata={this.userdata}/>
         ))}
       </GridList>
         );
@@ -413,4 +486,27 @@ export  class ImageGridList  extends React.Component<CactusArg> {
 };
 
 
-export default withStyles(diystyles)(ImageShow);
+@observer
+export  class ImageGridList_MFS  extends React.Component<CactusArg> {
+  userdata:CactusData;
+  constructor(props:CactusArg){
+      super(props);
+      this.userdata = props.cactusdata;
+      // this.classes = useStyles();
+      console.log("detectandclassifyarr.size=%d",this.userdata.MFS_Arr.length);
+  }
+
+  public render(){
+      return (
+        <GridList cellHeight={160}  cols={3}>
+        {this.userdata.MFS_Arr.map(tile =>(
+            <ImageShow_MFS showinfo={tile} cactusdata={this.userdata}/>
+        ))}
+      </GridList>
+        );
+  }
+
+};
+
+
+// export default withStyles(diystyles)(ImageShow_MFK);
