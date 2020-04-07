@@ -3,6 +3,7 @@ import {observable,action,autorun, configure, reaction} from 'mobx';
 import * as CactusClientPb from "../proto_code/CactusServiceClientPb"
 import * as CactusPb from "../proto_code/cactus_pb"
 import * as grpcWeb from 'grpc-web'
+// import "Date"
 
 // import * as protobuf from 'google-protobuf'
 
@@ -50,6 +51,7 @@ export class  DetectAndClassifyImageInfo{
 
 export class CactusData {
 @observable    helloword:string;
+@observable    groupid:string;
 @observable    GraphViewShowType:GraphViewShowTypeEnum;
 @observable    MFK_Arr:DetectAndClassifyImageInfo[];
 @observable    MFS_Arr:DetectAndClassifyImageInfo[];
@@ -67,7 +69,9 @@ cactusClient:CactusClientPb.CactusClient;
         console.log("addr=",addr2);
         // this.cactusClient =  new CactusClientPb.CactusClient('http://10.12.23.127:8080');
         this.cactusClient =  new CactusClientPb.CactusClient(addr2);
-
+        // Date.parse(new Date())
+        this.groupid = new Date().getTime().toString()
+        console.log("groupid=",this.groupid)
 
     }
     private HelloWord(p1:string):boolean{

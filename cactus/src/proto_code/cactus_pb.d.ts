@@ -138,6 +138,36 @@ export namespace FaceDetectAndIdentifyByPic_MFK_Configure {
   }
 }
 
+export class FaceDetectAndIdentifyByPic_MFS_Configure extends jspb.Message {
+  getTrainDirectory(): string;
+  setTrainDirectory(value: string): void;
+
+  getIdentifyDirectory(): string;
+  setIdentifyDirectory(value: string): void;
+
+  getIsAutoClassify(): boolean;
+  setIsAutoClassify(value: boolean): void;
+
+  getMaxnumfaceAutoClassfiy(): number;
+  setMaxnumfaceAutoClassfiy(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FaceDetectAndIdentifyByPic_MFS_Configure.AsObject;
+  static toObject(includeInstance: boolean, msg: FaceDetectAndIdentifyByPic_MFS_Configure): FaceDetectAndIdentifyByPic_MFS_Configure.AsObject;
+  static serializeBinaryToWriter(message: FaceDetectAndIdentifyByPic_MFS_Configure, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FaceDetectAndIdentifyByPic_MFS_Configure;
+  static deserializeBinaryFromReader(message: FaceDetectAndIdentifyByPic_MFS_Configure, reader: jspb.BinaryReader): FaceDetectAndIdentifyByPic_MFS_Configure;
+}
+
+export namespace FaceDetectAndIdentifyByPic_MFS_Configure {
+  export type AsObject = {
+    trainDirectory: string,
+    identifyDirectory: string,
+    isAutoClassify: boolean,
+    maxnumfaceAutoClassfiy: number,
+  }
+}
+
 export class FaceNetConfigure extends jspb.Message {
   getModelName(): string;
   setModelName(value: string): void;
@@ -178,6 +208,14 @@ export class CactusConfigure extends jspb.Message {
   hasFacedetectandidentifybypicMfkConfigure(): boolean;
   clearFacedetectandidentifybypicMfkConfigure(): void;
 
+  getFacedetectandidentifybypicMfsConfigure(): FaceDetectAndIdentifyByPic_MFS_Configure | undefined;
+  setFacedetectandidentifybypicMfsConfigure(value?: FaceDetectAndIdentifyByPic_MFS_Configure): void;
+  hasFacedetectandidentifybypicMfsConfigure(): boolean;
+  clearFacedetectandidentifybypicMfsConfigure(): void;
+
+  getPermanentGroupidMapMap(): jspb.Map<string, string>;
+  clearPermanentGroupidMapMap(): void;
+
   getStockpredict1Modelname(): string;
   setStockpredict1Modelname(value: string): void;
 
@@ -196,6 +234,8 @@ export namespace CactusConfigure {
     stockpredict1Configure?: StockPredict1_Configure.AsObject,
     facedetectMtConfigure?: FaceDetect_Mt_Configure.AsObject,
     facedetectandidentifybypicMfkConfigure?: FaceDetectAndIdentifyByPic_MFK_Configure.AsObject,
+    facedetectandidentifybypicMfsConfigure?: FaceDetectAndIdentifyByPic_MFS_Configure.AsObject,
+    permanentGroupidMapMap: Array<[string, string]>,
     stockpredict1Modelname: string,
   }
 }
@@ -418,6 +458,9 @@ export class FaceDetectAndIdentifyByPicReq extends jspb.Message {
   getId(): number;
   setId(value: number): void;
 
+  getGroupid(): string;
+  setGroupid(value: string): void;
+
   getPicdata(): Uint8Array | string;
   getPicdata_asU8(): Uint8Array;
   getPicdata_asB64(): string;
@@ -434,6 +477,7 @@ export class FaceDetectAndIdentifyByPicReq extends jspb.Message {
 export namespace FaceDetectAndIdentifyByPicReq {
   export type AsObject = {
     id: number,
+    groupid: string,
     picdata: Uint8Array | string,
   }
 }
@@ -441,6 +485,9 @@ export namespace FaceDetectAndIdentifyByPicReq {
 export class FaceDetectAndIdentifyByPicRsp extends jspb.Message {
   getId(): number;
   setId(value: number): void;
+
+  getGroupid(): string;
+  setGroupid(value: string): void;
 
   getPersoninfosList(): Array<DetectAndIdentifyInfo>;
   setPersoninfosList(value: Array<DetectAndIdentifyInfo>): void;
@@ -458,6 +505,7 @@ export class FaceDetectAndIdentifyByPicRsp extends jspb.Message {
 export namespace FaceDetectAndIdentifyByPicRsp {
   export type AsObject = {
     id: number,
+    groupid: string,
     personinfosList: Array<DetectAndIdentifyInfo.AsObject>,
   }
 }

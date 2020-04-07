@@ -423,6 +423,7 @@ export  class  ImageShow_MFS extends React.Component<ImageShowArg> {
         let array = new Uint8Array(pic as ArrayBuffer, 0);       
         req.setId(this.props.showinfo.id);
         req.setPicdata(array);
+        req.setGroupid(this.props.cactusdata.groupid);
         this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFS(req);
         // this.props.cactusdata.Send_Hello("this web");
       }else{
