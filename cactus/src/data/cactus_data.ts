@@ -57,7 +57,7 @@ export class CactusData {
 @observable    MFS_Arr:DetectAndClassifyImageInfo[];
 cactusClient:CactusClientPb.CactusClient;
     constructor(){
-        this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify_MFS;
+        this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify_MFK;
         this.MFK_Arr=[];
         this.MFS_Arr=[]
         let addshow = new DetectAndClassifyImageInfo(this.MFK_Arr.length);

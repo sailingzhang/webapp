@@ -130,14 +130,14 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
                 </ListItem>
                 <Collapse in={this.state.bTestOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  <ListItem button className="test" onClick={null}>
+                  <ListItem button className="test" onClick={null} selected={this.props.cactusdata.GraphViewShowType == GraphViewShowTypeEnum.DetectAndClassify_MFS}>
                   <ListItemIcon>
                   <StarBorder />
                   </ListItemIcon>
-                  <ListItemText inset primary="Detect And Classify(MFS)" onClick={this.onMFSClick.bind(this)}/>
+                  <ListItemText inset primary="Detect And Classify(MFS)" onClick={this.onMFSClick.bind(this)} />
                   </ListItem> 
 
-                  <ListItem button className="test" onClick={null}>
+                  <ListItem button className="test" onClick={null} selected={this.props.cactusdata.GraphViewShowType == GraphViewShowTypeEnum.DetectAndClassify_MFK} >
                   <ListItemIcon>
                   <StarBorder />
                   </ListItemIcon>
@@ -308,31 +308,6 @@ export  function AdvancedGridList() {
 };
 
 
-// export  function ImageGridList() {
-//     const classes = useStyles();
-//     return (
-//       <div className={classes.root}>
-//         <GridList cellHeight={160} className={classes.gridList} cols={3}>
-//           {tileData.map(tile => (
-//             <GridListTile key={tile.img} cols={tile.cols || 1}>
-//               <img src={tile.img} alt={tile.title} />
-//             </GridListTile>
-//           ))}
-//         </GridList>
-//       </div>
-//     );
-//   };
-
-
-// function onFileSelect(event:React.ChangeEvent<HTMLInputElement>) {
-//   let selectedFile = event.target.files[0];
-//   const reader = new FileReader();
-//   reader.onload = (e) => {
-//       const text = reader.result.toString();
-//       console.log(text);
-//   }
-//   reader.readAsText(selectedFile);
-// }
 
 interface ImageShowArg{
   showinfo:DetectAndClassifyImageInfo;
@@ -359,6 +334,7 @@ export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
         let req = new CactusPb.FaceDetectAndIdentifyByPicReq();
         let array = new Uint8Array(pic as ArrayBuffer, 0);       
         req.setId(this.props.showinfo.id);
+        req.setGroupid(this.props.cactusdata.groupid);
         req.setPicdata(array);
         this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
         // this.props.cactusdata.Send_Hello("this web");
