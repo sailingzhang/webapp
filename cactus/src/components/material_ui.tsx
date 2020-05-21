@@ -22,11 +22,16 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 
 import * as CactusPb from "../proto_code/cactus_pb"
 
+// / <reference path ="typetest.d.ts" /> 
+import * as myy  from "./typetest"
+import * as type_opencv from "mirada"
+
 
 // import tileData from './tileData';
 
 
 import { observer } from 'mobx-react';
+import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
 
@@ -78,6 +83,7 @@ export class Head extends React.Component<CactusArg>{
 
  interface UserProfileListState{
     bTestOpen:boolean;
+    bAnanaSisOpen:boolean;
 }
 
 @observer
@@ -88,7 +94,7 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
         super(props)
         this.userdata = props.cactusdata
         // this.userupdateObj = data.MyUserCli.userDataMana.UserUpdateClsArr[UserUpdateEnum.UserGraphShowType];
-        this.state={bTestOpen:false};
+        this.state={bTestOpen:false,bAnanaSisOpen:false};
     }
 
 
@@ -104,6 +110,10 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
     onTestListClick(){
         this.setState({bTestOpen:!this.state.bTestOpen})
     }
+    onAnanaSisClick(){
+      this.setState({bAnanaSisOpen:!this.state.bAnanaSisOpen})
+    }
+    
 
     onTestOneClick(){
         console.log("onTestOneClick");
@@ -114,7 +124,15 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
     }
     onMFSClick(){
       this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.DetectAndClassify_MFS);
-  }
+    }
+    onAnalysisPicClick(){
+      this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.AnalysisPic);
+      // myy.typet("myfirsttype")
+      myy.typet("oh ,my")
+      // let a = new type_opencv.Mat();
+      new cv.Mat();
+    }
+
     render(){
         return (
             <div>
@@ -153,10 +171,32 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
 
                 </List>
                 </Collapse>
+
+                <ListItem button onClick={this.onAnanaSisClick.bind(this)}>
+                <ListItemIcon>
+                <InboxIcon />
+                </ListItemIcon>
+                <ListItemText inset primary={"AnanasisPic"} />
+                {this.state.bAnanaSisOpen? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={this.state.bAnanaSisOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItem button className="test" onClick={null} selected={this.props.cactusdata.GraphViewShowType == GraphViewShowTypeEnum.AnalysisPic}>
+                    <ListItemIcon>
+                    <StarBorder />
+                    </ListItemIcon>
+                    <ListItemText inset primary="AnalysisPic" onClick={this.onAnalysisPicClick.bind(this)} />
+                    </ListItem> 
+
+                  </List>
+                </Collapse>
+
+
+
                 </div>
             </List>
              </div>
-            </div>
+         </div>
         )
     }
 }
@@ -186,13 +226,18 @@ export class UserGrpahView extends React.Component<CactusArg>{
               // <DetectAndClassifyView cactusdata={this.userdata} />
               // <p>detectandclassify</p>
           )           
-      }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
+        }else if(GraphViewShowTypeEnum.Tracking == this.userdata.GraphViewShowType){
             return (
                 // <p>track</p>
                 <TrackingView cactusdata={this.userdata} />
             )
-        }
-        else{
+       }else if(GraphViewShowTypeEnum.AnalysisPic == this.userdata.GraphViewShowType){
+         return (
+            // <p> this is analysispic</p>
+            <AnalysisShow cactusdata={this.userdata}/>
+         )
+       }
+       else{
             return (
                 <p>no such type</p>
                 
@@ -309,9 +354,108 @@ export  function AdvancedGridList() {
 
 
 
+interface AnalysisPicArg{
+  cactusdata:CactusData;
+}
+
+
+
+@observer
+export class AnalysisShow  extends React.Component<AnalysisPicArg>{
+  @observable img:string;
+  constructor(props:AnalysisPicArg){
+    super(props);
+    this.img=""
+  }
+
+
+
+
+  
+
+  onChange(evt:React.ChangeEvent<HTMLInputElement>){
+    let selectedFile:File = evt.target.files[0];
+    console.log("select file..=%s",selectedFile.name)
+    this.img = URL.createObjectURL(selectedFile)
+
+
+
+    let srcImg = document.getElementById('src-img');
+    let toImg = document.getElementById('dst-img');
+    let tocanvas = document.getElementById('dst-canvas');
+
+    // srcImg.setAttribute('crossOrigin', 'Anonymous');
+    
+    console.log("begin to dst")
+    let newimg = new Image(200,200);
+    newimg.crossOrigin = "anonymous";
+    newimg.src = this.img;
+    
+    let dst_canvas = cv.imread(srcImg)
+    // cv.imshow('dst-canvas', dst_canvas);
+    cv.imshow(tocanvas, dst_canvas)
+    console.log("show over")
+    // let dst = cv.imread(srcImg);
+    // cv.imshow('dest-canvas', dst);
+    // // src.delete();
+    // dst.delete();
+  }
+
+
+
+  onChange2(evt:React.ChangeEvent<HTMLInputElement>){
+    let selectedFile:File = evt.target.files[0];
+    console.log("select file..=%s",selectedFile.name)
+    const DetectReader = new FileReader();
+    const ShowReader = new FileReader();
+    let onloadfun = (e:ProgressEvent<FileReader>) => {
+      const pic = e.target.result;
+      if(pic instanceof ArrayBuffer){
+        // let req = new CactusPb.FaceDetectAndIdentifyByPicReq();
+        // let array = new Uint8Array(pic as ArrayBuffer, 0);       
+        // req.setId(this.props.showinfo.id);
+        // req.setGroupid(this.props.cactusdata.groupid);
+        // req.setPicdata(array);
+        // this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
+        // this.props.cactusdata.Send_Hello("this web");
+      }else{
+        console.log("begin set img")
+        this.img = pic
+        // this.props.showinfo.setAttribution(pic,2);
+        // let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.MFK_Arr.length);
+        // this.props.cactusdata.AddDetectAndClassify_MFK(addshow);
+      }
+      
+      // console.log("strpic=",pic.toString());
+
+    }
+    DetectReader.onload=onloadfun;
+    ShowReader.onload = onloadfun;
+    DetectReader.readAsArrayBuffer(selectedFile);
+    ShowReader.readAsDataURL(selectedFile);
+  }
+
+
+  public render(){
+      console.log("begin render canvas");
+
+        return (
+          // <p>empty image</p>
+          <div>
+          <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
+          <img id="src-img" src={this.img} className="full" width='200' height='200' />
+          <img id="dst-img"  className="full"  />
+          <canvas id="dst-canvas" width='200' height='200' ></canvas>
+          </div>
+        )
+    
+
+    }
+}
+
 interface ImageShowArg{
   showinfo:DetectAndClassifyImageInfo;
-  cactusdata:CactusData
+  cactusdata:CactusData;
 }
 @observer
 export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
