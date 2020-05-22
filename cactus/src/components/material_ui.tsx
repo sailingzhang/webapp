@@ -447,10 +447,24 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     }
 
     processVideo(){
-        console.log("processing");
+        // console.log("processing");
         const begin = Date.now();
         this.cap_video.read(this.src_Mat)
         cv.cvtColor(this.src_Mat, this.dst_Mat, cv.COLOR_RGBA2GRAY);
+        
+        let left = 0;
+        let top = 0;
+        let width = 50;
+        let height = 50;
+        let start_point = new cv.Point(left,top);
+        let end_point = new cv.Point(left+width,top+height);
+        // start_point = (left, top)
+        // end_point = (left+width, top+height)
+        // cv2.rectangle(picdata, start_point, end_point,  (0, 255, 0), 2)
+        // cv2.putText(picdata, p.personId, (left, top), font, 1.2, (255, 255, 255), 2)
+        let color =new  cv.Scalar(0,255,0);
+        cv.rectangle(this.dst_Mat,start_point,end_point,color,2);
+        cv.putText(this.dst_Mat, "hello world", end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
         cv.imshow(this.outputcanvasId, this.dst_Mat);
         const delay = 1000/this.FPS - (Date.now() - begin);
         setTimeout(this.processVideo.bind(this), delay);
