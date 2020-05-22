@@ -34,6 +34,7 @@ import { observer } from 'mobx-react';
 import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
+import { int32_t } from "mirada";
 
 
 
@@ -84,6 +85,7 @@ export class Head extends React.Component<CactusArg>{
  interface UserProfileListState{
     bTestOpen:boolean;
     bAnanaSisOpen:boolean;
+    bAnanaSisPicStreamOpen:boolean;
 }
 
 @observer
@@ -94,7 +96,7 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
         super(props)
         this.userdata = props.cactusdata
         // this.userupdateObj = data.MyUserCli.userDataMana.UserUpdateClsArr[UserUpdateEnum.UserGraphShowType];
-        this.state={bTestOpen:false,bAnanaSisOpen:false};
+        this.state={bTestOpen:false,bAnanaSisOpen:false,bAnanaSisPicStreamOpen:false};
     }
 
 
@@ -113,6 +115,9 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
     onAnanaSisClick(){
       this.setState({bAnanaSisOpen:!this.state.bAnanaSisOpen})
     }
+    onAnalySisPicStreamExpandClick(){
+      this.setState({bAnanaSisPicStreamOpen:!this.state.bAnanaSisPicStreamOpen})
+    }
     
 
     onTestOneClick(){
@@ -128,9 +133,15 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
     onAnalysisPicClick(){
       this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.AnalysisPic);
       // myy.typet("myfirsttype")
-      myy.typet("oh ,my")
+      // myy.typet("oh ,my")
       // let a = new type_opencv.Mat();
-      new cv.Mat();
+      // new cv.Mat();
+    }
+
+    onAnalysisPicStreamClick(){
+      this.userdata.SetGraphViewShowType(GraphViewShowTypeEnum.AnalysisPicStream);
+      myy.typet("oh ,my")
+
     }
 
     render(){
@@ -193,6 +204,27 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
 
 
 
+                <ListItem button onClick={this.onAnalySisPicStreamExpandClick.bind(this)}>
+                <ListItemIcon>
+                <InboxIcon />
+                </ListItemIcon>
+                <ListItemText inset primary={"AnanasisPicStream"} />
+                {this.state.bAnanaSisPicStreamOpen? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={this.state.bAnanaSisPicStreamOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItem button className="test" onClick={null} selected={this.props.cactusdata.GraphViewShowType == GraphViewShowTypeEnum.AnalysisPicStream}>
+                    <ListItemIcon>
+                    <StarBorder />
+                    </ListItemIcon>
+                    <ListItemText inset primary="AnanasisPicStream" onClick={this.onAnalysisPicStreamClick.bind(this)} />
+                    </ListItem> 
+
+                  </List>
+                </Collapse>
+
+
+
                 </div>
             </List>
              </div>
@@ -235,6 +267,10 @@ export class UserGrpahView extends React.Component<CactusArg>{
          return (
             // <p> this is analysispic</p>
             <AnalysisShow cactusdata={this.userdata}/>
+         )
+       }else if(GraphViewShowTypeEnum.AnalysisPicStream == this.userdata.GraphViewShowType){
+         return(
+            <AnalysisPicStreamShow cactusdata={this.userdata}/>
          )
        }
        else{
@@ -354,10 +390,94 @@ export  function AdvancedGridList() {
 
 
 
-interface AnalysisPicArg{
+
+
+interface AnalysisPicStreamArg{
   cactusdata:CactusData;
 }
 
+@observer 
+export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>{
+    @observable videoid:string;
+    @observable outputcanvasId:string;
+    @observable chosefileId:string;
+    @observable src_Mat:type_opencv.Mat;
+    @observable dst_Mat:type_opencv.Mat;
+    @observable cap_video:type_opencv.VideoCapture;
+    @observable chosefileurl:string;
+    @observable FPS:number;
+    @observable width:number;
+    @observable height:number;
+    constructor(props:AnalysisPicStreamArg){
+        super(props);
+        this.videoid="mytestvideoid";
+        this.outputcanvasId="outputid";
+        this.chosefileId="chosefileid";
+        this.FPS = 30;
+        this.width= 320;
+        this.height = 240;
+    }
+    onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
+        let selectedFile:File = evt.target.files[0];
+        console.log("select file..=%s",selectedFile.name)
+        this.chosefileurl  = URL.createObjectURL(selectedFile);
+
+        // var file = document.getElementById('file').files[0];
+        // var url = URL.createObjectURL(file);
+        // console.log(url);
+        // document.getElementById("audio_id").src = url;
+
+    }
+
+    onviedoplay(){
+        console.log('playing...');
+        let video = document.getElementById(this.videoid) as HTMLVideoElement;
+        // video.crossOrigin="Anonymous";
+        // streaming = true;
+        let getwidth = video.width;
+        let getheight = video.height;
+        console.log("getwidth=%d,getheight=%d",getwidth,getheight);
+        this.src_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC4);
+        this.dst_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC1);
+        // this.src_Mat = new cv.Mat(cv.CV_8UC4);
+        // this.dst_Mat = new cv.Mat(cv.CV_8UC1);
+        this.cap_video = new cv.VideoCapture(video);
+        
+        setTimeout(this.processVideo.bind(this), 0);
+    }
+
+    processVideo(){
+        console.log("processing");
+        const begin = Date.now();
+        this.cap_video.read(this.src_Mat)
+        cv.cvtColor(this.src_Mat, this.dst_Mat, cv.COLOR_RGBA2GRAY);
+        cv.imshow(this.outputcanvasId, this.dst_Mat);
+        const delay = 1000/this.FPS - (Date.now() - begin);
+        setTimeout(this.processVideo.bind(this), delay);
+    }
+
+    public render(){
+        console.log("begin render stream canvas");
+          return (
+            <div>
+                <p>this is ananaSisPicStream</p>
+                <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} width="50" height="50" ></input>
+                <video id={this.videoid} src={this.chosefileurl} onPlay={this.onviedoplay.bind(this)} controls={true}  width={this.width} height={this.height} crossOrigin="Anonymous"></video>
+                <canvas id={this.outputcanvasId} width={this.width} height={this.height} ></canvas>
+            </div>
+          )
+      
+  
+      }
+
+}
+
+
+
+
+interface AnalysisPicArg{
+  cactusdata:CactusData;
+}
 
 
 @observer
@@ -368,10 +488,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     this.img=""
   }
 
-
-
-
-  
 
   onChange(evt:React.ChangeEvent<HTMLInputElement>){
     let selectedFile:File = evt.target.files[0];

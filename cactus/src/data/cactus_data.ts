@@ -12,6 +12,7 @@ export enum GraphViewShowTypeEnum{
     DetectAndClassify_MFS,
     Tracking,
     AnalysisPic,
+    AnalysisPicStream,
 }
 
 
