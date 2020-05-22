@@ -148,16 +148,18 @@ public  AddDetectAndClassify_MFS(one:DetectAndClassifyImageInfo){
 public Send_Hello(value:string){
     let req = new CactusPb.HelloReq();
     req.setAsk("this is web");
-    let metadata = {'custom-header-1': 'value1'}
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
     this.cactusClient.hello(req,metadata,this.Rsp_Hello.bind(this));
 }
 
 public  Send_FaceDetectAndIdentifyByPic_MFK(req:CactusPb.FaceDetectAndIdentifyByPicReq){
-    this.cactusClient.faceDetectAndIdentifyByPic_MFK(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFK.bind(this));
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+    this.cactusClient.faceDetectAndIdentifyByPic_MFK(req,metadata,this.Rsp_FaceDetectAndIdentifyByPic_MFK.bind(this));
 }
 
 public  Send_FaceDetectAndIdentifyByPic_MFS(req:CactusPb.FaceDetectAndIdentifyByPicReq){
-    this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,null,this.Rsp_FaceDetectAndIdentifyByPic_MFS.bind(this));
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+    this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,metadata,this.Rsp_FaceDetectAndIdentifyByPic_MFS.bind(this));
 }
 
     
