@@ -10,6 +10,14 @@
 import * as grpcWeb from 'grpc-web';
 
 import {
+  AnalysisPicReq,
+  AnalysisPicRsp,
+  AnalysisPicStreamPopReq,
+  AnalysisPicStreamPopRsp,
+  AnalysisPicStreamPushReq,
+  AnalysisPicStreamPushRsp,
+  AnalysisPicStreamStartReq,
+  AnalysisPicStreamStartRsp,
   FaceDetectAndIdentifyByPicReq,
   FaceDetectAndIdentifyByPicRsp,
   FaceDetectReq,
@@ -106,6 +114,28 @@ export class CactusClient {
       callback);
   }
 
+  methodInfoFaceDetect_ResNet152 = new grpcWeb.AbstractClientBase.MethodInfo(
+    FaceDetectRsp,
+    (request: FaceDetectReq) => {
+      return request.serializeBinary();
+    },
+    FaceDetectRsp.deserializeBinary
+  );
+
+  faceDetect_ResNet152(
+    request: FaceDetectReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: FaceDetectRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/FaceDetect_ResNet152',
+      request,
+      metadata || {},
+      this.methodInfoFaceDetect_ResNet152,
+      callback);
+  }
+
   methodInfoFaceDetectAndIdentifyByPic_MFK = new grpcWeb.AbstractClientBase.MethodInfo(
     FaceDetectAndIdentifyByPicRsp,
     (request: FaceDetectAndIdentifyByPicReq) => {
@@ -169,6 +199,94 @@ export class CactusClient {
       request,
       metadata || {},
       this.methodInfoIdentifyPersonByThumbnails,
+      callback);
+  }
+
+  methodInfoAnalysisPicStreamStart = new grpcWeb.AbstractClientBase.MethodInfo(
+    AnalysisPicStreamStartRsp,
+    (request: AnalysisPicStreamStartReq) => {
+      return request.serializeBinary();
+    },
+    AnalysisPicStreamStartRsp.deserializeBinary
+  );
+
+  analysisPicStreamStart(
+    request: AnalysisPicStreamStartReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: AnalysisPicStreamStartRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/AnalysisPicStreamStart',
+      request,
+      metadata || {},
+      this.methodInfoAnalysisPicStreamStart,
+      callback);
+  }
+
+  methodInfoAnalysisPicStreamPush = new grpcWeb.AbstractClientBase.MethodInfo(
+    AnalysisPicStreamPushRsp,
+    (request: AnalysisPicStreamPushReq) => {
+      return request.serializeBinary();
+    },
+    AnalysisPicStreamPushRsp.deserializeBinary
+  );
+
+  analysisPicStreamPush(
+    request: AnalysisPicStreamPushReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: AnalysisPicStreamPushRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/AnalysisPicStreamPush',
+      request,
+      metadata || {},
+      this.methodInfoAnalysisPicStreamPush,
+      callback);
+  }
+
+  methodInfoAnalysisPicStreamPop = new grpcWeb.AbstractClientBase.MethodInfo(
+    AnalysisPicStreamPopRsp,
+    (request: AnalysisPicStreamPopReq) => {
+      return request.serializeBinary();
+    },
+    AnalysisPicStreamPopRsp.deserializeBinary
+  );
+
+  analysisPicStreamPop(
+    request: AnalysisPicStreamPopReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: AnalysisPicStreamPopRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/AnalysisPicStreamPop',
+      request,
+      metadata || {},
+      this.methodInfoAnalysisPicStreamPop,
+      callback);
+  }
+
+  methodInfoAnalysisPic = new grpcWeb.AbstractClientBase.MethodInfo(
+    AnalysisPicRsp,
+    (request: AnalysisPicReq) => {
+      return request.serializeBinary();
+    },
+    AnalysisPicRsp.deserializeBinary
+  );
+
+  analysisPic(
+    request: AnalysisPicReq,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: AnalysisPicRsp) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/Cactus.Cactus/AnalysisPic',
+      request,
+      metadata || {},
+      this.methodInfoAnalysisPic,
       callback);
   }
 

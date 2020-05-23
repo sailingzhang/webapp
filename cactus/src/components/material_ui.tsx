@@ -401,13 +401,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable videoid:string;
     @observable outputcanvasId:string;
     @observable chosefileId:string;
-    @observable src_Mat:type_opencv.Mat;
-    @observable dst_Mat:type_opencv.Mat;
+    // @observable src_Mat:type_opencv.Mat;
+    // @observable dst_Mat:type_opencv.Mat;
     @observable cap_video:type_opencv.VideoCapture;
     @observable chosefileurl:string;
     @observable FPS:number;
     @observable width:number;
     @observable height:number;
+    userdata:CactusData;
     constructor(props:AnalysisPicStreamArg){
         super(props);
         this.videoid="mytestvideoid";
@@ -416,6 +417,13 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.FPS = 30;
         this.width= 320;
         this.height = 240;
+        this.userdata = props.cactusdata;
+
+        let req = new CactusPb.AnalysisPicStreamStartReq();
+        req.setChannelName("testchannnel");
+        req.setFaceTrackGroupid("webanasistestgroupid");
+        this.userdata.Send_AnalysisPicStreamStart(req)
+
     }
     onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
         let selectedFile:File = evt.target.files[0];
@@ -436,9 +444,11 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         // streaming = true;
         let getwidth = video.width;
         let getheight = video.height;
+        this.width = video.width;
+        this.height = video.height;
         console.log("getwidth=%d,getheight=%d",getwidth,getheight);
-        this.src_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC4);
-        this.dst_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC1);
+        // this.src_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC4);
+        // this.dst_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC1);
         // this.src_Mat = new cv.Mat(cv.CV_8UC4);
         // this.dst_Mat = new cv.Mat(cv.CV_8UC1);
         this.cap_video = new cv.VideoCapture(video);
@@ -446,11 +456,44 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         setTimeout(this.processVideo.bind(this), 0);
     }
 
+
+
+    // (function() {
+    //     var video, output;
+    //     var scale = 0.8;
+    //     var initialize = function() {
+    //         output = document.getElementById("output");
+    //         video = document.getElementById("video");
+    //         video.addEventListener('loadeddata', captureImage);
+    //     };
+    //     var captureImage = function() {
+    //         var canvas = document.createElement("canvas");
+    //         canvas.width = video.videoWidth * scale;
+    //         canvas.height = video.videoHeight * scale;
+    //         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width,
+    //                 canvas.height);
+
+    //         var img = document.createElement("img");
+    //         img.src = canvas.toDataURL("image/png");
+    //         img.width = 400;
+    //         img.height = 300;
+    //         output.appendChild(img);
+    //     };
+    //     initialize();
+    // })();
+
     processVideo(){
         // console.log("processing");
         const begin = Date.now();
-        this.cap_video.read(this.src_Mat)
-        cv.cvtColor(this.src_Mat, this.dst_Mat, cv.COLOR_RGBA2GRAY);
+        let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
+        let dst_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC1);
+        this.cap_video.read(src_Mat)
+        src_Mat.data8U;
+
+        // cv::imdecode(cv::Mat(1, picdata.length(), CV_8U, (char *)picdata.c_str()), cv::ImreadModes::IMREAD_COLOR);
+        // cv2.imencode('.JPEG', frame,encode_param)[1].tostring()
+        //var fullQuality = canvas.toDataURL("image/jpeg", 1.0);
+        cv.cvtColor(src_Mat, dst_Mat, cv.COLOR_RGBA2GRAY);
         
         let left = 0;
         let top = 0;
@@ -463,9 +506,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         // cv2.rectangle(picdata, start_point, end_point,  (0, 255, 0), 2)
         // cv2.putText(picdata, p.personId, (left, top), font, 1.2, (255, 255, 255), 2)
         let color =new  cv.Scalar(0,255,0);
-        cv.rectangle(this.dst_Mat,start_point,end_point,color,2);
-        cv.putText(this.dst_Mat, "hello world", end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
-        cv.imshow(this.outputcanvasId, this.dst_Mat);
+        cv.rectangle(dst_Mat,start_point,end_point,color,2);
+        cv.putText(dst_Mat, "hello world", end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+        cv.imshow(this.outputcanvasId, dst_Mat);
         const delay = 1000/this.FPS - (Date.now() - begin);
         setTimeout(this.processVideo.bind(this), delay);
     }

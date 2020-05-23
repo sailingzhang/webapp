@@ -57,6 +57,7 @@ export class CactusData {
 @observable    GraphViewShowType:GraphViewShowTypeEnum;
 @observable    MFK_Arr:DetectAndClassifyImageInfo[];
 @observable    MFS_Arr:DetectAndClassifyImageInfo[];
+@observable    is_AnalysisPicStreamStart:Boolean;
 cactusClient:CactusClientPb.CactusClient;
     constructor(){
         this.GraphViewShowType = GraphViewShowTypeEnum.DetectAndClassify_MFK;
@@ -130,6 +131,30 @@ cactusClient:CactusClientPb.CactusClient;
             break;
         }
     }
+
+    private Rsp_AnalysisPicStreamStart(err:grpcWeb.Error,response :CactusPb.AnalysisPicStreamStartRsp){
+        console.log("Rsp_AnalysisPicStreamStart");
+        if(err.code){
+            console.error("grpc Rsp_AnalysisPicStreamStart err=%s",err.message);
+            return;
+        }
+        let geterr = response.getError()
+        if("" == geterr){
+            console.log("AnalysisPicStreamStart Ok");
+            this.is_AnalysisPicStreamStart = true;
+        }else{
+            console.log("AnalysisPicStreamStart err=%s",geterr);
+            this.is_AnalysisPicStreamStart = false;
+        }
+
+    }
+    private Rsp_AnalysisPicStreamPush(err:grpcWeb.Error,response:CactusPb.AnalysisPicStreamPushRsp){
+
+    }
+    private Rsp_AnalysisPicStreamPop(err:grpcWeb.Error,response:CactusPb.AnalysisPicStreamPopRsp){
+
+    }
+
 @action    
 public SetGraphViewShowType(type:GraphViewShowTypeEnum){
         this.GraphViewShowType = type;
@@ -160,6 +185,26 @@ public  Send_FaceDetectAndIdentifyByPic_MFK(req:CactusPb.FaceDetectAndIdentifyBy
 public  Send_FaceDetectAndIdentifyByPic_MFS(req:CactusPb.FaceDetectAndIdentifyByPicReq){
     let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
     this.cactusClient.faceDetectAndIdentifyByPic_MFS(req,metadata,this.Rsp_FaceDetectAndIdentifyByPic_MFS.bind(this));
+}
+
+
+// rpc AnalysisPicStreamStart(AnalysisPicStreamStartReq) returns(AnalysisPicStreamStartRsp);
+// rpc AnalysisPicStreamPush(AnalysisPicStreamPushReq) returns(AnalysisPicStreamPushRsp);
+// rpc AnalysisPicStreamPop(AnalysisPicStreamPopReq) returns(AnalysisPicStreamPopRsp);
+
+public Send_AnalysisPicStreamStart(req:CactusPb.AnalysisPicStreamStartReq){
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+    this.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
+} 
+
+public Send_AnalysisPicStreamPush(req:CactusPb.AnalysisPicStreamPushReq){
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+    this.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this));
+}
+
+public Send_AnalysisPicStreamPop(req:CactusPb.AnalysisPicStreamPopReq){
+    let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+    this.cactusClient.analysisPicStreamPop(req,metadata,this.Rsp_AnalysisPicStreamPop.bind(this));
 }
 
     

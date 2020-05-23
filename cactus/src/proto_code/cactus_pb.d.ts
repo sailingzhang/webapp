@@ -1,5 +1,381 @@
 import * as jspb from "google-protobuf"
 
+export class Position extends jspb.Message {
+  getTop(): number;
+  setTop(value: number): void;
+
+  getLeft(): number;
+  setLeft(value: number): void;
+
+  getHeight(): number;
+  setHeight(value: number): void;
+
+  getWidth(): number;
+  setWidth(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Position.AsObject;
+  static toObject(includeInstance: boolean, msg: Position): Position.AsObject;
+  static serializeBinaryToWriter(message: Position, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Position;
+  static deserializeBinaryFromReader(message: Position, reader: jspb.BinaryReader): Position;
+}
+
+export namespace Position {
+  export type AsObject = {
+    top: number,
+    left: number,
+    height: number,
+    width: number,
+  }
+}
+
+export class PersonInfo extends jspb.Message {
+  getFacepos(): Position | undefined;
+  setFacepos(value?: Position): void;
+  hasFacepos(): boolean;
+  clearFacepos(): void;
+
+  getPersonid(): string;
+  setPersonid(value: string): void;
+
+  getIsnewperson(): boolean;
+  setIsnewperson(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PersonInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: PersonInfo): PersonInfo.AsObject;
+  static serializeBinaryToWriter(message: PersonInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PersonInfo;
+  static deserializeBinaryFromReader(message: PersonInfo, reader: jspb.BinaryReader): PersonInfo;
+}
+
+export namespace PersonInfo {
+  export type AsObject = {
+    facepos?: Position.AsObject,
+    personid: string,
+    isnewperson: boolean,
+  }
+}
+
+export class LicencePlateInfo extends jspb.Message {
+  getLicpos(): Position | undefined;
+  setLicpos(value?: Position): void;
+  hasLicpos(): boolean;
+  clearLicpos(): void;
+
+  getLicenceid(): string;
+  setLicenceid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LicencePlateInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: LicencePlateInfo): LicencePlateInfo.AsObject;
+  static serializeBinaryToWriter(message: LicencePlateInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LicencePlateInfo;
+  static deserializeBinaryFromReader(message: LicencePlateInfo, reader: jspb.BinaryReader): LicencePlateInfo;
+}
+
+export namespace LicencePlateInfo {
+  export type AsObject = {
+    licpos?: Position.AsObject,
+    licenceid: string,
+  }
+}
+
+export class VehicleInfo extends jspb.Message {
+  getVehiclepos(): Position | undefined;
+  setVehiclepos(value?: Position): void;
+  hasVehiclepos(): boolean;
+  clearVehiclepos(): void;
+
+  getLicenceplate(): LicencePlateInfo | undefined;
+  setLicenceplate(value?: LicencePlateInfo): void;
+  hasLicenceplate(): boolean;
+  clearLicenceplate(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VehicleInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: VehicleInfo): VehicleInfo.AsObject;
+  static serializeBinaryToWriter(message: VehicleInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VehicleInfo;
+  static deserializeBinaryFromReader(message: VehicleInfo, reader: jspb.BinaryReader): VehicleInfo;
+}
+
+export namespace VehicleInfo {
+  export type AsObject = {
+    vehiclepos?: Position.AsObject,
+    licenceplate?: LicencePlateInfo.AsObject,
+  }
+}
+
+export class AnalysisPicReq extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getGroupid(): string;
+  setGroupid(value: string): void;
+
+  getPicdata(): Uint8Array | string;
+  getPicdata_asU8(): Uint8Array;
+  getPicdata_asB64(): string;
+  setPicdata(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicReq): AnalysisPicReq.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicReq;
+  static deserializeBinaryFromReader(message: AnalysisPicReq, reader: jspb.BinaryReader): AnalysisPicReq;
+}
+
+export namespace AnalysisPicReq {
+  export type AsObject = {
+    id: number,
+    groupid: string,
+    picdata: Uint8Array | string,
+  }
+}
+
+export class AnalysisPicRsp extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  getPersonInfosList(): Array<PersonInfo>;
+  setPersonInfosList(value: Array<PersonInfo>): void;
+  clearPersonInfosList(): void;
+  addPersonInfos(value?: PersonInfo, index?: number): PersonInfo;
+
+  getVelicleInfosList(): Array<VehicleInfo>;
+  setVelicleInfosList(value: Array<VehicleInfo>): void;
+  clearVelicleInfosList(): void;
+  addVelicleInfos(value?: VehicleInfo, index?: number): VehicleInfo;
+
+  getError(): string;
+  setError(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicRsp.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicRsp): AnalysisPicRsp.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicRsp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicRsp;
+  static deserializeBinaryFromReader(message: AnalysisPicRsp, reader: jspb.BinaryReader): AnalysisPicRsp;
+}
+
+export namespace AnalysisPicRsp {
+  export type AsObject = {
+    id: number,
+    personInfosList: Array<PersonInfo.AsObject>,
+    velicleInfosList: Array<VehicleInfo.AsObject>,
+    error: string,
+  }
+}
+
+export class FaceTrack extends jspb.Message {
+  getPersonId(): string;
+  setPersonId(value: string): void;
+
+  getTrackingId(): string;
+  setTrackingId(value: string): void;
+
+  getStatus(): TrackStatus;
+  setStatus(value: TrackStatus): void;
+
+  getPos(): Position | undefined;
+  setPos(value?: Position): void;
+  hasPos(): boolean;
+  clearPos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FaceTrack.AsObject;
+  static toObject(includeInstance: boolean, msg: FaceTrack): FaceTrack.AsObject;
+  static serializeBinaryToWriter(message: FaceTrack, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FaceTrack;
+  static deserializeBinaryFromReader(message: FaceTrack, reader: jspb.BinaryReader): FaceTrack;
+}
+
+export namespace FaceTrack {
+  export type AsObject = {
+    personId: string,
+    trackingId: string,
+    status: TrackStatus,
+    pos?: Position.AsObject,
+  }
+}
+
+export class VehicleTrack extends jspb.Message {
+  getPlateId(): string;
+  setPlateId(value: string): void;
+
+  getTrackingId(): string;
+  setTrackingId(value: string): void;
+
+  getStatus(): TrackStatus;
+  setStatus(value: TrackStatus): void;
+
+  getPos(): Position | undefined;
+  setPos(value?: Position): void;
+  hasPos(): boolean;
+  clearPos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VehicleTrack.AsObject;
+  static toObject(includeInstance: boolean, msg: VehicleTrack): VehicleTrack.AsObject;
+  static serializeBinaryToWriter(message: VehicleTrack, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VehicleTrack;
+  static deserializeBinaryFromReader(message: VehicleTrack, reader: jspb.BinaryReader): VehicleTrack;
+}
+
+export namespace VehicleTrack {
+  export type AsObject = {
+    plateId: string,
+    trackingId: string,
+    status: TrackStatus,
+    pos?: Position.AsObject,
+  }
+}
+
+export class AnalysisPicStreamStartReq extends jspb.Message {
+  getChannelName(): string;
+  setChannelName(value: string): void;
+
+  getFaceTrackGroupid(): string;
+  setFaceTrackGroupid(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamStartReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamStartReq): AnalysisPicStreamStartReq.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamStartReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamStartReq;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamStartReq, reader: jspb.BinaryReader): AnalysisPicStreamStartReq;
+}
+
+export namespace AnalysisPicStreamStartReq {
+  export type AsObject = {
+    channelName: string,
+    faceTrackGroupid: string,
+  }
+}
+
+export class AnalysisPicStreamStartRsp extends jspb.Message {
+  getError(): string;
+  setError(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamStartRsp.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamStartRsp): AnalysisPicStreamStartRsp.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamStartRsp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamStartRsp;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamStartRsp, reader: jspb.BinaryReader): AnalysisPicStreamStartRsp;
+}
+
+export namespace AnalysisPicStreamStartRsp {
+  export type AsObject = {
+    error: string,
+  }
+}
+
+export class AnalysisPicStreamPushReq extends jspb.Message {
+  getChannelName(): string;
+  setChannelName(value: string): void;
+
+  getFrameId(): number;
+  setFrameId(value: number): void;
+
+  getPicdata(): Uint8Array | string;
+  getPicdata_asU8(): Uint8Array;
+  getPicdata_asB64(): string;
+  setPicdata(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamPushReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamPushReq): AnalysisPicStreamPushReq.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamPushReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamPushReq;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamPushReq, reader: jspb.BinaryReader): AnalysisPicStreamPushReq;
+}
+
+export namespace AnalysisPicStreamPushReq {
+  export type AsObject = {
+    channelName: string,
+    frameId: number,
+    picdata: Uint8Array | string,
+  }
+}
+
+export class AnalysisPicStreamPushRsp extends jspb.Message {
+  getError(): string;
+  setError(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamPushRsp.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamPushRsp): AnalysisPicStreamPushRsp.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamPushRsp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamPushRsp;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamPushRsp, reader: jspb.BinaryReader): AnalysisPicStreamPushRsp;
+}
+
+export namespace AnalysisPicStreamPushRsp {
+  export type AsObject = {
+    error: string,
+  }
+}
+
+export class AnalysisPicStreamPopReq extends jspb.Message {
+  getChannelName(): string;
+  setChannelName(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamPopReq.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamPopReq): AnalysisPicStreamPopReq.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamPopReq, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamPopReq;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamPopReq, reader: jspb.BinaryReader): AnalysisPicStreamPopReq;
+}
+
+export namespace AnalysisPicStreamPopReq {
+  export type AsObject = {
+    channelName: string,
+  }
+}
+
+export class AnalysisPicStreamPopRsp extends jspb.Message {
+  getError(): string;
+  setError(value: string): void;
+
+  getChannelName(): string;
+  setChannelName(value: string): void;
+
+  getFrameId(): number;
+  setFrameId(value: number): void;
+
+  getFaceTracksList(): Array<FaceTrack>;
+  setFaceTracksList(value: Array<FaceTrack>): void;
+  clearFaceTracksList(): void;
+  addFaceTracks(value?: FaceTrack, index?: number): FaceTrack;
+
+  getVehicleTracksList(): Array<VehicleTrack>;
+  setVehicleTracksList(value: Array<VehicleTrack>): void;
+  clearVehicleTracksList(): void;
+  addVehicleTracks(value?: VehicleTrack, index?: number): VehicleTrack;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPicStreamPopRsp.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPicStreamPopRsp): AnalysisPicStreamPopRsp.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPicStreamPopRsp, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPicStreamPopRsp;
+  static deserializeBinaryFromReader(message: AnalysisPicStreamPopRsp, reader: jspb.BinaryReader): AnalysisPicStreamPopRsp;
+}
+
+export namespace AnalysisPicStreamPopRsp {
+  export type AsObject = {
+    error: string,
+    channelName: string,
+    frameId: number,
+    faceTracksList: Array<FaceTrack.AsObject>,
+    vehicleTracksList: Array<VehicleTrack.AsObject>,
+  }
+}
+
 export class StockPredict1_Configure extends jspb.Message {
   getModelName(): string;
   setModelName(value: string): void;
@@ -64,30 +440,118 @@ export namespace FaceDetect_Mt_Configure {
   }
 }
 
+export class FaceNet_Configure extends jspb.Message {
+  getModelname(): string;
+  setModelname(value: string): void;
+
+  getVersion(): number;
+  setVersion(value: number): void;
+
+  getSignaturename(): string;
+  setSignaturename(value: string): void;
+
+  getInputnameData(): string;
+  setInputnameData(value: string): void;
+
+  getInputnameIstrain(): string;
+  setInputnameIstrain(value: string): void;
+
+  getOutputname0(): string;
+  setOutputname0(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FaceNet_Configure.AsObject;
+  static toObject(includeInstance: boolean, msg: FaceNet_Configure): FaceNet_Configure.AsObject;
+  static serializeBinaryToWriter(message: FaceNet_Configure, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FaceNet_Configure;
+  static deserializeBinaryFromReader(message: FaceNet_Configure, reader: jspb.BinaryReader): FaceNet_Configure;
+}
+
+export namespace FaceNet_Configure {
+  export type AsObject = {
+    modelname: string,
+    version: number,
+    signaturename: string,
+    inputnameData: string,
+    inputnameIstrain: string,
+    outputname0: string,
+  }
+}
+
+export class FaceNetSimilar_Configure extends jspb.Message {
+  getModelname(): string;
+  setModelname(value: string): void;
+
+  getVersion(): number;
+  setVersion(value: number): void;
+
+  getSignaturename(): string;
+  setSignaturename(value: string): void;
+
+  getInputnameData(): string;
+  setInputnameData(value: string): void;
+
+  getInputnameIstrain(): string;
+  setInputnameIstrain(value: string): void;
+
+  getOutputname0(): string;
+  setOutputname0(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FaceNetSimilar_Configure.AsObject;
+  static toObject(includeInstance: boolean, msg: FaceNetSimilar_Configure): FaceNetSimilar_Configure.AsObject;
+  static serializeBinaryToWriter(message: FaceNetSimilar_Configure, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FaceNetSimilar_Configure;
+  static deserializeBinaryFromReader(message: FaceNetSimilar_Configure, reader: jspb.BinaryReader): FaceNetSimilar_Configure;
+}
+
+export namespace FaceNetSimilar_Configure {
+  export type AsObject = {
+    modelname: string,
+    version: number,
+    signaturename: string,
+    inputnameData: string,
+    inputnameIstrain: string,
+    outputname0: string,
+  }
+}
+
+export class FaceDetect_ResNet152 extends jspb.Message {
+  getSignaturename(): string;
+  setSignaturename(value: string): void;
+
+  getVersion(): number;
+  setVersion(value: number): void;
+
+  getInputname0(): string;
+  setInputname0(value: string): void;
+
+  getOutputname0(): string;
+  setOutputname0(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FaceDetect_ResNet152.AsObject;
+  static toObject(includeInstance: boolean, msg: FaceDetect_ResNet152): FaceDetect_ResNet152.AsObject;
+  static serializeBinaryToWriter(message: FaceDetect_ResNet152, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FaceDetect_ResNet152;
+  static deserializeBinaryFromReader(message: FaceDetect_ResNet152, reader: jspb.BinaryReader): FaceDetect_ResNet152;
+}
+
+export namespace FaceDetect_ResNet152 {
+  export type AsObject = {
+    signaturename: string,
+    version: number,
+    inputname0: string,
+    outputname0: string,
+  }
+}
+
 export class FaceDetectAndIdentifyByPic_MFK_Configure extends jspb.Message {
-  getMtcnnModelname(): string;
-  setMtcnnModelname(value: string): void;
-
-  getMtcnnMinifacesize(): number;
-  setMtcnnMinifacesize(value: number): void;
-
-  getMtcnnFactor(): number;
-  setMtcnnFactor(value: number): void;
-
-  getMtcnnPnetThreshold(): number;
-  setMtcnnPnetThreshold(value: number): void;
-
-  getMtcnnRnetThreshold(): number;
-  setMtcnnRnetThreshold(value: number): void;
-
-  getMtcnnOnetThreshold(): number;
-  setMtcnnOnetThreshold(value: number): void;
+  getDetectType(): FaceDetectType;
+  setDetectType(value: FaceDetectType): void;
 
   getFacedetectFilterMinifacearea(): number;
   setFacedetectFilterMinifacearea(value: number): void;
-
-  getFacenetModelname(): string;
-  setFacenetModelname(value: string): void;
 
   getFacenetDistance(): number;
   setFacenetDistance(value: number): void;
@@ -110,6 +574,9 @@ export class FaceDetectAndIdentifyByPic_MFK_Configure extends jspb.Message {
   getMaxnumfaceAutoClassfiy(): number;
   setMaxnumfaceAutoClassfiy(value: number): void;
 
+  getIsDumpAddition(): boolean;
+  setIsDumpAddition(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FaceDetectAndIdentifyByPic_MFK_Configure.AsObject;
   static toObject(includeInstance: boolean, msg: FaceDetectAndIdentifyByPic_MFK_Configure): FaceDetectAndIdentifyByPic_MFK_Configure.AsObject;
@@ -120,14 +587,8 @@ export class FaceDetectAndIdentifyByPic_MFK_Configure extends jspb.Message {
 
 export namespace FaceDetectAndIdentifyByPic_MFK_Configure {
   export type AsObject = {
-    mtcnnModelname: string,
-    mtcnnMinifacesize: number,
-    mtcnnFactor: number,
-    mtcnnPnetThreshold: number,
-    mtcnnRnetThreshold: number,
-    mtcnnOnetThreshold: number,
+    detectType: FaceDetectType,
     facedetectFilterMinifacearea: number,
-    facenetModelname: string,
     facenetDistance: number,
     trainDirectory: string,
     identifyDirectory: string,
@@ -135,10 +596,17 @@ export namespace FaceDetectAndIdentifyByPic_MFK_Configure {
     autoVideoNewpersonMaxDistance: number,
     autoAddtrainMinDistance: number,
     maxnumfaceAutoClassfiy: number,
+    isDumpAddition: boolean,
   }
 }
 
 export class FaceDetectAndIdentifyByPic_MFS_Configure extends jspb.Message {
+  getDetectType(): FaceDetectType;
+  setDetectType(value: FaceDetectType): void;
+
+  getProbThreshold(): number;
+  setProbThreshold(value: number): void;
+
   getTrainDirectory(): string;
   setTrainDirectory(value: string): void;
 
@@ -151,6 +619,9 @@ export class FaceDetectAndIdentifyByPic_MFS_Configure extends jspb.Message {
   getMaxnumfaceAutoClassfiy(): number;
   setMaxnumfaceAutoClassfiy(value: number): void;
 
+  getIsDumpAddition(): boolean;
+  setIsDumpAddition(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): FaceDetectAndIdentifyByPic_MFS_Configure.AsObject;
   static toObject(includeInstance: boolean, msg: FaceDetectAndIdentifyByPic_MFS_Configure): FaceDetectAndIdentifyByPic_MFS_Configure.AsObject;
@@ -161,10 +632,39 @@ export class FaceDetectAndIdentifyByPic_MFS_Configure extends jspb.Message {
 
 export namespace FaceDetectAndIdentifyByPic_MFS_Configure {
   export type AsObject = {
+    detectType: FaceDetectType,
+    probThreshold: number,
     trainDirectory: string,
     identifyDirectory: string,
     isAutoClassify: boolean,
     maxnumfaceAutoClassfiy: number,
+    isDumpAddition: boolean,
+  }
+}
+
+export class AnalysisPic_Configure extends jspb.Message {
+  getFrameInterval(): number;
+  setFrameInterval(value: number): void;
+
+  getFaceDetectType(): FaceDetectType;
+  setFaceDetectType(value: FaceDetectType): void;
+
+  getIdentifyPersonType(): IdentifyPersonType;
+  setIdentifyPersonType(value: IdentifyPersonType): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnalysisPic_Configure.AsObject;
+  static toObject(includeInstance: boolean, msg: AnalysisPic_Configure): AnalysisPic_Configure.AsObject;
+  static serializeBinaryToWriter(message: AnalysisPic_Configure, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnalysisPic_Configure;
+  static deserializeBinaryFromReader(message: AnalysisPic_Configure, reader: jspb.BinaryReader): AnalysisPic_Configure;
+}
+
+export namespace AnalysisPic_Configure {
+  export type AsObject = {
+    frameInterval: number,
+    faceDetectType: FaceDetectType,
+    identifyPersonType: IdentifyPersonType,
   }
 }
 
@@ -193,6 +693,16 @@ export class CactusConfigure extends jspb.Message {
   getCactusserver(): string;
   setCactusserver(value: string): void;
 
+  getFacenetConfigure(): FaceNet_Configure | undefined;
+  setFacenetConfigure(value?: FaceNet_Configure): void;
+  hasFacenetConfigure(): boolean;
+  clearFacenetConfigure(): void;
+
+  getFacenetsimilarConfigure(): FaceNetSimilar_Configure | undefined;
+  setFacenetsimilarConfigure(value?: FaceNetSimilar_Configure): void;
+  hasFacenetsimilarConfigure(): boolean;
+  clearFacenetsimilarConfigure(): void;
+
   getStockpredict1Configure(): StockPredict1_Configure | undefined;
   setStockpredict1Configure(value?: StockPredict1_Configure): void;
   hasStockpredict1Configure(): boolean;
@@ -213,6 +723,11 @@ export class CactusConfigure extends jspb.Message {
   hasFacedetectandidentifybypicMfsConfigure(): boolean;
   clearFacedetectandidentifybypicMfsConfigure(): void;
 
+  getAnalysispicConfigure(): AnalysisPic_Configure | undefined;
+  setAnalysispicConfigure(value?: AnalysisPic_Configure): void;
+  hasAnalysispicConfigure(): boolean;
+  clearAnalysispicConfigure(): void;
+
   getPermanentGroupidMapMap(): jspb.Map<string, string>;
   clearPermanentGroupidMapMap(): void;
 
@@ -231,42 +746,15 @@ export namespace CactusConfigure {
   export type AsObject = {
     modelserver: string,
     cactusserver: string,
+    facenetConfigure?: FaceNet_Configure.AsObject,
+    facenetsimilarConfigure?: FaceNetSimilar_Configure.AsObject,
     stockpredict1Configure?: StockPredict1_Configure.AsObject,
     facedetectMtConfigure?: FaceDetect_Mt_Configure.AsObject,
     facedetectandidentifybypicMfkConfigure?: FaceDetectAndIdentifyByPic_MFK_Configure.AsObject,
     facedetectandidentifybypicMfsConfigure?: FaceDetectAndIdentifyByPic_MFS_Configure.AsObject,
+    analysispicConfigure?: AnalysisPic_Configure.AsObject,
     permanentGroupidMapMap: Array<[string, string]>,
     stockpredict1Modelname: string,
-  }
-}
-
-export class Position extends jspb.Message {
-  getTop(): number;
-  setTop(value: number): void;
-
-  getLeft(): number;
-  setLeft(value: number): void;
-
-  getHeight(): number;
-  setHeight(value: number): void;
-
-  getWidth(): number;
-  setWidth(value: number): void;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Position.AsObject;
-  static toObject(includeInstance: boolean, msg: Position): Position.AsObject;
-  static serializeBinaryToWriter(message: Position, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Position;
-  static deserializeBinaryFromReader(message: Position, reader: jspb.BinaryReader): Position;
-}
-
-export namespace Position {
-  export type AsObject = {
-    top: number,
-    left: number,
-    height: number,
-    width: number,
   }
 }
 
@@ -600,6 +1088,21 @@ export namespace HelloRsp {
   }
 }
 
+export enum TrackStatus { 
+  TRACK_NONE = 0,
+  TRACK_APPEAR = 1,
+  TRACK_TRACKING = 2,
+  TRACK_DISAPPEAR = 3,
+}
+export enum FaceDetectType { 
+  TF_MTCNN_DETECT = 0,
+  OPVINO_RESNET152_DETECT = 1,
+}
+export enum IdentifyPersonType { 
+  IDENTIFY_PERSON_NONE = 0,
+  IDENTIFY_PERSON_MFK = 1,
+  IDENTIFY_PERSON_MFS = 2,
+}
 export enum STOCKOP { 
   HOLD = 0,
   SELL = 1,
