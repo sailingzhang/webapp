@@ -584,7 +584,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let start_point = new cv.Point(left,top);
             let end_point = new cv.Point(left+width,top+height);
             cv.rectangle(srcmat,start_point,end_point,color,2);
-            cv.putText(srcmat, personinfo.getPersonid(), end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            cv.putText(srcmat, personinfo.getPersonid(), start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
         }
         for(let i =0; i<vehicleinfolist.length;i++){
             let vehicleinfo = vehicleinfolist[i];
@@ -623,8 +623,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this,srcmat))
     }
 
-    imgonload(event: React.SyntheticEvent<HTMLInputElement, Event>){
-        let srcImg = document.getElementById(this.srcimgid) as HTMLImageElement;
+    imgonload(srcImg:HTMLImageElement, event: React.SyntheticEvent<HTMLInputElement, Event>){
+        // let srcImg = document.getElementById(this.srcimgid) as HTMLImageElement;
         let read_mat = cv.imread(srcImg)
         cv.imshow(this.tmpCanvas,read_mat)
         this.tmpCanvas.toBlob(this.getBlob.bind(this,read_mat),"image/jpeg", 1.0);
@@ -668,6 +668,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let selectedFile:File = evt.target.files[0];
         console.log("select file..=%s",selectedFile.name)
         this.img = URL.createObjectURL(selectedFile)
+        let tmpimg = document.createElement("img");
+        tmpimg.src = this.img;
+        tmpimg.onload = this.imgonload.bind(this,tmpimg);
   }
 
 
@@ -713,7 +716,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
           // <p>empty image</p>
           <div>
             <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
-            <img id={this.srcimgid} src={this.img}   onLoad={this.imgonload.bind(this)} />
+            {/* <img id={this.srcimgid} src={this.img}   onLoad={this.imgonload.bind(this)} /> */}
             <img id={this.toimgid}    />
             <canvas id={this.tocanvasid}   ></canvas>
           </div>
