@@ -35,7 +35,7 @@ import { observer } from 'mobx-react';
 import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
-import { int32_t, Mat } from "mirada";
+import { int32_t, Mat, readOpticalFlow } from "mirada";
 
 
 
@@ -397,6 +397,15 @@ interface AnalysisPicStreamArg{
   cactusdata:CactusData;
 }
 
+class ShowDataInfo{
+    frameid:number;
+    dataMat:type_opencv.Mat;
+    constructor(_frameid:number,_dataMat:type_opencv.Mat){
+        this.frameid=_frameid;
+        this.dataMat = _dataMat;
+    }
+}
+
 @observer 
 export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>{
     @observable videoid:string;
@@ -409,111 +418,218 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable FPS:number;
     @observable width:number;
     @observable height:number;
-    tmpCanvas:HTMLCanvasElement;
+    @observable is_cactus_start:boolean;
+    @observable video:HTMLVideoElement;
+    frameid:number
     userdata:CactusData;
+    channelname:string;
+    track_groupid:string;
+    tmpCanvas:HTMLCanvasElement;
+    ShowDataInfoArr:ShowDataInfo[];
     constructor(props:AnalysisPicStreamArg){
         super(props);
+        this.ShowDataInfoArr=[];
+        this.is_cactus_start = false;
+        this.channelname="webchannetest";
+        this.track_groupid ="webtrackgroupid";
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
         this.chosefileId="chosefileid";
         this.FPS = 30;
-        this.width= 320;
-        this.height = 240;
+        this.frameid =0;
         this.userdata = props.cactusdata;
+        this.tmpCanvas =  document.createElement("canvas");
+        this.video = document.getElementById(this.videoid) as HTMLVideoElement;
 
-        let req = new CactusPb.AnalysisPicStreamStartReq();
-        req.setChannelName("testchannnel");
-        req.setFaceTrackGroupid("webanasistestgroupid");
-        this.userdata.Send_AnalysisPicStreamStart(req)
-        this.tmpCanvas=document.createElement("canvas");
+
+        this.Send_AnalysisPicStreamStart();
+        
 
     }
     onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
         let selectedFile:File = evt.target.files[0];
         console.log("select file..=%s",selectedFile.name)
         this.chosefileurl  = URL.createObjectURL(selectedFile);
-
-        // var file = document.getElementById('file').files[0];
-        // var url = URL.createObjectURL(file);
-        // console.log(url);
-        // document.getElementById("audio_id").src = url;
-
+        // this.video.src = this.chosefileurl;
+        this.video.load();
     }
 
-    onviedoplay(){
-        console.log('playing...');
-        let video = document.getElementById(this.videoid) as HTMLVideoElement;
-        // video.crossOrigin="Anonymous";
-        // streaming = true;
+
+    
+    Send_AnalysisPicStreamStart(){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        let req = new CactusPb.AnalysisPicStreamStartReq();
+        req.setChannelName(this.channelname);
+        req.setFaceTrackGroupid(this.track_groupid);
+        this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
+    }
+
+    Rsp_AnalysisPicStreamStart(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
+        if(null != err){
+            console.error("grpc err=%s",err.message)
+            return;
+        }
+        if("" != rsp.getError()){
+            console.error("rsp error=%s",rsp.getError());
+            return;
+        }
+        console.info("AnalysisPicStreamStart OK");
+        this.is_cactus_start = true;
+        this.Send_AnalysisPicStreamPop();
+    }
+    Rsp_AnalysisPicStreamPush(frameid:number,toMat:type_opencv.Mat,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
+        if(null != err){
+            console.log("grpc err=%s",err.message)
+        }
+    }
+    Send_AnalysisPicStreamPush(frameid:number,toMat:type_opencv.Mat,req:CactusPb.AnalysisPicStreamPushReq){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        let showinfo = new ShowDataInfo(frameid,toMat);
+        this.ShowDataInfoArr.push(showinfo);
+        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,frameid,toMat))
+    }
+
+
+    Rsp_AnalysisPicStreamPop(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPopRsp){
+        if(null != err){
+            console.error("grpc err=%s",err.message)
+            return;
+        }
+        let showdatainfo = this.ShowDataInfoArr.pop();
+        let getframeid = rsp.getFrameId();
+        if(getframeid != showdatainfo.frameid){
+            console.error("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
+            return;
+        }
+        let maxwidth = showdatainfo.dataMat.cols;
+        let maxheight = showdatainfo.dataMat.rows;
+        let vehicleList = rsp.getVehicleTracksList();
+        let faceList = rsp.getFaceTracksList();
+        for(let i = 0;i < vehicleList.length;i++){
+            let vehicle = vehicleList[i];
+            let pos = vehicle.getPos();
+            let plateid = vehicle.getPlateId();
+            let trackid = vehicle.getTrackingId();
+
+            let color =new  cv.Scalar(0,255,0);
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            let start_point = new cv.Point(left,top);
+            let end_point = new cv.Point(left+width,top+height);
+            cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
+            if("" != plateid){
+                cv.putText(showdatainfo.dataMat, plateid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            }
+            if("" != trackid){
+                cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            }
+        }
+        for(let i = 0;i < faceList.length;i++){
+            let oneface = faceList[i];
+            let pos = oneface.getPos();
+            let trackid = oneface.getTrackingId();
+            let personid = oneface.getPersonId();
+
+            let color =new  cv.Scalar(0,255,0);
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            let start_point = new cv.Point(left,top);
+            let end_point = new cv.Point(left+width,top+height);
+            let personid_start_point= new cv.Point(left,top+5);
+            cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
+            if("" != trackid){
+                cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            }
+            if("" != personid){
+                cv.putText(showdatainfo.dataMat, personid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            }
+        }
+        cv.imshow(this.outputcanvasId,showdatainfo.dataMat);
+        this.Send_AnalysisPicStreamPop();
+
+    }
+    Send_AnalysisPicStreamPop(){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        let req = new CactusPb.AnalysisPicStreamPopReq();
+        req.setChannelName(this.channelname);
+        this.userdata.cactusClient.analysisPicStreamPop(req,metadata,this.Rsp_AnalysisPicStreamPop.bind(this));
+        
+    }
+    getBlob(framid:number,read_mat:type_opencv.Mat,blob:Blob){
+        let dst_mat = new cv.Mat();
+        let maxwidth = read_mat.cols;
+        let maxheight = read_mat.rows;
+        if(maxheight > 720){
+            let ratio = 720/maxheight
+            let real 
+            cv.resize(read_mat,dst_mat,dst_mat.size(),ratio,ratio);
+        }else{
+            dst_mat = read_mat;
+        }
+        let onloadfun = (e:ProgressEvent<FileReader>) => {
+            const pic = e.target.result;
+            if(pic instanceof ArrayBuffer){
+              let array = new Uint8Array(pic as ArrayBuffer, 0);       
+              let req = new CactusPb.AnalysisPicStreamPushReq();
+              req.setChannelName(this.channelname);
+              req.setFrameId(framid);
+              req.setPicdata(array);
+            //   console.log("begin Send_AnalysisPicStream")
+              this.Send_AnalysisPicStreamPush(framid,dst_mat,req);
+            }else{
+            }
+          }
+
+        let  reader = new FileReader()
+        reader.onload= onloadfun;
+        reader.readAsArrayBuffer(blob)
+    }
+
+    onvidecanplay(){
+        // let video =  document.getElementById(this.videoid) as HTMLVideoElement;
+        this.video.load()
+        let video  = this.video;
+
         let getwidth = video.width;
         let getheight = video.height;
         this.width = video.width;
         this.height = video.height;
-        console.log("getwidth=%d,getheight=%d",getwidth,getheight);
-        // this.src_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC4);
-        // this.dst_Mat = new cv.Mat(getheight, getwidth, cv.CV_8UC1);
-        // this.src_Mat = new cv.Mat(cv.CV_8UC4);
-        // this.dst_Mat = new cv.Mat(cv.CV_8UC1);
-        this.cap_video = new cv.VideoCapture(video);
+        console.log("video real width=%d,height=%d",getwidth,getheight);
+    }
+    onviedoplay(){
+        console.log('playing...');
+        // this.Send_AnalysisPicStreamStart();
+
+        // this.video = document.getElementById(this.videoid) as HTMLVideoElement;
+
+        // let getwidth = this.video.width;
+        // let getheight = this.video.height;
+        // this.width = this.video.width;
+        // this.height = this.video.height;
+
+        this.cap_video = new cv.VideoCapture(this.video);
         
         setTimeout(this.processVideo.bind(this), 0);
     }
 
 
-
-    // (function() {
-    //     var video, output;
-    //     var scale = 0.8;
-    //     var initialize = function() {
-    //         output = document.getElementById("output");
-    //         video = document.getElementById("video");
-    //         video.addEventListener('loadeddata', captureImage);
-    //     };
-    //     var captureImage = function() {
-    //         var canvas = document.createElement("canvas");
-    //         canvas.width = video.videoWidth * scale;
-    //         canvas.height = video.videoHeight * scale;
-    //         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width,
-    //                 canvas.height);
-
-    //         var img = document.createElement("img");
-    //         img.src = canvas.toDataURL("image/png");
-    //         img.width = 400;
-    //         img.height = 300;
-    //         output.appendChild(img);
-    //     };
-    //     initialize();
-    // })();
-
     processVideo(){
         // console.log("processing");
         const begin = Date.now();
-        let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
-        let dst_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC1);
-        this.cap_video.read(src_Mat)
-        src_Mat.data8U;
+        if(this.is_cactus_start){
+            // let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
+            let src_Mat = new cv.Mat(this.video.height,this.video.width);
+            // let src_Mat = new cv.Mat(1280, 720, cv.CV_8UC4);
+            this.cap_video.read(src_Mat)
+            cv.imshow(this.tmpCanvas,src_Mat)
+            this.tmpCanvas.toBlob(this.getBlob.bind(this,this.frameid,src_Mat),"image/jpeg", 1.0);
+            this.frameid++;
+        }
 
-        // cv::imdecode(cv::Mat(1, picdata.length(), CV_8U, (char *)picdata.c_str()), cv::ImreadModes::IMREAD_COLOR);
-        // cv2.imencode('.JPEG', frame,encode_param)[1].tostring()
-        //var fullQuality = canvas.toDataURL("image/jpeg", 1.0);
-
-        cv.imshow(this.tmpCanvas,src_Mat)
-        let b64image = this.tmpCanvas.toDataURL("image/jpeg", 1.0)
-
-
-        cv.cvtColor(src_Mat, dst_Mat, cv.COLOR_RGBA2GRAY);
-        
-        let left = 0;
-        let top = 0;
-        let width = 50;
-        let height = 50;
-        let start_point = new cv.Point(left,top);
-        let end_point = new cv.Point(left+width,top+height);
-
-        let color =new  cv.Scalar(0,255,0);
-        cv.rectangle(dst_Mat,start_point,end_point,color,2);
-        cv.putText(dst_Mat, "hello world", end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
-        cv.imshow(this.outputcanvasId, dst_Mat);
         const delay = 1000/this.FPS - (Date.now() - begin);
         setTimeout(this.processVideo.bind(this), delay);
     }
@@ -524,8 +640,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             <div>
                 <p>this is ananaSisPicStream</p>
                 <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} width="50" height="50" ></input>
-                <video id={this.videoid} src={this.chosefileurl} onPlay={this.onviedoplay.bind(this)} controls={true}  width={this.width} height={this.height} crossOrigin="Anonymous"></video>
-                <canvas id={this.outputcanvasId} width={this.width} height={this.height} ></canvas>
+                <video id={this.videoid} src={this.chosefileurl} onPlay={this.onviedoplay.bind(this)} onCanPlay={this.onvidecanplay.bind(this)}  controls={true}  crossOrigin="Anonymous"></video>
+                <canvas id={this.outputcanvasId}  ></canvas>
             </div>
           )
       
@@ -672,42 +788,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         tmpimg.src = this.img;
         tmpimg.onload = this.imgonload.bind(this,tmpimg);
   }
-
-
-
-  onChange2(evt:React.ChangeEvent<HTMLInputElement>){
-    let selectedFile:File = evt.target.files[0];
-
-    console.log("select file..=%s",selectedFile.name)
-    const DetectReader = new FileReader();
-    const ShowReader = new FileReader();
-    let onloadfun = (e:ProgressEvent<FileReader>) => {
-      const pic = e.target.result;
-      if(pic instanceof ArrayBuffer){
-        // let req = new CactusPb.FaceDetectAndIdentifyByPicReq();
-        // let array = new Uint8Array(pic as ArrayBuffer, 0);       
-        // req.setId(this.props.showinfo.id);
-        // req.setGroupid(this.props.cactusdata.groupid);
-        // req.setPicdata(array);
-        // this.props.cactusdata.Send_FaceDetectAndIdentifyByPic_MFK(req);
-        // this.props.cactusdata.Send_Hello("this web");
-      }else{
-        console.log("begin set img")
-        this.img = pic
-        // this.props.showinfo.setAttribution(pic,2);
-        // let addshow = new DetectAndClassifyImageInfo(this.props.cactusdata.MFK_Arr.length);
-        // this.props.cactusdata.AddDetectAndClassify_MFK(addshow);
-      }
-      
-      // console.log("strpic=",pic.toString());
-
-    }
-    DetectReader.onload=onloadfun;
-    ShowReader.onload = onloadfun;
-    DetectReader.readAsArrayBuffer(selectedFile);
-    ShowReader.readAsDataURL(selectedFile);
-  }
-
 
   public render(){
       console.log("begin render canvas");
