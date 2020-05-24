@@ -19,6 +19,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
+import * as grpcWeb from 'grpc-web'
 
 import * as CactusPb from "../proto_code/cactus_pb"
 
@@ -408,6 +409,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable FPS:number;
     @observable width:number;
     @observable height:number;
+    tmpCanvas:HTMLCanvasElement;
     userdata:CactusData;
     constructor(props:AnalysisPicStreamArg){
         super(props);
@@ -423,6 +425,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         req.setChannelName("testchannnel");
         req.setFaceTrackGroupid("webanasistestgroupid");
         this.userdata.Send_AnalysisPicStreamStart(req)
+        this.tmpCanvas=document.createElement("canvas");
 
     }
     onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
@@ -493,6 +496,11 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         // cv::imdecode(cv::Mat(1, picdata.length(), CV_8U, (char *)picdata.c_str()), cv::ImreadModes::IMREAD_COLOR);
         // cv2.imencode('.JPEG', frame,encode_param)[1].tostring()
         //var fullQuality = canvas.toDataURL("image/jpeg", 1.0);
+
+        cv.imshow(this.tmpCanvas,src_Mat)
+        let b64image = this.tmpCanvas.toDataURL("image/jpeg", 1.0)
+
+
         cv.cvtColor(src_Mat, dst_Mat, cv.COLOR_RGBA2GRAY);
         
         let left = 0;
@@ -501,10 +509,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         let height = 50;
         let start_point = new cv.Point(left,top);
         let end_point = new cv.Point(left+width,top+height);
-        // start_point = (left, top)
-        // end_point = (left+width, top+height)
-        // cv2.rectangle(picdata, start_point, end_point,  (0, 255, 0), 2)
-        // cv2.putText(picdata, p.personId, (left, top), font, 1.2, (255, 255, 255), 2)
+
         let color =new  cv.Scalar(0,255,0);
         cv.rectangle(dst_Mat,start_point,end_point,color,2);
         cv.putText(dst_Mat, "hello world", end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
@@ -539,12 +544,57 @@ interface AnalysisPicArg{
 
 @observer
 export class AnalysisShow  extends React.Component<AnalysisPicArg>{
-  @observable img:string;
-  constructor(props:AnalysisPicArg){
-    super(props);
-    this.img=""
+    @observable img:string;
+    @observable srcimgid:string;
+    @observable toimgid:string;
+    @observable tocanvasid:string;
+    @observable width:number;
+    @observable height:number;
+    userdata:CactusData;
+    constructor(props:AnalysisPicArg){
+        super(props);
+        this.img=""
+        this.srcimgid="srcimgid";
+        this.toimgid="toimageid";
+        this.tocanvasid="tocanvasid";
+        this.width=100;
+        this.height=100;
+        this.userdata = props.cactusdata;
   }
+    Rsp_AnalysisPic(err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
+        console.log("Rsp_AnalysisPic..")
+    }
+    Send_AnalysisPic(req:CactusPb.AnalysisPicReq){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this))
+    }
 
+    // getarrbuf()
+    getBlob(blob:Blob){
+        // let p_buff = blob.arrayBuffer()
+        // p_buff.then()
+        
+        let onloadfun = (e:ProgressEvent<FileReader>) => {
+            const pic = e.target.result;
+            if(pic instanceof ArrayBuffer){
+              let array = new Uint8Array(pic as ArrayBuffer, 0);       
+              let req = new CactusPb.AnalysisPicReq();
+              req.setId(11);
+              req.setGroupid("webtest");
+              req.setPicdata(array);
+              console.log("begin Send_AnalysisPic")
+              this.Send_AnalysisPic(req);
+              // this.props.cactusdata.Send_Hello("this web");
+            }else{
+
+            }
+      
+          }
+
+        let  reader = new FileReader()
+        reader.onload= onloadfun;
+        reader.readAsArrayBuffer(blob)
+    }
 
   onChange(evt:React.ChangeEvent<HTMLInputElement>){
     let selectedFile:File = evt.target.files[0];
@@ -553,20 +603,51 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
 
 
-    let srcImg = document.getElementById('src-img');
-    let toImg = document.getElementById('dst-img');
-    let tocanvas = document.getElementById('dst-canvas');
+    let srcImg = document.getElementById(this.srcimgid);
+    let toImg = document.getElementById(this.toimgid);
+    let tocanvas = document.getElementById(this.tocanvasid);
+
+
 
     // srcImg.setAttribute('crossOrigin', 'Anonymous');
     
-    console.log("begin to dst")
-    let newimg = new Image(200,200);
-    newimg.crossOrigin = "anonymous";
-    newimg.src = this.img;
+    // console.log("begin to dst")
+    // let newimg = new Image(200,200);
+    // newimg.crossOrigin = "anonymous";
+    // newimg.src = this.img;
     
-    let dst_canvas = cv.imread(srcImg)
+
+    let read_mat = cv.imread(srcImg)
+
+    {
+
+        let tempCanvas = document.createElement("canvas");
+        cv.imshow(tempCanvas,read_mat)
+        tempCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+
+        // let d8u = read_mat.data
+        // let req = new CactusPb.AnalysisPicReq();
+        // req.setId(11);
+        // req.setGroupid("webtest");
+        // req.setPicdata(d8u as Uint8Array);
+        // this.Send_AnalysisPic(req);
+        
+        // console.log("d8u... size=%d,mat_rows=%d,mat_clos=%d,mat_channels=%d",d8u.length,read_mat.rows,read_mat.cols,read_mat.channels())
+    }
+
+
+
+
+
+    // let test:HTMLCanvasElement;
+    // //  test.toBlob(null,"dgd");
+    // let b = new Blob();
+    // b.arrayBuffer()
+
+    // test.toBlob()
+    console.log("begin show now")
     // cv.imshow('dst-canvas', dst_canvas);
-    cv.imshow(tocanvas, dst_canvas)
+    cv.imshow(this.tocanvasid, read_mat)
     console.log("show over")
     // let dst = cv.imread(srcImg);
     // cv.imshow('dest-canvas', dst);
@@ -578,6 +659,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
   onChange2(evt:React.ChangeEvent<HTMLInputElement>){
     let selectedFile:File = evt.target.files[0];
+
     console.log("select file..=%s",selectedFile.name)
     const DetectReader = new FileReader();
     const ShowReader = new FileReader();
@@ -615,10 +697,10 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         return (
           // <p>empty image</p>
           <div>
-          <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
-          <img id="src-img" src={this.img} className="full" width='200' height='200' />
-          <img id="dst-img"  className="full"  />
-          <canvas id="dst-canvas" width='200' height='200' ></canvas>
+            <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
+            <img id={this.srcimgid} src={this.img}  width={2*this.width} height={2*this.height} />
+            <img id={this.toimgid}    />
+            <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
           </div>
         )
     
