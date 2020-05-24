@@ -35,7 +35,7 @@ import { observer } from 'mobx-react';
 import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
-import { int32_t } from "mirada";
+import { int32_t, Mat } from "mirada";
 
 
 
@@ -551,6 +551,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable width:number;
     @observable height:number;
     userdata:CactusData;
+    tmpCanvas:HTMLCanvasElement;
     constructor(props:AnalysisPicArg){
         super(props);
         this.img=""
@@ -560,20 +561,90 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.width=100;
         this.height=100;
         this.userdata = props.cactusdata;
-  }
-    Rsp_AnalysisPic(err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
-        console.log("Rsp_AnalysisPic..")
+        this.tmpCanvas =  document.createElement("canvas");
     }
-    Send_AnalysisPic(req:CactusPb.AnalysisPicReq){
+    Rsp_AnalysisPic(srcmat:type_opencv.Mat, err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
+        
+        // let toImg = document.getElementById(this.toimgid);
+        // let tocanvas = document.getElementById(this.tocanvasid); 
+        let personinfolist =  response.getPersonInfosList();
+        let vehicleinfolist = response.getVelicleInfosList();
+        let maxwidth = srcmat.cols;
+        let maxheight = srcmat.rows
+
+        console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
+        for(let i =0;i < personinfolist.length;i++){
+            let personinfo = personinfolist[i];
+            let pos = personinfo.getFacepos();
+            let color =new  cv.Scalar(0,255,0);
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            let start_point = new cv.Point(left,top);
+            let end_point = new cv.Point(left+width,top+height);
+            cv.rectangle(srcmat,start_point,end_point,color,2);
+            cv.putText(srcmat, personinfo.getPersonid(), end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+        }
+        for(let i =0; i<vehicleinfolist.length;i++){
+            let vehicleinfo = vehicleinfolist[i];
+            
+            
+            if(vehicleinfo.hasVehiclepos()){
+                let pos =  vehicleinfo.getVehiclepos();
+                let color =new  cv.Scalar(0,255,0);
+                let left = maxwidth* pos.getLeft();
+                let top =  maxheight* pos.getTop();
+                let width = maxwidth * pos.getWidth();
+                let height = maxheight * pos.getHeight();
+                let start_point = new cv.Point(left,top);
+                let end_point = new cv.Point(left+width,top+height);
+                cv.rectangle(srcmat,start_point,end_point,color,2);
+            }
+            if(vehicleinfo.hasLicenceplate()){
+                let licenceplate = vehicleinfo.getLicenceplate();
+                let pos =  licenceplate.getLicpos();
+                let color =new  cv.Scalar(0,255,0);
+                let left = maxwidth* pos.getLeft();
+                let top =  maxheight* pos.getTop();
+                let width = maxwidth * pos.getWidth();
+                let height = maxheight * pos.getHeight();
+                let start_point = new cv.Point(left,top);
+                let end_point = new cv.Point(left+width,top+height);
+                cv.rectangle(srcmat,start_point,end_point,color,2);
+                cv.putText(srcmat, licenceplate.getLicenceid(), end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)                
+            }
+        }
+
+        cv.imshow(this.tocanvasid,srcmat)
+    }
+    Send_AnalysisPic(srcmat:type_opencv.Mat, req:CactusPb.AnalysisPicReq){
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
-        this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this))
+        this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this,srcmat))
+    }
+
+    imgonload(event: React.SyntheticEvent<HTMLInputElement, Event>){
+        let srcImg = document.getElementById(this.srcimgid) as HTMLImageElement;
+        let read_mat = cv.imread(srcImg)
+        cv.imshow(this.tmpCanvas,read_mat)
+        this.tmpCanvas.toBlob(this.getBlob.bind(this,read_mat),"image/jpeg", 1.0);
+
     }
 
     // getarrbuf()
-    getBlob(blob:Blob){
+    getBlob(read_mat:type_opencv.Mat,blob:Blob){
         // let p_buff = blob.arrayBuffer()
         // p_buff.then()
-        
+        let dst_mat = new cv.Mat();
+        let maxwidth = read_mat.cols;
+        let maxheight = read_mat.rows;
+        if(maxheight > 720){
+            let ratio = 720/maxheight
+            let real 
+            cv.resize(read_mat,dst_mat,dst_mat.size(),ratio,ratio);
+        }else{
+            dst_mat = read_mat;
+        }
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
@@ -583,12 +654,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
               req.setGroupid("webtest");
               req.setPicdata(array);
               console.log("begin Send_AnalysisPic")
-              this.Send_AnalysisPic(req);
-              // this.props.cactusdata.Send_Hello("this web");
+              this.Send_AnalysisPic(dst_mat,req);
             }else{
-
             }
-      
           }
 
         let  reader = new FileReader()
@@ -596,63 +664,10 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         reader.readAsArrayBuffer(blob)
     }
 
-  onChange(evt:React.ChangeEvent<HTMLInputElement>){
-    let selectedFile:File = evt.target.files[0];
-    console.log("select file..=%s",selectedFile.name)
-    this.img = URL.createObjectURL(selectedFile)
-
-
-
-    let srcImg = document.getElementById(this.srcimgid);
-    let toImg = document.getElementById(this.toimgid);
-    let tocanvas = document.getElementById(this.tocanvasid);
-
-
-
-    // srcImg.setAttribute('crossOrigin', 'Anonymous');
-    
-    // console.log("begin to dst")
-    // let newimg = new Image(200,200);
-    // newimg.crossOrigin = "anonymous";
-    // newimg.src = this.img;
-    
-
-    let read_mat = cv.imread(srcImg)
-
-    {
-
-        let tempCanvas = document.createElement("canvas");
-        cv.imshow(tempCanvas,read_mat)
-        tempCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
-
-        // let d8u = read_mat.data
-        // let req = new CactusPb.AnalysisPicReq();
-        // req.setId(11);
-        // req.setGroupid("webtest");
-        // req.setPicdata(d8u as Uint8Array);
-        // this.Send_AnalysisPic(req);
-        
-        // console.log("d8u... size=%d,mat_rows=%d,mat_clos=%d,mat_channels=%d",d8u.length,read_mat.rows,read_mat.cols,read_mat.channels())
-    }
-
-
-
-
-
-    // let test:HTMLCanvasElement;
-    // //  test.toBlob(null,"dgd");
-    // let b = new Blob();
-    // b.arrayBuffer()
-
-    // test.toBlob()
-    console.log("begin show now")
-    // cv.imshow('dst-canvas', dst_canvas);
-    cv.imshow(this.tocanvasid, read_mat)
-    console.log("show over")
-    // let dst = cv.imread(srcImg);
-    // cv.imshow('dest-canvas', dst);
-    // // src.delete();
-    // dst.delete();
+    onChange(evt:React.ChangeEvent<HTMLInputElement>){
+        let selectedFile:File = evt.target.files[0];
+        console.log("select file..=%s",selectedFile.name)
+        this.img = URL.createObjectURL(selectedFile)
   }
 
 
@@ -698,9 +713,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
           // <p>empty image</p>
           <div>
             <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
-            <img id={this.srcimgid} src={this.img}  width={2*this.width} height={2*this.height} />
+            <img id={this.srcimgid} src={this.img}   onLoad={this.imgonload.bind(this)} />
             <img id={this.toimgid}    />
-            <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
+            <canvas id={this.tocanvasid}   ></canvas>
           </div>
         )
     
