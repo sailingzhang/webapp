@@ -399,10 +399,10 @@ interface AnalysisPicStreamArg{
 
 class ShowDataInfo{
     frameid:number;
-    dataMat:type_opencv.Mat;
-    constructor(_frameid:number,_dataMat:type_opencv.Mat){
+    dataCanvas:HTMLCanvasElement;
+    constructor(_frameid:number,_dataCanvas:HTMLCanvasElement){
         this.frameid=_frameid;
-        this.dataMat = _dataMat;
+        this.dataCanvas = _dataCanvas;
     }
 }
 
@@ -410,6 +410,7 @@ class ShowDataInfo{
 export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>{
     @observable videoid:string;
     @observable outputcanvasId:string;
+    @observable outputcanvas:HTMLCanvasElement;
     @observable chosefileId:string;
     // @observable src_Mat:type_opencv.Mat;
     // @observable dst_Mat:type_opencv.Mat;
@@ -435,11 +436,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
         this.chosefileId="chosefileid";
+        this.width = 320;
+        this.height =240;
         this.FPS = 30;
         this.frameid =0;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
+        this.outputcanvas = document.getElementById(this.outputcanvasId) as HTMLCanvasElement;
 
 
         this.Send_AnalysisPicStreamStart();
@@ -451,7 +455,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         console.log("select file..=%s",selectedFile.name)
         this.chosefileurl  = URL.createObjectURL(selectedFile);
         // this.video.src = this.chosefileurl;
-        this.video.load();
+        // this.video.load();
     }
 
 
@@ -477,16 +481,18 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.is_cactus_start = true;
         this.Send_AnalysisPicStreamPop();
     }
-    Rsp_AnalysisPicStreamPush(frameid:number,toMat:type_opencv.Mat,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
+    Rsp_AnalysisPicStreamPush(frameid:number,to_canvas:HTMLCanvasElement,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
         if(null != err){
             console.log("grpc err=%s",err.message)
         }
+
+        this.processVideo();
     }
-    Send_AnalysisPicStreamPush(frameid:number,toMat:type_opencv.Mat,req:CactusPb.AnalysisPicStreamPushReq){
+    Send_AnalysisPicStreamPush(frameid:number,to_canvas:HTMLCanvasElement,req:CactusPb.AnalysisPicStreamPushReq){
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
-        let showinfo = new ShowDataInfo(frameid,toMat);
+        let showinfo = new ShowDataInfo(frameid,to_canvas);
         this.ShowDataInfoArr.push(showinfo);
-        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,frameid,toMat))
+        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,frameid,to_canvas))
     }
 
 
@@ -495,12 +501,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             console.error("grpc err=%s",err.message)
             return;
         }
-        let showdatainfo = this.ShowDataInfoArr.pop();
+        // let showdatainfo = this.ShowDataInfoArr.pop();
+        let showdatainfo = this.ShowDataInfoArr.shift();
         let getframeid = rsp.getFrameId();
         if(getframeid != showdatainfo.frameid){
             console.error("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
             return;
         }
+/*
         let maxwidth = showdatainfo.dataMat.cols;
         let maxheight = showdatainfo.dataMat.rows;
         let vehicleList = rsp.getVehicleTracksList();
@@ -548,7 +556,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                 cv.putText(showdatainfo.dataMat, personid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
             }
         }
-        cv.imshow(this.outputcanvasId,showdatainfo.dataMat);
+*/
+        // cv.imshow(this.outputcanvasId,showdatainfo.dataMat);
+        this.outputcanvas.getContext('2d').drawImage(showdatainfo.dataCanvas, 0, 0, this.width,this.height)
         this.Send_AnalysisPicStreamPop();
 
     }
@@ -559,17 +569,18 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.userdata.cactusClient.analysisPicStreamPop(req,metadata,this.Rsp_AnalysisPicStreamPop.bind(this));
         
     }
-    getBlob(framid:number,read_mat:type_opencv.Mat,blob:Blob){
-        let dst_mat = new cv.Mat();
-        let maxwidth = read_mat.cols;
-        let maxheight = read_mat.rows;
-        if(maxheight > 720){
-            let ratio = 720/maxheight
-            let real 
-            cv.resize(read_mat,dst_mat,dst_mat.size(),ratio,ratio);
-        }else{
-            dst_mat = read_mat;
-        }
+    getBlob(framid:number,read_canvas:HTMLCanvasElement,blob:Blob){
+        // let dst_mat = new cv.Mat();
+        let maxwidth = read_canvas.width;
+        let maxheight = read_canvas.height;
+        // if(maxheight > 720){
+        //     let ratio = 720/maxheight
+        //     let real 
+        //     cv.resize(read_mat,dst_mat,dst_mat.size(),ratio,ratio);
+        // }else{
+        //     dst_mat = read_mat;
+        // }
+        // dst_mat = read_mat;
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
@@ -579,7 +590,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
               req.setFrameId(framid);
               req.setPicdata(array);
             //   console.log("begin Send_AnalysisPicStream")
-              this.Send_AnalysisPicStreamPush(framid,dst_mat,req);
+              this.Send_AnalysisPicStreamPush(framid,read_canvas,req);
             }else{
             }
           }
@@ -590,14 +601,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     }
 
     onvidecanplay(){
-        // let video =  document.getElementById(this.videoid) as HTMLVideoElement;
-        this.video.load()
-        let video  = this.video;
-
+        let video =  document.getElementById(this.videoid) as HTMLVideoElement;
+        // this.video.load()
+        // let video  = this.video;
+  
         let getwidth = video.width;
         let getheight = video.height;
-        this.width = video.width;
-        this.height = video.height;
+        // this.width = getwidth;
+        // this.height = getheight;
         console.log("video real width=%d,height=%d",getwidth,getheight);
     }
     onviedoplay(){
@@ -611,27 +622,69 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         // this.width = this.video.width;
         // this.height = this.video.height;
 
-        this.cap_video = new cv.VideoCapture(this.video);
+        this.cap_video = new cv.VideoCapture(this.videoid);
         
         setTimeout(this.processVideo.bind(this), 0);
     }
 
+    onload(){
+      console.log("it is onload ");
+    }
+    
+    onLoadedMetadata(event: React.SyntheticEvent<HTMLVideoElement, Event>){
+      // event.target
+      let video  = this.video;
+  
+      let getwidth = video.width;
+      let getheight = video.height;
+      this.width = getwidth;
+      this.height = getheight;
+      console.log("meta video real width=%d,height=%d",getwidth,getheight);
+    }
 
     processVideo(){
         // console.log("processing");
         const begin = Date.now();
+        this.outputcanvas =  document.getElementById(this.outputcanvasId) as HTMLCanvasElement;
+        this.video = document.getElementById(this.videoid) as HTMLVideoElement;
+        if(null == this.outputcanvasId || null == this.video){
+          const delay = 1000/this.FPS - (Date.now() - begin);
+          setTimeout(this.processVideo.bind(this), delay);
+        }
+
+
         if(this.is_cactus_start){
             // let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
-            let src_Mat = new cv.Mat(this.video.height,this.video.width);
+            // let src_Mat = new cv.Mat(this.video.height,this.video.width);
             // let src_Mat = new cv.Mat(1280, 720, cv.CV_8UC4);
-            this.cap_video.read(src_Mat)
-            cv.imshow(this.tmpCanvas,src_Mat)
-            this.tmpCanvas.toBlob(this.getBlob.bind(this,this.frameid,src_Mat),"image/jpeg", 1.0);
+            // this.cap_video.read(src_Mat)
+            // let tmpcanvas = document.createElement("canvas");
+            // let tmpcanvas = this.tmpCanvas;
+            // cv.imshow(tmpcanvas,src_Mat)
+
+            let tmpcanvas = document.createElement("canvas");
+            tmpcanvas.width = this.width;
+            tmpcanvas.height = this.height;
+            tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
+            tmpcanvas.toBlob(this.getBlob.bind(this,this.frameid,tmpcanvas),"image/jpeg", 1.0);
             this.frameid++;
         }
 
-        const delay = 1000/this.FPS - (Date.now() - begin);
-        setTimeout(this.processVideo.bind(this), delay);
+        // let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
+        // this.cap_video.read(src_Mat)
+        // cv.imshow(this.outputcanvasId,src_Mat);
+        
+        
+
+
+
+          // this.outputcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
+          // this.outputcanvas.getContext('2d').drawImage(tmpcanvas, 0, 0, this.width,this.height);
+      
+
+
+        // const delay = 1000/this.FPS - (Date.now() - begin);
+        // setTimeout(this.processVideo.bind(this), delay);
     }
 
     public render(){
@@ -640,8 +693,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             <div>
                 <p>this is ananaSisPicStream</p>
                 <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} width="50" height="50" ></input>
-                <video id={this.videoid} src={this.chosefileurl} onPlay={this.onviedoplay.bind(this)} onCanPlay={this.onvidecanplay.bind(this)}  controls={true}  crossOrigin="Anonymous"></video>
-                <canvas id={this.outputcanvasId}  ></canvas>
+                <video id={this.videoid} src={this.chosefileurl}  width={this.width}  height={this.height}   onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} onCanPlay={this.onvidecanplay.bind(this)}  controls={true}  crossOrigin="Anonymous"></video>
+                <canvas id={this.outputcanvasId} width={this.width} height={this.height}  ></canvas>
             </div>
           )
       
