@@ -25,7 +25,7 @@ import * as CactusPb from "../proto_code/cactus_pb"
 
 // / <reference path ="typetest.d.ts" /> 
 import * as myy  from "./typetest"
-import * as type_opencv from "mirada"
+// import * as type_opencv from "mirada"
 
 
 // import tileData from './tileData';
@@ -36,6 +36,7 @@ import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
 import { int32_t, Mat, readOpticalFlow } from "mirada";
+import { yellow } from "@material-ui/core/colors";
 
 
 
@@ -414,7 +415,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable chosefileId:string;
     // @observable src_Mat:type_opencv.Mat;
     // @observable dst_Mat:type_opencv.Mat;
-    @observable cap_video:type_opencv.VideoCapture;
+    // @observable cap_video:type_opencv.VideoCapture;
     @observable chosefileurl:string;
     @observable FPS:number;
     @observable width:number;
@@ -447,7 +448,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
 
 
         this.Send_AnalysisPicStreamStart();
-        
+        console.info("AnalysisPicStreamShow 20.48")
 
     }
     onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
@@ -477,8 +478,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             console.error("rsp error=%s",rsp.getError());
             return;
         }
-        console.info("AnalysisPicStreamStart OK");
+        console.info("AnalysisPicStreamStart OK 20.25");
         this.is_cactus_start = true;
+        this.ShowDataInfoArr=[];
         this.Send_AnalysisPicStreamPop();
     }
     Rsp_AnalysisPicStreamPush(frameid:number,to_canvas:HTMLCanvasElement,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
@@ -508,11 +510,17 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             console.error("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
             return;
         }
-/*
-        let maxwidth = showdatainfo.dataMat.cols;
-        let maxheight = showdatainfo.dataMat.rows;
+
+        let maxwidth = showdatainfo.dataCanvas.width
+        let maxheight = showdatainfo.dataCanvas.height;
         let vehicleList = rsp.getVehicleTracksList();
         let faceList = rsp.getFaceTracksList();
+        let canvas_context = showdatainfo.dataCanvas.getContext('2d');
+        // canvas_context.closePath();
+        
+        canvas_context.strokeStyle ='white';
+        canvas_context.fillStyle='white';
+        canvas_context.font='18px bold white';
         for(let i = 0;i < vehicleList.length;i++){
             let vehicle = vehicleList[i];
             let pos = vehicle.getPos();
@@ -524,14 +532,15 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
             let height = maxheight * pos.getHeight();
-            let start_point = new cv.Point(left,top);
-            let end_point = new cv.Point(left+width,top+height);
-            cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
+            canvas_context.strokeRect(left,top,width,height);
+            // cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
             if("" != plateid){
-                cv.putText(showdatainfo.dataMat, plateid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                // cv.putText(showdatainfo.dataMat, plateid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(plateid,left+width,top+height);
             }
             if("" != trackid){
-                cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                // cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(trackid,left,top)
             }
         }
         for(let i = 0;i < faceList.length;i++){
@@ -545,18 +554,18 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
             let height = maxheight * pos.getHeight();
-            let start_point = new cv.Point(left,top);
-            let end_point = new cv.Point(left+width,top+height);
-            let personid_start_point= new cv.Point(left,top+5);
-            cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
+            canvas_context.strokeRect(left,top,width,height);
+            // cv.rectangle(showdatainfo.dataMat,start_point,end_point,color,2);
             if("" != trackid){
-                cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                // cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(trackid,left,top);
             }
             if("" != personid){
-                cv.putText(showdatainfo.dataMat, personid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                // cv.putText(showdatainfo.dataMat, personid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(personid,left+width,top+height);
             }
         }
-*/
+
         // cv.imshow(this.outputcanvasId,showdatainfo.dataMat);
         this.outputcanvas.getContext('2d').drawImage(showdatainfo.dataCanvas, 0, 0, this.width,this.height)
         this.Send_AnalysisPicStreamPop();
@@ -622,7 +631,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         // this.width = this.video.width;
         // this.height = this.video.height;
 
-        this.cap_video = new cv.VideoCapture(this.videoid);
+   
         
         setTimeout(this.processVideo.bind(this), 0);
     }
@@ -721,6 +730,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable height:number;
     userdata:CactusData;
     tmpCanvas:HTMLCanvasElement;
+    toCanvas:HTMLCanvasElement;
     constructor(props:AnalysisPicArg){
         super(props);
         this.img=""
@@ -732,15 +742,26 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
     }
-    Rsp_AnalysisPic(srcmat:type_opencv.Mat, err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
+    Rsp_AnalysisPic(err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
+        if(null != err){
+            console.log("grpc err=%s",err.message);
+            return;
+        }
         
         // let toImg = document.getElementById(this.toimgid);
         // let tocanvas = document.getElementById(this.tocanvasid); 
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
-        let maxwidth = srcmat.cols;
-        let maxheight = srcmat.rows
 
+
+
+        let maxwidth = this.tmpCanvas.width;
+        let maxheight = this.tmpCanvas.height;
+        // let canvas_context = this.tmpCanvas.getContext('2d');
+        let canvas_context = this.tmpCanvas.getContext('2d');
+        canvas_context.strokeStyle ='white';
+        canvas_context.fillStyle='white';
+        canvas_context.font='18px bold white';
         console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
         for(let i =0;i < personinfolist.length;i++){
             let personinfo = personinfolist[i];
@@ -750,10 +771,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
             let height = maxheight * pos.getHeight();
-            let start_point = new cv.Point(left,top);
-            let end_point = new cv.Point(left+width,top+height);
-            cv.rectangle(srcmat,start_point,end_point,color,2);
-            cv.putText(srcmat, personinfo.getPersonid(), start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+            canvas_context.strokeRect(left,top,width,height);
+            canvas_context.fillText(personinfo.getPersonid(),left,top);
+
         }
         for(let i =0; i<vehicleinfolist.length;i++){
             let vehicleinfo = vehicleinfolist[i];
@@ -766,9 +786,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 let top =  maxheight* pos.getTop();
                 let width = maxwidth * pos.getWidth();
                 let height = maxheight * pos.getHeight();
-                let start_point = new cv.Point(left,top);
-                let end_point = new cv.Point(left+width,top+height);
-                cv.rectangle(srcmat,start_point,end_point,color,2);
+                canvas_context.strokeRect(left,top,width,height);
+
             }
             if(vehicleinfo.hasLicenceplate()){
                 let licenceplate = vehicleinfo.getLicenceplate();
@@ -778,42 +797,44 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 let top =  maxheight* pos.getTop();
                 let width = maxwidth * pos.getWidth();
                 let height = maxheight * pos.getHeight();
-                let start_point = new cv.Point(left,top);
-                let end_point = new cv.Point(left+width,top+height);
-                cv.rectangle(srcmat,start_point,end_point,color,2);
-                cv.putText(srcmat, licenceplate.getLicenceid(), end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)                
+                canvas_context.strokeRect(left,top,width,height);
+                canvas_context.fillText(licenceplate.getLicenceid(),left+width,top+height);             
             }
         }
+        if(this.tmpCanvas.height>720){
+            let ratio = 720/this.tmpCanvas.height;
+            this.toCanvas.width = this.tmpCanvas.height * ratio;
+            this.toCanvas.height = this.tmpCanvas.width * ratio;
+        }
 
-        cv.imshow(this.tocanvasid,srcmat)
+        this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
+   
+
+
     }
-    Send_AnalysisPic(srcmat:type_opencv.Mat, req:CactusPb.AnalysisPicReq){
+    Send_AnalysisPic(req:CactusPb.AnalysisPicReq){
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
-        this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this,srcmat))
+        this.userdata.cactusClient.analysisPic(req,metadata,this.Rsp_AnalysisPic.bind(this))
     }
 
     imgonload(srcImg:HTMLImageElement, event: React.SyntheticEvent<HTMLInputElement, Event>){
-        // let srcImg = document.getElementById(this.srcimgid) as HTMLImageElement;
-        let read_mat = cv.imread(srcImg)
-        cv.imshow(this.tmpCanvas,read_mat)
-        this.tmpCanvas.toBlob(this.getBlob.bind(this,read_mat),"image/jpeg", 1.0);
+
+        // this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0, srcImg.width,srcImg.height);
+        // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+        console.log("get img width=%d,height=%d",srcImg.width,srcImg.height);
+        this.tmpCanvas.width = srcImg.width;
+        this.tmpCanvas.height = srcImg.height;
+        this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0);
+        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
 
     }
 
     // getarrbuf()
-    getBlob(read_mat:type_opencv.Mat,blob:Blob){
+    getBlob(blob:Blob){
         // let p_buff = blob.arrayBuffer()
         // p_buff.then()
-        let dst_mat = new cv.Mat();
-        let maxwidth = read_mat.cols;
-        let maxheight = read_mat.rows;
-        if(maxheight > 720){
-            let ratio = 720/maxheight
-            let real 
-            cv.resize(read_mat,dst_mat,dst_mat.size(),ratio,ratio);
-        }else{
-            dst_mat = read_mat;
-        }
+
+
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
@@ -823,7 +844,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
               req.setGroupid("webtest");
               req.setPicdata(array);
               console.log("begin Send_AnalysisPic")
-              this.Send_AnalysisPic(dst_mat,req);
+              this.Send_AnalysisPic(req);
             }else{
             }
           }
@@ -834,6 +855,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     }
 
     onChange(evt:React.ChangeEvent<HTMLInputElement>){
+        this.toCanvas= document.getElementById(this.tocanvasid) as HTMLCanvasElement;
         let selectedFile:File = evt.target.files[0];
         console.log("select file..=%s",selectedFile.name)
         this.img = URL.createObjectURL(selectedFile)
@@ -851,7 +873,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
             {/* <img id={this.srcimgid} src={this.img}   onLoad={this.imgonload.bind(this)} /> */}
             <img id={this.toimgid}    />
-            <canvas id={this.tocanvasid}   ></canvas>
+            <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
           </div>
         )
     
