@@ -413,21 +413,20 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable outputcanvasId:string;
     @observable outputcanvas:HTMLCanvasElement;
     @observable chosefileId:string;
-    // @observable src_Mat:type_opencv.Mat;
-    // @observable dst_Mat:type_opencv.Mat;
-    // @observable cap_video:type_opencv.VideoCapture;
     @observable chosefileurl:string;
     @observable FPS:number;
     @observable width:number;
     @observable height:number;
     @observable is_cactus_start:boolean;
     @observable video:HTMLVideoElement;
+    @observable resolution_detect:boolean;
     frameid:number
     userdata:CactusData;
     channelname:string;
     track_groupid:string;
     tmpCanvas:HTMLCanvasElement;
     ShowDataInfoArr:ShowDataInfo[];
+
     constructor(props:AnalysisPicStreamArg){
         super(props);
         this.ShowDataInfoArr=[];
@@ -437,6 +436,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
         this.chosefileId="chosefileid";
+        this.resolution_detect = false;
         this.width = 320;
         this.height =240;
         this.FPS = 30;
@@ -447,13 +447,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.outputcanvas = document.getElementById(this.outputcanvasId) as HTMLCanvasElement;
 
 
-        this.Send_AnalysisPicStreamStart();
+        
         console.info("AnalysisPicStreamShow 20.48")
 
     }
     onChoseFileChange(evt:React.ChangeEvent<HTMLInputElement>){
         let selectedFile:File = evt.target.files[0];
         console.log("select file..=%s",selectedFile.name)
+        this.chosefileurl="";
         this.chosefileurl  = URL.createObjectURL(selectedFile);
         // this.video.src = this.chosefileurl;
         // this.video.load();
@@ -609,30 +610,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         reader.readAsArrayBuffer(blob)
     }
 
-    onvidecanplay(){
-        let video =  document.getElementById(this.videoid) as HTMLVideoElement;
-        // this.video.load()
-        // let video  = this.video;
-  
-        let getwidth = video.width;
-        let getheight = video.height;
-        // this.width = getwidth;
-        // this.height = getheight;
-        console.log("video real width=%d,height=%d",getwidth,getheight);
-    }
+
     onviedoplay(){
-        console.log('playing...');
-        // this.Send_AnalysisPicStreamStart();
-
-        // this.video = document.getElementById(this.videoid) as HTMLVideoElement;
-
-        // let getwidth = this.video.width;
-        // let getheight = this.video.height;
-        // this.width = this.video.width;
-        // this.height = this.video.height;
-
-   
-        
+        console.log('playing...');        
         setTimeout(this.processVideo.bind(this), 0);
     }
 
@@ -642,13 +622,30 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     
     onLoadedMetadata(event: React.SyntheticEvent<HTMLVideoElement, Event>){
       // event.target
-      let video  = this.video;
-  
-      let getwidth = video.width;
-      let getheight = video.height;
-      this.width = getwidth;
-      this.height = getheight;
-      console.log("meta video real width=%d,height=%d",getwidth,getheight);
+
+    
+      this.video = document.getElementById(this.videoid) as HTMLVideoElement;
+      this.outputcanvas = document.getElementById(this.outputcanvasId) as HTMLCanvasElement;
+      let srcwidth = this.video.videoWidth;
+      let srcheight = this.video.videoHeight;
+      let towidth = srcwidth;
+      let toheight = srcheight;
+      if(srcheight > 720){
+          let ratio = 720/srcheight;
+          towidth = srcwidth *ratio;
+          toheight = srcheight * ratio;
+      }
+      this.width = towidth;
+      this.height = toheight;
+      this.video.width = towidth;
+      this.video.height = toheight;
+      this.outputcanvas.width = towidth;
+      this.outputcanvas.height = toheight;
+      this.resolution_detect = true;
+
+      this.Send_AnalysisPicStreamStart();
+      console.info("srcwidth=%d,srcheight=%d,towidth=%d,toheight=%d",srcwidth,srcheight,towidth,toheight);
+      
     }
 
     processVideo(){
@@ -662,14 +659,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         }
 
 
-        if(this.is_cactus_start){
-            // let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
-            // let src_Mat = new cv.Mat(this.video.height,this.video.width);
-            // let src_Mat = new cv.Mat(1280, 720, cv.CV_8UC4);
-            // this.cap_video.read(src_Mat)
-            // let tmpcanvas = document.createElement("canvas");
-            // let tmpcanvas = this.tmpCanvas;
-            // cv.imshow(tmpcanvas,src_Mat)
+
+
+        if(this.is_cactus_start && this.resolution_detect){
 
             let tmpcanvas = document.createElement("canvas");
             tmpcanvas.width = this.width;
@@ -702,8 +694,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             <div>
                 <p>this is ananaSisPicStream</p>
                 <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} width="50" height="50" ></input>
-                <video id={this.videoid} src={this.chosefileurl}  width={this.width}  height={this.height}   onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} onCanPlay={this.onvidecanplay.bind(this)}  controls={true}  crossOrigin="Anonymous"></video>
-                <canvas id={this.outputcanvasId} width={this.width} height={this.height}  ></canvas>
+                <video id={this.videoid} src={this.chosefileurl}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
+                <canvas id={this.outputcanvasId}   ></canvas>
             </div>
           )
       
