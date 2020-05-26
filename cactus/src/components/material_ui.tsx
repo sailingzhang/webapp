@@ -35,7 +35,7 @@ import { observer } from 'mobx-react';
 import {observable,action,autorun, configure, reaction} from 'mobx';
 
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
-import { int32_t, Mat, readOpticalFlow } from "mirada";
+// import { int32_t, Mat, readOpticalFlow } from "mirada";
 import { yellow } from "@material-ui/core/colors";
 
 
@@ -399,11 +399,13 @@ interface AnalysisPicStreamArg{
 }
 
 class ShowDataInfo{
+    begintime:number;
     frameid:number;
     dataCanvas:HTMLCanvasElement;
-    constructor(_frameid:number,_dataCanvas:HTMLCanvasElement){
+    constructor(_begintime:number,_frameid:number,_dataCanvas:HTMLCanvasElement){
         this.frameid=_frameid;
         this.dataCanvas = _dataCanvas;
+        this.begintime=_begintime;
     }
 }
 
@@ -431,7 +433,6 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         super(props);
         this.ShowDataInfoArr=[];
         this.is_cactus_start = false;
-        this.channelname="webchannetest";
         this.track_groupid ="webtrackgroupid";
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
@@ -463,11 +464,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
 
     
     Send_AnalysisPicStreamStart(){
+        this.is_cactus_start = false;
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
         let req = new CactusPb.AnalysisPicStreamStartReq();
+        this.channelname="webchannetest" + new Date().toLocaleString();
         req.setChannelName(this.channelname);
         req.setFaceTrackGroupid(this.track_groupid);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
+        console.info("AnalysisPicStreamStart ,chnannlename=%s",this.channelname)
     }
 
     Rsp_AnalysisPicStreamStart(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
@@ -484,18 +488,17 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.ShowDataInfoArr=[];
         this.Send_AnalysisPicStreamPop();
     }
-    Rsp_AnalysisPicStreamPush(frameid:number,to_canvas:HTMLCanvasElement,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
+    Rsp_AnalysisPicStreamPush(showinfo:ShowDataInfo,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
         if(null != err){
             console.log("grpc err=%s",err.message)
         }
-
-        this.processVideo();
+        const delay = 1000/this.FPS - (Date.now() - showinfo.begintime);
+        setTimeout(this.processVideo.bind(this), delay);
     }
-    Send_AnalysisPicStreamPush(frameid:number,to_canvas:HTMLCanvasElement,req:CactusPb.AnalysisPicStreamPushReq){
+    Send_AnalysisPicStreamPush(showinfo:ShowDataInfo,req:CactusPb.AnalysisPicStreamPushReq){
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
-        let showinfo = new ShowDataInfo(frameid,to_canvas);
         this.ShowDataInfoArr.push(showinfo);
-        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,frameid,to_canvas))
+        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,showinfo))
     }
 
 
@@ -528,7 +531,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             let plateid = vehicle.getPlateId();
             let trackid = vehicle.getTrackingId();
 
-            let color =new  cv.Scalar(0,255,0);
+
             let left = maxwidth* pos.getLeft();
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
@@ -550,7 +553,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             let trackid = oneface.getTrackingId();
             let personid = oneface.getPersonId();
 
-            let color =new  cv.Scalar(0,255,0);
+
             let left = maxwidth* pos.getLeft();
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
@@ -579,10 +582,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.userdata.cactusClient.analysisPicStreamPop(req,metadata,this.Rsp_AnalysisPicStreamPop.bind(this));
         
     }
-    getBlob(framid:number,read_canvas:HTMLCanvasElement,blob:Blob){
+    getBlob(showinfo:ShowDataInfo,blob:Blob){
         // let dst_mat = new cv.Mat();
-        let maxwidth = read_canvas.width;
-        let maxheight = read_canvas.height;
+        let maxwidth = showinfo.dataCanvas.width;
+        let maxheight = showinfo.dataCanvas.height;
         // if(maxheight > 720){
         //     let ratio = 720/maxheight
         //     let real 
@@ -597,10 +600,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
               let array = new Uint8Array(pic as ArrayBuffer, 0);       
               let req = new CactusPb.AnalysisPicStreamPushReq();
               req.setChannelName(this.channelname);
-              req.setFrameId(framid);
+              req.setFrameId(showinfo.frameid);
               req.setPicdata(array);
             //   console.log("begin Send_AnalysisPicStream")
-              this.Send_AnalysisPicStreamPush(framid,read_canvas,req);
+              this.Send_AnalysisPicStreamPush(showinfo,req);
             }else{
             }
           }
@@ -667,7 +670,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             tmpcanvas.width = this.width;
             tmpcanvas.height = this.height;
             tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
-            tmpcanvas.toBlob(this.getBlob.bind(this,this.frameid,tmpcanvas),"image/jpeg", 1.0);
+            let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
+            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
+            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
             this.frameid++;
         }
 
@@ -766,7 +771,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         for(let i =0;i < personinfolist.length;i++){
             let personinfo = personinfolist[i];
             let pos = personinfo.getFacepos();
-            let color =new  cv.Scalar(0,255,0);
             let left = maxwidth* pos.getLeft();
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
@@ -781,7 +785,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             
             if(vehicleinfo.hasVehiclepos()){
                 let pos =  vehicleinfo.getVehiclepos();
-                let color =new  cv.Scalar(0,255,0);
                 let left = maxwidth* pos.getLeft();
                 let top =  maxheight* pos.getTop();
                 let width = maxwidth * pos.getWidth();
@@ -792,7 +795,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             if(vehicleinfo.hasLicenceplate()){
                 let licenceplate = vehicleinfo.getLicenceplate();
                 let pos =  licenceplate.getLicpos();
-                let color =new  cv.Scalar(0,255,0);
                 let left = maxwidth* pos.getLeft();
                 let top =  maxheight* pos.getTop();
                 let width = maxwidth * pos.getWidth();
@@ -813,10 +815,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     }
 
     imgonload(srcImg:HTMLImageElement, event: React.SyntheticEvent<HTMLInputElement, Event>){
-
-        // this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0, srcImg.width,srcImg.height);
-        // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
-        console.log("get img width=%d,height=%d",srcImg.width,srcImg.height);
+        console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
         this.tmpCanvas.width = srcImg.width;
         this.tmpCanvas.height = srcImg.height;
         this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0);

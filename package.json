@@ -36,7 +36,6 @@
     "google-protobuf": "^3.11.4",
     "grpc-web": "^1.0.7",
     "material-ui": "^0.20.2",
-    "mirada": "0.0.15",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
     "react": "^16.13.1",
