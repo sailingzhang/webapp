@@ -753,16 +753,24 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
 
+        console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
 
+        this.width = this.tmpCanvas.width;
+        this.height = this.tmpCanvas.height;
+        if(this.tmpCanvas.height>720){
+            let ratio = 720/this.tmpCanvas.height;
+            this.toCanvas.width = this.tmpCanvas.width * ratio;
+            this.toCanvas.height = this.tmpCanvas.height * ratio;
+        }
+        let maxwidth = this.toCanvas.width;
+        let maxheight = this.toCanvas.height;
+        this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
 
-        let maxwidth = this.tmpCanvas.width;
-        let maxheight = this.tmpCanvas.height;
         // let canvas_context = this.tmpCanvas.getContext('2d');
-        let canvas_context = this.tmpCanvas.getContext('2d');
+        let canvas_context = this.toCanvas.getContext('2d');
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
-        console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
         for(let i =0;i < personinfolist.length;i++){
             let personinfo = personinfolist[i];
             let pos = personinfo.getFacepos();
@@ -801,13 +809,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 canvas_context.fillText(licenceplate.getLicenceid(),left+width,top+height);             
             }
         }
-        if(this.tmpCanvas.height>720){
-            let ratio = 720/this.tmpCanvas.height;
-            this.toCanvas.width = this.tmpCanvas.height * ratio;
-            this.toCanvas.height = this.tmpCanvas.width * ratio;
-        }
 
-        this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
+
    
 
 
