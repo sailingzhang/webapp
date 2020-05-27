@@ -819,8 +819,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.tmpCanvas.width = srcImg.width;
         this.tmpCanvas.height = srcImg.height;
         this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0);
-        // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
-        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
+        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+        // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
 
     }
 
