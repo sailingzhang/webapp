@@ -671,8 +671,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             tmpcanvas.height = this.height;
             tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
             let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
-            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
-            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
+            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
+            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1);
             this.frameid++;
         }
 
@@ -819,7 +819,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.tmpCanvas.width = srcImg.width;
         this.tmpCanvas.height = srcImg.height;
         this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0);
-        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+        // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
 
     }
 
