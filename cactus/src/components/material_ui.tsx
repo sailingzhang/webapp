@@ -698,7 +698,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
           return (
             <div>
                 <p>this is ananaSisPicStream</p>
-                <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} width="50" height="50" ></input>
+                <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} className='ImageShowArg' ></input>
                 <video id={this.videoid} src={this.chosefileurl}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
                 <canvas id={this.outputcanvasId}   ></canvas>
             </div>
@@ -870,10 +870,39 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
   
     this.img = this.submitUrl;
     let tmpimg = document.createElement("img");
+    tmpimg.setAttribute('crossOrigin', 'anonymous');
     tmpimg.src = this.img;
     tmpimg.onload = this.imgonload.bind(this,tmpimg);
     
   }
+
+  onSubmit2(){
+    this.submitUrl = this.tmpsubmitUrt;
+    console.log("submit url=%s",this.submitUrl);
+    this.tmpsubmitUrt="";
+    
+  
+    this.img = this.submitUrl;
+    let tmpimg = document.createElement("img");
+    let imgonloadfunc = this.imgonload.bind(this,tmpimg);
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('get', this.submitUrl, true);
+    xhr.responseType = 'blob';
+    xhr.withCredentials = true
+    xhr.onload = function () {
+        if (this.status == 200) {
+        // imgResponse = this.response;
+        //这里面可以直接通过URL的api将其转换，然后赋值给img.src
+        //也可以使用下面的preView方法将其转换成base64之后再赋值
+        tmpimg.src = URL.createObjectURL(this.response);
+        tmpimg.onload = imgonloadfunc;
+        }
+        };
+        xhr.send();
+    }
+
+
   ontextChange(evt:React.ChangeEvent<HTMLInputElement>){
     // console.log("get text=%s",evt.target.value);
     this.tmpsubmitUrt = evt.target.value;
@@ -885,11 +914,11 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         return (
           // <p>empty image</p>
           <div>
-            <input type="file" onChange={this.onChange.bind(this)}  width='100' height='40' />
-            <input type="text" name="input url"   onChange={this.ontextChange.bind(this)} width='1000' height='40' />
-            <input type="button"  onClick={this.onSubmit.bind(this)}  width='40' height='40'/>
+            <input type="file"  name="choose file"  onChange={this.onChange.bind(this)}  className='ImageShowArg' />
+            {/* <input type="text" name="input url"   onChange={this.ontextChange.bind(this)} width='1000' height='40' />
+            <input type="button"  onClick={this.onSubmit2.bind(this)}  width='40' height='40'/> */}
 
-            <img id={this.toimgid} src={this.img} />
+            {/* <img id={this.toimgid} src={this.img} /> */}
             <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
           </div>
         )
