@@ -671,8 +671,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             tmpcanvas.height = this.height;
             tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
             let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
-            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
-            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1);
+            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
+            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1);
             this.frameid++;
         }
 
@@ -725,6 +725,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable tocanvasid:string;
     @observable width:number;
     @observable height:number;
+    @observable submitUrl:string;
+    tmpsubmitUrt:string;
     userdata:CactusData;
     tmpCanvas:HTMLCanvasElement;
     toCanvas:HTMLCanvasElement;
@@ -738,6 +740,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.height=100;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
+        this.submitUrl ="input image url";
     }
     Rsp_AnalysisPic(err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
         if(null != err){
@@ -858,6 +861,23 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         tmpimg.src = this.img;
         tmpimg.onload = this.imgonload.bind(this,tmpimg);
   }
+  onSubmit(evt:React.ChangeEvent<HTMLButtonElement>){
+    // let url = evt.target.textContent;
+    this.submitUrl = this.tmpsubmitUrt;
+    console.log("submit url=%s",this.submitUrl);
+    this.tmpsubmitUrt="";
+    
+  
+    this.img = this.submitUrl;
+    let tmpimg = document.createElement("img");
+    tmpimg.src = this.img;
+    tmpimg.onload = this.imgonload.bind(this,tmpimg);
+    
+  }
+  ontextChange(evt:React.ChangeEvent<HTMLInputElement>){
+    // console.log("get text=%s",evt.target.value);
+    this.tmpsubmitUrt = evt.target.value;
+  }
 
   public render(){
       console.log("begin render canvas");
@@ -865,9 +885,11 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         return (
           // <p>empty image</p>
           <div>
-            <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" width='200' height='200' />
-            {/* <img id={this.srcimgid} src={this.img}   onLoad={this.imgonload.bind(this)} /> */}
-            <img id={this.toimgid}    />
+            <input type="file" onChange={this.onChange.bind(this)}  width='100' height='40' />
+            <input type="text" name="input url"   onChange={this.ontextChange.bind(this)} width='1000' height='40' />
+            <input type="button"  onClick={this.onSubmit.bind(this)}  width='40' height='40'/>
+
+            <img id={this.toimgid} src={this.img} />
             <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
           </div>
         )
