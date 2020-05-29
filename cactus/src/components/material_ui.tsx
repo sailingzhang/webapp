@@ -400,12 +400,17 @@ interface AnalysisPicStreamArg{
 
 class ShowDataInfo{
     begintime:number;
+    beginEncodeTime:number;
+    beginGrpcTime:number;
     frameid:number;
+    isJpg:boolean;
+    dataArray:Uint8Array;
     dataCanvas:HTMLCanvasElement;
     constructor(_begintime:number,_frameid:number,_dataCanvas:HTMLCanvasElement){
         this.frameid=_frameid;
         this.dataCanvas = _dataCanvas;
         this.begintime=_begintime;
+        this.isJpg = false;
     }
 }
 
@@ -423,15 +428,17 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable video:HTMLVideoElement;
     @observable resolution_detect:boolean;
     frameid:number
+    diyheight:number;
     userdata:CactusData;
     channelname:string;
     track_groupid:string;
     tmpCanvas:HTMLCanvasElement;
     ShowDataInfoArr:ShowDataInfo[];
-
+    SendDataInfoArr:ShowDataInfo[];
     constructor(props:AnalysisPicStreamArg){
         super(props);
         this.ShowDataInfoArr=[];
+        this.SendDataInfoArr=[];
         this.is_cactus_start = false;
         this.track_groupid ="webtrackgroupid";
         this.videoid="mytestvideoid";
@@ -440,6 +447,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.resolution_detect = false;
         this.width = 320;
         this.height =240;
+        this.diyheight= 320;
         this.FPS = 30;
         this.frameid =0;
         this.userdata = props.cactusdata;
@@ -486,19 +494,49 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         console.info("AnalysisPicStreamStart OK 20.25");
         this.is_cactus_start = true;
         this.ShowDataInfoArr=[];
+        this.SendDataInfoArr=[];
         this.Send_AnalysisPicStreamPop();
+        this.TryRsp_AnalysisPicStreamPush(null,null,null);
     }
     Rsp_AnalysisPicStreamPush(showinfo:ShowDataInfo,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
         if(null != err){
             console.log("grpc err=%s",err.message)
         }
-        const delay = 1000/this.FPS - (Date.now() - showinfo.begintime);
-        setTimeout(this.processVideo.bind(this), delay);
+
+        // const delay = 1000/this.FPS - (Date.now() - showinfo.begintime);
+        // setTimeout(this.processVideo.bind(this), delay);
     }
     Send_AnalysisPicStreamPush(showinfo:ShowDataInfo,req:CactusPb.AnalysisPicStreamPushReq){
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
         this.ShowDataInfoArr.push(showinfo);
         this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.Rsp_AnalysisPicStreamPush.bind(this,showinfo))
+    }
+
+    TryRsp_AnalysisPicStreamPush(showinfo:ShowDataInfo,err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPushRsp){
+        if(null != err){
+            console.log("grpc err=%s",err.message)
+            return
+        }
+        if(null != showinfo){
+            console.log("grpc costime=%d",Date.now()-showinfo.beginGrpcTime);
+        }   
+        if(this.SendDataInfoArr.length >0 && true == this.SendDataInfoArr[0].isJpg){
+            let showinfo = this.SendDataInfoArr.shift();
+            showinfo.beginGrpcTime = Date.now()
+            this.TrySend_AnalysisPicStreamPush(showinfo);
+        }else{
+            let delay = 1000/this.FPS;
+            setTimeout(this.TryRsp_AnalysisPicStreamPush.bind(this,null,null), delay);
+        }
+        
+    }
+    TrySend_AnalysisPicStreamPush(showinfo:ShowDataInfo){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        let req = new CactusPb.AnalysisPicStreamPushReq();
+        req.setChannelName(this.channelname);
+        req.setFrameId(showinfo.frameid);
+        req.setPicdata(showinfo.dataArray);
+        this.userdata.cactusClient.analysisPicStreamPush(req,metadata,this.TryRsp_AnalysisPicStreamPush.bind(this,showinfo))
     }
 
 
@@ -594,16 +632,20 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         //     dst_mat = read_mat;
         // }
         // dst_mat = read_mat;
+        console.log("toblob time=%d",Date.now()- showinfo.beginEncodeTime);
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
-              let array = new Uint8Array(pic as ArrayBuffer, 0);       
-              let req = new CactusPb.AnalysisPicStreamPushReq();
-              req.setChannelName(this.channelname);
-              req.setFrameId(showinfo.frameid);
-              req.setPicdata(array);
-            //   console.log("begin Send_AnalysisPicStream")
-              this.Send_AnalysisPicStreamPush(showinfo,req);
+              let array = new Uint8Array(pic as ArrayBuffer, 0);   
+              showinfo.dataArray = array;
+              showinfo.isJpg = true; 
+              console.log("decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
+            //   let req = new CactusPb.AnalysisPicStreamPushReq();
+            //   req.setChannelName(this.channelname);
+            //   req.setFrameId(showinfo.frameid);
+            //   req.setPicdata(array);
+            // //   console.log("begin Send_AnalysisPicStream")
+            //   this.Send_AnalysisPicStreamPush(showinfo,req);
             }else{
             }
           }
@@ -633,8 +675,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
       let srcheight = this.video.videoHeight;
       let towidth = srcwidth;
       let toheight = srcheight;
-      if(srcheight > 720){
-          let ratio = 720/srcheight;
+      if(srcheight > this.diyheight){
+          let ratio = this.diyheight/srcheight;
           towidth = srcwidth *ratio;
           toheight = srcheight * ratio;
       }
@@ -671,8 +713,11 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             tmpcanvas.height = this.height;
             tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
             let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
+            showinfo.beginEncodeTime = Date.now();
+            this.SendDataInfoArr.push(showinfo);
+            this.ShowDataInfoArr.push(showinfo);
             tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
-            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1);
+            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
             this.frameid++;
         }
 
@@ -689,8 +734,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
       
 
 
-        // const delay = 1000/this.FPS - (Date.now() - begin);
-        // setTimeout(this.processVideo.bind(this), delay);
+        const delay = 1000/this.FPS - (Date.now() - begin);
+        setTimeout(this.processVideo.bind(this), delay);
     }
 
     public render(){
