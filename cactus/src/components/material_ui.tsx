@@ -427,6 +427,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable is_cactus_start:boolean;
     @observable video:HTMLVideoElement;
     @observable resolution_detect:boolean;
+    @observable extract_frame_num:number;
     frameid:number
     diyheight:number;
     userdata:CactusData;
@@ -440,6 +441,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.ShowDataInfoArr=[];
         this.SendDataInfoArr=[];
         this.is_cactus_start = false;
+        this.extract_frame_num = 0;
         this.track_groupid ="webtrackgroupid";
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
@@ -447,7 +449,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.resolution_detect = false;
         this.width = 320;
         this.height =240;
-        this.diyheight= 320;
+        this.diyheight= 720;
         this.FPS = 30;
         this.frameid =0;
         this.userdata = props.cactusdata;
@@ -455,7 +457,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
         this.outputcanvas = document.getElementById(this.outputcanvasId) as HTMLCanvasElement;
 
-
+        this.Send_AnalysisPicStreamStart();
         
         console.info("AnalysisPicStreamShow 20.48")
 
@@ -546,12 +548,19 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             return;
         }
         // let showdatainfo = this.ShowDataInfoArr.pop();
-        let showdatainfo = this.ShowDataInfoArr.shift();
-        let getframeid = rsp.getFrameId();
-        if(getframeid != showdatainfo.frameid){
-            console.error("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
-            return;
+        let bGet = false;
+        let   showdatainfo:ShowDataInfo;
+        while(false == bGet){
+          showdatainfo = this.ShowDataInfoArr.shift();
+          let getframeid = rsp.getFrameId();
+          if(getframeid != showdatainfo.frameid){
+              console.info("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
+              this.outputcanvas.getContext('2d').drawImage(showdatainfo.dataCanvas, 0, 0, this.width,this.height)
+              continue;
+          }
+          bGet = true;
         }
+
 
         let maxwidth = showdatainfo.dataCanvas.width
         let maxheight = showdatainfo.dataCanvas.height;
@@ -657,7 +666,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
 
 
     onviedoplay(){
-        console.log('playing...');        
+        console.log('playing...');
+        this.is_cactus_start = true;        
         setTimeout(this.processVideo.bind(this), 0);
     }
 
@@ -688,9 +698,30 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
       this.outputcanvas.height = toheight;
       this.resolution_detect = true;
 
-      this.Send_AnalysisPicStreamStart();
+      
       console.info("srcwidth=%d,srcheight=%d,towidth=%d,toheight=%d",srcwidth,srcheight,towidth,toheight);
       
+    }
+
+    onPause(event: React.SyntheticEvent<HTMLVideoElement, Event>){
+      console.info("player pause");
+      this.is_cactus_start = false;
+    }
+  
+    onEnd(event: React.SyntheticEvent<HTMLVideoElement, Event>){
+      console.info("player end");
+      this.is_cactus_start = false;
+    }
+
+    onExtractFrameNumChange(event: React.ChangeEvent<HTMLSelectElement>){
+      this.extract_frame_num = Number(event.target.value.trim());
+      console.log("select extract frame num value=%d",this.extract_frame_num);
+  
+    }
+    onDiyHeightChange(event: React.ChangeEvent<HTMLSelectElement>){
+      this.diyheight = Number(event.target.value.trim());
+      console.log("select diyheight  value=%d",this.diyheight);
+  
     }
 
     processVideo(){
@@ -706,20 +737,28 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
 
 
 
-        if(this.is_cactus_start && this.resolution_detect){
-
-            let tmpcanvas = document.createElement("canvas");
-            tmpcanvas.width = this.width;
-            tmpcanvas.height = this.height;
-            tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
-            let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
-            showinfo.beginEncodeTime = Date.now();
-            this.SendDataInfoArr.push(showinfo);
-            this.ShowDataInfoArr.push(showinfo);
-            tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
-            // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
-            this.frameid++;
+        if(false == this.is_cactus_start || false ==  this.resolution_detect){
+          console.info("is_cactus_start=%d,resolution_detect=%d",this.is_cactus_start,this.resolution_detect);
+          return;
         }
+
+
+        
+        let tmpcanvas = document.createElement("canvas");
+        tmpcanvas.width = this.width;
+        tmpcanvas.height = this.height;
+        tmpcanvas.getContext('2d').drawImage(this.video, 0, 0, this.width,this.height);
+        let showinfo = new ShowDataInfo(begin,this.frameid,tmpcanvas);
+        showinfo.beginEncodeTime = Date.now();
+        
+        this.ShowDataInfoArr.push(showinfo);
+        if(0 == this.frameid%(this.extract_frame_num+1)){
+          this.SendDataInfoArr.push(showinfo);
+          tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
+        }
+        
+        // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
+        this.frameid++;
 
         // let src_Mat = new cv.Mat(this.height, this.width, cv.CV_8UC4);
         // this.cap_video.read(src_Mat)
@@ -743,8 +782,26 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
           return (
             <div>
                 <p>this is ananaSisPicStream</p>
-                <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} className='ImageShowArg' ></input>
-                <video id={this.videoid} src={this.chosefileurl}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
+                <div className='ImageShowArg'> 
+                  <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)}  ></input>
+                  <label>extract_frame_num</label>
+                  <select id="extract_frame_num"  name="extract_frame_num" onChange={this.onExtractFrameNumChange.bind(this)} >
+                    <option ></option>
+                    <option >0</option>
+                    <option >1</option>
+                    <option >2</option>
+                    <option >3</option>
+                  </select>
+                  <label>maxheight</label>
+                  <select id="maxheight" name="maxheight" onChange={this.onDiyHeightChange.bind(this)}>
+                    <option ></option>
+                    <option >360</option>
+                    <option >720</option>
+                    <option >1080</option>
+                  </select>
+                </div>
+                
+                <video id={this.videoid} src={this.chosefileurl} onPause={this.onPause.bind(this)}  onEnded={this.onEnd.bind(this)}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
                 <canvas id={this.outputcanvasId}   ></canvas>
             </div>
           )
