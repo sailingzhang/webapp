@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/sailingzhang/webapp#readme",
   "devDependencies": {
+    "@types/browser-image-compression": "^1.0.1",
     "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
     "source-map-loader": "^0.2.4",
@@ -33,8 +34,10 @@
     "@material-ui/core": "^4.9.7",
     "@material-ui/icons": "^4.9.1",
     "@types/google-protobuf": "^3.7.2",
+    "browser-image-compression": "^1.0.11",
     "google-protobuf": "^3.11.4",
     "grpc-web": "^1.0.7",
+    "image-conversion": "^2.1.1",
     "material-ui": "^0.20.2",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",

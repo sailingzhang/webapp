@@ -21,6 +21,9 @@ import IconButton from '@material-ui/core/IconButton';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import * as grpcWeb from 'grpc-web'
 
+import * as  imageCompression from "browser-image-compression";
+import * as imageConversion from 'image-conversion';
+
 import * as CactusPb from "../proto_code/cactus_pb"
 
 // / <reference path ="typetest.d.ts" /> 
@@ -629,6 +632,53 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.userdata.cactusClient.analysisPicStreamPop(req,metadata,this.Rsp_AnalysisPicStreamPop.bind(this));
         
     }
+
+    imageCompression_tojpg(canvas: HTMLCanvasElement){
+      let options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      }
+
+      imageCompression.canvasToFile(canvas,"jpeg","test",0).then(
+        function (arg:any) {
+          console.log("imageCompression ok");
+        }
+      )
+      // imageCompression(imageFile, options)
+      //   .then(function (compressedFile) {
+      //     console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      //     console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+    
+      //     return uploadToServer(compressedFile); // write your own logic
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error.message);
+      //   });
+    }
+
+    imageConversion_tojpg(showinfo:ShowDataInfo,canv:HTMLCanvasElement){
+      imageConversion.canvastoFile(canv,0.9).then(
+        function (blob:Blob) {
+          // console.log("imageConversion_tojpg");
+          let onloadfun = (e:ProgressEvent<FileReader>) => {
+            const pic = e.target.result;
+            if(pic instanceof ArrayBuffer){
+              let array = new Uint8Array(pic as ArrayBuffer, 0);   
+              showinfo.dataArray = array;
+              showinfo.isJpg = true; 
+              console.log("imageConversion_tojpg decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
+            }else{
+            }
+          }
+
+        let  reader = new FileReader()
+        reader.onload= onloadfun;
+        reader.readAsArrayBuffer(blob)
+        }
+      )
+    }
+
     getBlob(showinfo:ShowDataInfo,blob:Blob){
         // let dst_mat = new cv.Mat();
         let maxwidth = showinfo.dataCanvas.width;
@@ -754,7 +804,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.ShowDataInfoArr.push(showinfo);
         if(0 == this.frameid%(this.extract_frame_num+1)){
           this.SendDataInfoArr.push(showinfo);
-          tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 1.0);
+          // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 0.9);
+          // this.imageCompression_tojpg(tmpcanvas);
+          this.imageConversion_tojpg(showinfo,tmpcanvas);
+          
         }
         
         // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/png", 1.0);
