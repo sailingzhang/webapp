@@ -21,8 +21,8 @@ import IconButton from '@material-ui/core/IconButton';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import * as grpcWeb from 'grpc-web'
 
-import * as  imageCompression from "browser-image-compression";
-import * as imageConversion from 'image-conversion';
+// import * as  imageCompression from "browser-image-compression";
+// import * as imageConversion from 'image-conversion';
 
 import * as CactusPb from "../proto_code/cactus_pb"
 
@@ -444,7 +444,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.ShowDataInfoArr=[];
         this.SendDataInfoArr=[];
         this.is_cactus_start = false;
-        this.extract_frame_num = 0;
+        this.extract_frame_num = 1;
         this.track_groupid ="webtrackgroupid";
         this.videoid="mytestvideoid";
         this.outputcanvasId="outputid";
@@ -523,7 +523,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             return
         }
         if(null != showinfo){
-            console.log("grpc costime=%d",Date.now()-showinfo.beginGrpcTime);
+            // console.log("grpc costime=%d",Date.now()-showinfo.beginGrpcTime);
         }   
         if(this.SendDataInfoArr.length >0 && true == this.SendDataInfoArr[0].isJpg){
             let showinfo = this.SendDataInfoArr.shift();
@@ -557,7 +557,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
           showdatainfo = this.ShowDataInfoArr.shift();
           let getframeid = rsp.getFrameId();
           if(getframeid != showdatainfo.frameid){
-              console.info("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
+            //   console.info("showinfoframeid=%d,getframeid=%d",showdatainfo.frameid,getframeid);
               this.outputcanvas.getContext('2d').drawImage(showdatainfo.dataCanvas, 0, 0, this.width,this.height)
               continue;
           }
@@ -633,51 +633,51 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         
     }
 
-    imageCompression_tojpg(canvas: HTMLCanvasElement){
-      let options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true
-      }
+    // imageCompression_tojpg(canvas: HTMLCanvasElement){
+    //   let options = {
+    //     maxSizeMB: 1,
+    //     maxWidthOrHeight: 1920,
+    //     useWebWorker: true
+    //   }
 
-      imageCompression.canvasToFile(canvas,"jpeg","test",0).then(
-        function (arg:any) {
-          console.log("imageCompression ok");
-        }
-      )
-      // imageCompression(imageFile, options)
-      //   .then(function (compressedFile) {
-      //     console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-      //     console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+    //   imageCompression.canvasToFile(canvas,"jpeg","test",0).then(
+    //     function (arg:any) {
+    //       console.log("imageCompression ok");
+    //     }
+    //   )
+    //   // imageCompression(imageFile, options)
+    //   //   .then(function (compressedFile) {
+    //   //     console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+    //   //     console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
     
-      //     return uploadToServer(compressedFile); // write your own logic
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error.message);
-      //   });
-    }
+    //   //     return uploadToServer(compressedFile); // write your own logic
+    //   //   })
+    //   //   .catch(function (error) {
+    //   //     console.log(error.message);
+    //   //   });
+    // }
 
-    imageConversion_tojpg(showinfo:ShowDataInfo,canv:HTMLCanvasElement){
-      imageConversion.canvastoFile(canv,0.9).then(
-        function (blob:Blob) {
-          // console.log("imageConversion_tojpg");
-          let onloadfun = (e:ProgressEvent<FileReader>) => {
-            const pic = e.target.result;
-            if(pic instanceof ArrayBuffer){
-              let array = new Uint8Array(pic as ArrayBuffer, 0);   
-              showinfo.dataArray = array;
-              showinfo.isJpg = true; 
-              console.log("imageConversion_tojpg decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
-            }else{
-            }
-          }
+    // imageConversion_tojpg(showinfo:ShowDataInfo,canv:HTMLCanvasElement){
+    //   imageConversion.canvastoFile(canv,0.9).then(
+    //     function (blob:Blob) {
+    //       // console.log("imageConversion_tojpg");
+    //       let onloadfun = (e:ProgressEvent<FileReader>) => {
+    //         const pic = e.target.result;
+    //         if(pic instanceof ArrayBuffer){
+    //           let array = new Uint8Array(pic as ArrayBuffer, 0);   
+    //           showinfo.dataArray = array;
+    //           showinfo.isJpg = true; 
+    //           console.log("imageConversion_tojpg decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
+    //         }else{
+    //         }
+    //       }
 
-        let  reader = new FileReader()
-        reader.onload= onloadfun;
-        reader.readAsArrayBuffer(blob)
-        }
-      )
-    }
+    //     let  reader = new FileReader()
+    //     reader.onload= onloadfun;
+    //     reader.readAsArrayBuffer(blob)
+    //     }
+    //   )
+    // }
 
     getBlob(showinfo:ShowDataInfo,blob:Blob){
         // let dst_mat = new cv.Mat();
@@ -691,20 +691,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         //     dst_mat = read_mat;
         // }
         // dst_mat = read_mat;
-        console.log("toblob time=%d",Date.now()- showinfo.beginEncodeTime);
+        // console.log("toblob time=%d",Date.now()- showinfo.beginEncodeTime);
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
               let array = new Uint8Array(pic as ArrayBuffer, 0);   
               showinfo.dataArray = array;
               showinfo.isJpg = true; 
-              console.log("decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
-            //   let req = new CactusPb.AnalysisPicStreamPushReq();
-            //   req.setChannelName(this.channelname);
-            //   req.setFrameId(showinfo.frameid);
-            //   req.setPicdata(array);
-            // //   console.log("begin Send_AnalysisPicStream")
-            //   this.Send_AnalysisPicStreamPush(showinfo,req);
+            //   console.log("decode cost time=%d",Date.now()-showinfo.beginEncodeTime);
             }else{
             }
           }
@@ -804,9 +798,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.ShowDataInfoArr.push(showinfo);
         if(0 == this.frameid%(this.extract_frame_num+1)){
           this.SendDataInfoArr.push(showinfo);
-          // tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 0.9);
+          tmpcanvas.toBlob(this.getBlob.bind(this,showinfo),"image/jpeg", 0.9);
           // this.imageCompression_tojpg(tmpcanvas);
-          this.imageConversion_tojpg(showinfo,tmpcanvas);
+        //   this.imageConversion_tojpg(showinfo,tmpcanvas);
           
         }
         
@@ -839,17 +833,15 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                   <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)}  ></input>
                   <label>extract_frame_num</label>
                   <select id="extract_frame_num"  name="extract_frame_num" onChange={this.onExtractFrameNumChange.bind(this)} >
-                    <option ></option>
                     <option >0</option>
-                    <option >1</option>
+                    <option selected>1</option>
                     <option >2</option>
                     <option >3</option>
                   </select>
                   <label>maxheight</label>
                   <select id="maxheight" name="maxheight" onChange={this.onDiyHeightChange.bind(this)}>
-                    <option ></option>
                     <option >360</option>
-                    <option >720</option>
+                    <option selected >720</option>
                     <option >1080</option>
                   </select>
                 </div>
@@ -977,17 +969,15 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.tmpCanvas.width = srcImg.width;
         this.tmpCanvas.height = srcImg.height;
         this.tmpCanvas.getContext('2d').drawImage(srcImg, 0, 0);
-        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 1.0);
+        this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
         // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
+
+        // this.imageConversion_tojpg(this.tmpCanvas);
 
     }
 
     // getarrbuf()
     getBlob(blob:Blob){
-        // let p_buff = blob.arrayBuffer()
-        // p_buff.then()
-
-
         let onloadfun = (e:ProgressEvent<FileReader>) => {
             const pic = e.target.result;
             if(pic instanceof ArrayBuffer){
@@ -1006,6 +996,35 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         reader.onload= onloadfun;
         reader.readAsArrayBuffer(blob)
     }
+
+
+
+    // imageConversion_tojpg(canv:HTMLCanvasElement){
+    //     let sendfun = this.Send_AnalysisPic.bind(this);
+    //     imageConversion.canvastoFile(canv,1).then(
+    //       function (blob:Blob) {
+    //         // console.log("imageConversion_tojpg");
+    //         let onloadfun = (e:ProgressEvent<FileReader>) => {
+    //           const pic = e.target.result;
+    //           if(pic instanceof ArrayBuffer){
+    //             let array = new Uint8Array(pic as ArrayBuffer, 0);   
+    //             let req = new CactusPb.AnalysisPicReq();
+    //             req.setId(11);
+    //             req.setGroupid("webtest");
+    //             req.setPicdata(array);
+    //             console.log("imageConversion_tojpg begin Send_AnalysisPic")
+    //             // this.Send_AnalysisPic(req);
+    //             sendfun(req);
+    //           }else{
+    //           }
+    //         }
+  
+    //       let  reader = new FileReader()
+    //       reader.onload= onloadfun;
+    //       reader.readAsArrayBuffer(blob)
+    //       }
+    //     )
+    //   }
 
     onChange(evt:React.ChangeEvent<HTMLInputElement>){
         this.toCanvas= document.getElementById(this.tocanvasid) as HTMLCanvasElement;
