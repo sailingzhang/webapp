@@ -1153,7 +1153,7 @@ export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
       )
     }else{
       return(
-        <div className="ImageShowArg">
+        <div className="MulImageShowArg">
           <img src={this.props.showinfo.img} className="full"  />
           {this.props.showinfo.faceinfoarr.map(faceinfo =>(
                 <div className="react_view" style={{top:this.topercent(faceinfo.top),left:this.topercent(faceinfo.left),width:this.topercent(faceinfo.width),height:this.topercent(faceinfo.height)}} >
@@ -1217,7 +1217,7 @@ export  class  ImageShow_MFS extends React.Component<ImageShowArg> {
       )
     }else{
       return(
-        <div className="ImageShowArg">
+        <div className="MulImageShowArg">
           <img src={this.props.showinfo.img} className="full"  />
           {this.props.showinfo.faceinfoarr.map(faceinfo =>(
                 <div className="react_view" style={{top:this.topercent(faceinfo.top),left:this.topercent(faceinfo.left),width:this.topercent(faceinfo.width),height:this.topercent(faceinfo.height)}} >

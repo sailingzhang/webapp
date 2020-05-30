@@ -332,6 +332,17 @@ html{
     height: 30px;
 }
 
+.MulImageShowArg{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    position: relative;
+    background-color: blueviolet;
+    width: 400px;
+    height: 400px;
+}
+
 .react_view{
     display: -webkit-flex;
     display: flex;
