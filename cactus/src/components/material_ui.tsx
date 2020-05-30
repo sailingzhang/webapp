@@ -455,6 +455,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.diyheight= 720;
         this.FPS = 30;
         this.frameid =0;
+        this.channelname ="webtestchannel";
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
@@ -480,7 +481,6 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.is_cactus_start = false;
         let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
         let req = new CactusPb.AnalysisPicStreamStartReq();
-        this.channelname="webchannetest" + new Date().toLocaleString();
         req.setChannelName(this.channelname);
         req.setFaceTrackGroupid(this.track_groupid);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
