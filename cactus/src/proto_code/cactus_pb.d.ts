@@ -108,6 +108,26 @@ export namespace VehicleInfo {
   }
 }
 
+export class PedestrianInfo extends jspb.Message {
+  getPedestrianpos(): Position | undefined;
+  setPedestrianpos(value?: Position): void;
+  hasPedestrianpos(): boolean;
+  clearPedestrianpos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PedestrianInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: PedestrianInfo): PedestrianInfo.AsObject;
+  static serializeBinaryToWriter(message: PedestrianInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PedestrianInfo;
+  static deserializeBinaryFromReader(message: PedestrianInfo, reader: jspb.BinaryReader): PedestrianInfo;
+}
+
+export namespace PedestrianInfo {
+  export type AsObject = {
+    pedestrianpos?: Position.AsObject,
+  }
+}
+
 export class AnalysisPicReq extends jspb.Message {
   getId(): number;
   setId(value: number): void;
@@ -150,6 +170,11 @@ export class AnalysisPicRsp extends jspb.Message {
   clearVelicleInfosList(): void;
   addVelicleInfos(value?: VehicleInfo, index?: number): VehicleInfo;
 
+  getPedestrianInfosList(): Array<PedestrianInfo>;
+  setPedestrianInfosList(value: Array<PedestrianInfo>): void;
+  clearPedestrianInfosList(): void;
+  addPedestrianInfos(value?: PedestrianInfo, index?: number): PedestrianInfo;
+
   getError(): string;
   setError(value: string): void;
 
@@ -166,6 +191,7 @@ export namespace AnalysisPicRsp {
     id: number,
     personInfosList: Array<PersonInfo.AsObject>,
     velicleInfosList: Array<VehicleInfo.AsObject>,
+    pedestrianInfosList: Array<PedestrianInfo.AsObject>,
     error: string,
   }
 }
@@ -203,9 +229,6 @@ export namespace FaceTrack {
 }
 
 export class VehicleTrack extends jspb.Message {
-  getPlateId(): string;
-  setPlateId(value: string): void;
-
   getTrackingId(): string;
   setTrackingId(value: string): void;
 
@@ -227,7 +250,66 @@ export class VehicleTrack extends jspb.Message {
 
 export namespace VehicleTrack {
   export type AsObject = {
+    trackingId: string,
+    status: TrackStatus,
+    pos?: Position.AsObject,
+  }
+}
+
+export class LicensePlateTrack extends jspb.Message {
+  getPlateId(): string;
+  setPlateId(value: string): void;
+
+  getTrackingId(): string;
+  setTrackingId(value: string): void;
+
+  getStatus(): TrackStatus;
+  setStatus(value: TrackStatus): void;
+
+  getPos(): Position | undefined;
+  setPos(value?: Position): void;
+  hasPos(): boolean;
+  clearPos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LicensePlateTrack.AsObject;
+  static toObject(includeInstance: boolean, msg: LicensePlateTrack): LicensePlateTrack.AsObject;
+  static serializeBinaryToWriter(message: LicensePlateTrack, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LicensePlateTrack;
+  static deserializeBinaryFromReader(message: LicensePlateTrack, reader: jspb.BinaryReader): LicensePlateTrack;
+}
+
+export namespace LicensePlateTrack {
+  export type AsObject = {
     plateId: string,
+    trackingId: string,
+    status: TrackStatus,
+    pos?: Position.AsObject,
+  }
+}
+
+export class PedestrianTrack extends jspb.Message {
+  getTrackingId(): string;
+  setTrackingId(value: string): void;
+
+  getStatus(): TrackStatus;
+  setStatus(value: TrackStatus): void;
+
+  getPos(): Position | undefined;
+  setPos(value?: Position): void;
+  hasPos(): boolean;
+  clearPos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PedestrianTrack.AsObject;
+  static toObject(includeInstance: boolean, msg: PedestrianTrack): PedestrianTrack.AsObject;
+  static serializeBinaryToWriter(message: PedestrianTrack, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PedestrianTrack;
+  static deserializeBinaryFromReader(message: PedestrianTrack, reader: jspb.BinaryReader): PedestrianTrack;
+}
+
+export namespace PedestrianTrack {
+  export type AsObject = {
     trackingId: string,
     status: TrackStatus,
     pos?: Position.AsObject,
@@ -358,6 +440,16 @@ export class AnalysisPicStreamPopRsp extends jspb.Message {
   clearVehicleTracksList(): void;
   addVehicleTracks(value?: VehicleTrack, index?: number): VehicleTrack;
 
+  getLicenseplateTracksList(): Array<LicensePlateTrack>;
+  setLicenseplateTracksList(value: Array<LicensePlateTrack>): void;
+  clearLicenseplateTracksList(): void;
+  addLicenseplateTracks(value?: LicensePlateTrack, index?: number): LicensePlateTrack;
+
+  getPedestrianTracksList(): Array<PedestrianTrack>;
+  setPedestrianTracksList(value: Array<PedestrianTrack>): void;
+  clearPedestrianTracksList(): void;
+  addPedestrianTracks(value?: PedestrianTrack, index?: number): PedestrianTrack;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AnalysisPicStreamPopRsp.AsObject;
   static toObject(includeInstance: boolean, msg: AnalysisPicStreamPopRsp): AnalysisPicStreamPopRsp.AsObject;
@@ -373,6 +465,8 @@ export namespace AnalysisPicStreamPopRsp {
     frameId: number,
     faceTracksList: Array<FaceTrack.AsObject>,
     vehicleTracksList: Array<VehicleTrack.AsObject>,
+    licenseplateTracksList: Array<LicensePlateTrack.AsObject>,
+    pedestrianTracksList: Array<PedestrianTrack.AsObject>,
   }
 }
 

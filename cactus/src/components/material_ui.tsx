@@ -568,6 +568,8 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         let maxwidth = showdatainfo.dataCanvas.width
         let maxheight = showdatainfo.dataCanvas.height;
         let vehicleList = rsp.getVehicleTracksList();
+        let plateList = rsp.getLicenseplateTracksList();
+        let pedestrianList = rsp.getPedestrianTracksList();
         let faceList = rsp.getFaceTracksList();
         let canvas_context = showdatainfo.dataCanvas.getContext('2d');
         // canvas_context.closePath();
@@ -578,9 +580,22 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         for(let i = 0;i < vehicleList.length;i++){
             let vehicle = vehicleList[i];
             let pos = vehicle.getPos();
-            let plateid = vehicle.getPlateId();
             let trackid = vehicle.getTrackingId();
-
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            canvas_context.strokeRect(left,top,width,height);
+            if("" != trackid){
+                // cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(trackid,left,top)
+            }
+        }
+        for(let i = 0;i < plateList.length;i++){
+            let plate = plateList[i];
+            let pos = plate.getPos();
+            let plateid = plate.getPlateId();
+            let trackid = plate.getTrackingId();
 
             let left = maxwidth* pos.getLeft();
             let top =  maxheight* pos.getTop();
@@ -592,6 +607,20 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                 // cv.putText(showdatainfo.dataMat, plateid, end_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
                 canvas_context.fillText(plateid,left+width,top+height);
             }
+            if("" != trackid){
+                // cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
+                canvas_context.fillText(trackid,left,top)
+            }
+        }
+        for(let i = 0;i < pedestrianList.length;i++){
+            let pedestrian = pedestrianList[i];
+            let pos = pedestrian.getPos();
+            let trackid = pedestrian.getTrackingId();
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            canvas_context.strokeRect(left,top,width,height);
             if("" != trackid){
                 // cv.putText(showdatainfo.dataMat, trackid, start_point, cv.FONT_HERSHEY_SIMPLEX, 1.2, new cv.Scalar(255, 255, 255), 2)
                 canvas_context.fillText(trackid,left,top)
@@ -899,6 +928,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         // let tocanvas = document.getElementById(this.tocanvasid); 
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
+        let pedestrianInfoList = response.getPedestrianInfosList();
 
         console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
 
@@ -926,7 +956,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let width = maxwidth * pos.getWidth();
             let height = maxheight * pos.getHeight();
             canvas_context.strokeRect(left,top,width,height);
-            canvas_context.fillText(personinfo.getPersonid(),left,top);
+            canvas_context.fillText("pid="+personinfo.getPersonid(),left,top);
 
         }
         for(let i =0; i<vehicleinfolist.length;i++){
@@ -940,6 +970,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 let width = maxwidth * pos.getWidth();
                 let height = maxheight * pos.getHeight();
                 canvas_context.strokeRect(left,top,width,height);
+                canvas_context.fillText("vehicle",left,top);
 
             }
             if(vehicleinfo.hasLicenceplate()){
@@ -952,6 +983,16 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 canvas_context.strokeRect(left,top,width,height);
                 canvas_context.fillText(licenceplate.getLicenceid(),left+width,top+height);             
             }
+        }
+        for(let i = 0 ;i <pedestrianInfoList.length;i++){
+            let pedestrianInfo =  pedestrianInfoList[i]
+            let pos =  pedestrianInfo.getPedestrianpos();
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            canvas_context.strokeRect(left,top,width,height);
+            canvas_context.fillText("pedestrian",left,top);
         }
 
 
