@@ -431,6 +431,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable video:HTMLVideoElement;
     @observable resolution_detect:boolean;
     @observable extract_frame_num:number;
+    @observable video_loop:boolean;
     frameid:number
     diyheight:number;
     userdata:CactusData;
@@ -456,6 +457,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.FPS = 30;
         this.frameid =0;
         this.channelname ="webtestchannel";
+        this.video_loop = false;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
@@ -794,8 +796,18 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     onDiyHeightChange(event: React.ChangeEvent<HTMLSelectElement>){
       this.diyheight = Number(event.target.value.trim());
       console.log("select diyheight  value=%d",this.diyheight);
-  
     }
+
+    onVideoLoopChange(event: React.ChangeEvent<HTMLSelectElement>){
+      let loop_str = event.target.value.trim()
+      if("yes" == loop_str){
+        this.video_loop = true;
+      }else{
+        this.video_loop = false;
+      }
+      console.info("video loop,strvalue=%s,value=%s",loop_str,String(this.video_loop));
+    }
+
 
     processVideo(){
         // console.log("processing");
@@ -873,9 +885,14 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                     <option selected >720</option>
                     <option >1080</option>
                   </select>
+                  <label>video_loop</label>
+                  <select id="video_loop" name="video_loop" onChange={this.onVideoLoopChange.bind(this)}>
+                    <option >yes</option>
+                    <option selected >no</option>
+                  </select>
                 </div>
                 
-                <video id={this.videoid} src={this.chosefileurl} onPause={this.onPause.bind(this)}  onEnded={this.onEnd.bind(this)}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
+                <video id={this.videoid} src={this.chosefileurl} loop={this.video_loop}  onPause={this.onPause.bind(this)}  onEnded={this.onEnd.bind(this)}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
                 <canvas id={this.outputcanvasId}   ></canvas>
             </div>
           )
