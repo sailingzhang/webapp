@@ -14,6 +14,14 @@ html{
     visibility: visible;
   }
 
+
+.front0{
+    font-size: 12px;
+    text-align: left;
+    text-indent: 2em;
+    line-height: 1.2em;
+}
+
 .flex-container {
     display: -webkit-flex;
     display: flex;

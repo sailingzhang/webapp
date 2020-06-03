@@ -73,14 +73,17 @@ export class Head extends React.Component<CactusArg>{
     userdata:CactusData;
     constructor(pros:CactusArg){
         super(pros);
-        this.userdata = pros.cactusdata
-        this.userdata.helloword="fff";
+        this.userdata = pros.cactusdata;
     }
     public render(){
          return(
-            <p>
-                {this.props.cactusdata.helloword}
-            </p>
+            <div className="front0">
+                <p/>Hello, World! 
+                <p/>Function: 1, Face Detection, Face Recognition, Face Tracking. 2, Pedestrian Detection, Pedestrian Tracking. 3, Vehicle Detection, Vehicle Tracking. 4, License Plate Detection,  License Plate Recognition,   License Plate Tracking.  
+                (License can be Detected only when Front-facing Cars )
+                <p/>Contact:Email: sailingzhangflying@outlook.com  Tel: 18321644675
+                <p/>Any questions and requirements, please contact me.  
+            </div>
          )
      }
  }
@@ -178,12 +181,6 @@ export class UserProfileList extends React.Component<CactusArg,UserProfileListSt
                   <ListItemText inset primary="Detect And Classify(MFK)" onClick={this.onMFKClick.bind(this)}/>
                   </ListItem> 
 
-                  <ListItem button className="test">
-                  <ListItemIcon>
-                  <StarBorder />
-                  </ListItemIcon>
-                  <ListItemText inset primary="Tracking" onClick={this.onTrackingClick.bind(this)} />
-                  </ListItem>
 
                 </List>
                 </Collapse>
@@ -869,9 +866,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         console.log("begin render stream canvas");
           return (
             <div>
-                <p>this is ananaSisPicStream</p>
+                <p>Video Analysis</p>
                 <div className='ImageShowArg'> 
-                  <input type="file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)}  ></input>
+                  <input type="file" name="choose video file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} accept=".mp4,.MP4"  ></input>
                   <label>extract_frame_num</label>
                   <select id="extract_frame_num"  name="extract_frame_num" onChange={this.onExtractFrameNumChange.bind(this)} >
                     <option >0</option>
@@ -1144,13 +1141,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
       console.log("begin render canvas");
 
         return (
-          // <p>empty image</p>
           <div>
-            <input type="file"  name="choose file"  onChange={this.onChange.bind(this)}  className='ImageShowArg' />
-            {/* <input type="text" name="input url"   onChange={this.ontextChange.bind(this)} width='1000' height='40' />
-            <input type="button"  onClick={this.onSubmit2.bind(this)}  width='40' height='40'/> */}
-
-            {/* <img id={this.toimgid} src={this.img} /> */}
+            <p>Image Analysis</p>
+            <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}  className='ImageShowArg' accept="image/*" />
             <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
           </div>
         )
@@ -1207,7 +1200,7 @@ export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
     if("" == this.props.showinfo.img){
       return (
         // <p>empty image</p>
-        <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" />
+        <input type="file" name="choose image file" onChange={this.onChange.bind(this)} className="ImageShowArg" accept="image/*" />
       )
     }else{
       return(
@@ -1271,7 +1264,7 @@ export  class  ImageShow_MFS extends React.Component<ImageShowArg> {
     if("" == this.props.showinfo.img){
       return (
         // <p>empty image</p>
-        <input type="file" onChange={this.onChange.bind(this)} className="ImageShowArg" />
+        <input type="file" name="choose image file" onChange={this.onChange.bind(this)} className="ImageShowArg" accept="image/*" />
       )
     }else{
       return(
