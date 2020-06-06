@@ -429,6 +429,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable resolution_detect:boolean;
     @observable extract_frame_num:number;
     @observable video_loop:boolean;
+    @observable enable_pedestrian:boolean;
+    @observable enable_face:boolean;
+    @observable enable_vehicle:boolean;
+    @observable enable_plate:boolean;
     frameid:number
     diyheight:number;
     userdata:CactusData;
@@ -455,6 +459,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.frameid =0;
         this.channelname ="webtestchannel";
         this.video_loop = false;
+        this.enable_pedestrian = true;
+        this.enable_face = true;
+        this.enable_vehicle = true;
+        this.enable_plate = true;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
@@ -475,6 +483,21 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     }
 
 
+    Rsp_configure(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
+
+    }
+    Send_Configure(){
+        let metadata = {'custom-header-1': 'value1','Access-Control-Allow-Origin': '*'}
+        let req = new CactusPb.AnalysisPicStreamStartReq();
+        req.setChannelName(this.channelname);
+        req.setFaceTrackGroupid(this.track_groupid);
+        req.setEnablePedestrian(this.enable_pedestrian);
+        req.setEnableFace(this.enable_face);
+        req.setEnableVehicle(this.enable_vehicle);
+        req.setEnablePlate(this.enable_plate);
+        this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_configure.bind(this));
+        console.info("Send_Configure ,chnannlename=%s,en_pedestrian=%d,en_face=%d,en_vehicle=%d,en_plate=%d",this.channelname,this.enable_pedestrian,this.enable_face,this.enable_vehicle,this.enable_plate)       
+    }
     
     Send_AnalysisPicStreamStart(){
         this.is_cactus_start = false;
@@ -482,8 +505,12 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         let req = new CactusPb.AnalysisPicStreamStartReq();
         req.setChannelName(this.channelname);
         req.setFaceTrackGroupid(this.track_groupid);
+        req.setEnablePedestrian(this.enable_pedestrian);
+        req.setEnableFace(this.enable_face);
+        req.setEnableVehicle(this.enable_vehicle);
+        req.setEnablePlate(this.enable_plate);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
-        console.info("AnalysisPicStreamStart ,chnannlename=%s",this.channelname)
+        console.info("AnalysisPicStreamStart ,chnannlename=%s,en_pedestrian=%d,en_face=%d,en_vehicle=%d,en_plate=%d",this.channelname,this.enable_pedestrian,this.enable_face,this.enable_vehicle,this.enable_plate)
     }
 
     Rsp_AnalysisPicStreamStart(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
@@ -547,6 +574,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     Rsp_AnalysisPicStreamPop(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamPopRsp){
         if(null != err){
             console.error("grpc err=%s",err.message)
+            return;
+        }
+        if(0 == this.ShowDataInfoArr.length){
+            this.Send_AnalysisPicStreamPop();
             return;
         }
         // let showdatainfo = this.ShowDataInfoArr.pop();
@@ -805,6 +836,42 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
       console.info("video loop,strvalue=%s,value=%s",loop_str,String(this.video_loop));
     }
 
+    @action   
+    onFunctionsChange(event: React.ChangeEvent<HTMLSelectElement>){
+        let function_num = Number(event.target.value.trim());
+        console.info("function_num=%d",function_num);
+        switch(function_num){
+            case 0:
+                this.enable_pedestrian = true;
+                break;
+            case 1:
+                this.enable_pedestrian = false;
+                break;
+            case 2:
+                this.enable_face = true;
+                break;
+            case 3:
+                this.enable_face = false;
+                break;
+            case 4:
+                this.enable_vehicle = true;
+                break;
+            case 5:
+                this.enable_vehicle = false;
+                break;
+            case 6:
+                this.enable_plate = true;
+                break;
+            case 7:
+                this.enable_plate = false;
+                break;
+            default:
+                console.error("no such fucntin_numer=%d",function_num);
+                break;
+        }
+        this.Send_Configure()
+      }
+
 
     processVideo(){
         // console.log("processing");
@@ -887,6 +954,23 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                     <option >yes</option>
                     <option selected >no</option>
                   </select>
+                  <label>functions</label>
+                　　<select id='fuctions_pedestrian'  onChange={this.onFunctionsChange.bind(this)}>
+                　　　　<option  selected={this.enable_pedestrian} value={0} >enable_pedestrian</option>
+                　　　　<option selected={!this.enable_pedestrian} value={1} >disable_pedestrian</option>                                                                                                                                                      
+                　　</select>
+                　　<select id='fuctions_face' onChange={this.onFunctionsChange.bind(this)}>
+                　　　　<option  selected={this.enable_face} value={2} >enable_face</option>
+                　　　　<option selected={!this.enable_face} value={3} >disable_face</option>                                                                                                                                                         
+                　　</select>  
+                　　<select id='fuctions_vehicle' onChange={this.onFunctionsChange.bind(this)}>
+                　　　　<option  selected={this.enable_vehicle} value={4} >enable_vehicle</option>
+                　　　　<option selected={!this.enable_vehicle} value={5} >disable_vehicle</option>                                                                                                                                                     
+                　　</select>  
+                　　<select id='fuctions_plate'  onChange={this.onFunctionsChange.bind(this)}>
+                　　　　<option  selected={this.enable_plate} value={6} >enable_plate</option>
+                　　　　<option selected={!this.enable_plate} value={7} >disable_plate</option>                                                                                                                                                        
+                　　</select>  
                 </div>
                 
                 <video id={this.videoid} src={this.chosefileurl} loop={this.video_loop}  onPause={this.onPause.bind(this)}  onEnded={this.onEnd.bind(this)}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>

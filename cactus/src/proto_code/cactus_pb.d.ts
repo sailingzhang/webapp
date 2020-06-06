@@ -323,6 +323,18 @@ export class AnalysisPicStreamStartReq extends jspb.Message {
   getFaceTrackGroupid(): string;
   setFaceTrackGroupid(value: string): void;
 
+  getEnableFace(): boolean;
+  setEnableFace(value: boolean): void;
+
+  getEnablePedestrian(): boolean;
+  setEnablePedestrian(value: boolean): void;
+
+  getEnableVehicle(): boolean;
+  setEnableVehicle(value: boolean): void;
+
+  getEnablePlate(): boolean;
+  setEnablePlate(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AnalysisPicStreamStartReq.AsObject;
   static toObject(includeInstance: boolean, msg: AnalysisPicStreamStartReq): AnalysisPicStreamStartReq.AsObject;
@@ -335,6 +347,10 @@ export namespace AnalysisPicStreamStartReq {
   export type AsObject = {
     channelName: string,
     faceTrackGroupid: string,
+    enableFace: boolean,
+    enablePedestrian: boolean,
+    enableVehicle: boolean,
+    enablePlate: boolean,
   }
 }
 

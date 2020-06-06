@@ -3338,7 +3338,11 @@ proto.Cactus.AnalysisPicStreamStartReq.prototype.toObject = function(opt_include
 proto.Cactus.AnalysisPicStreamStartReq.toObject = function(includeInstance, msg) {
   var f, obj = {
     channelName: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    faceTrackGroupid: jspb.Message.getFieldWithDefault(msg, 2, "")
+    faceTrackGroupid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    enableFace: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
+    enablePedestrian: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    enableVehicle: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    enablePlate: jspb.Message.getBooleanFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -3383,6 +3387,22 @@ proto.Cactus.AnalysisPicStreamStartReq.deserializeBinaryFromReader = function(ms
       var value = /** @type {string} */ (reader.readString());
       msg.setFaceTrackGroupid(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEnableFace(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEnablePedestrian(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEnableVehicle(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setEnablePlate(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3426,6 +3446,34 @@ proto.Cactus.AnalysisPicStreamStartReq.serializeBinaryToWriter = function(messag
       f
     );
   }
+  f = message.getEnableFace();
+  if (f) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
+  f = message.getEnablePedestrian();
+  if (f) {
+    writer.writeBool(
+      4,
+      f
+    );
+  }
+  f = message.getEnableVehicle();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getEnablePlate();
+  if (f) {
+    writer.writeBool(
+      6,
+      f
+    );
+  }
 };
 
 
@@ -3462,6 +3510,78 @@ proto.Cactus.AnalysisPicStreamStartReq.prototype.getFaceTrackGroupid = function(
  */
 proto.Cactus.AnalysisPicStreamStartReq.prototype.setFaceTrackGroupid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional bool enable_face = 3;
+ * @return {boolean}
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.getEnableFace = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Cactus.AnalysisPicStreamStartReq} returns this
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.setEnableFace = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+
+/**
+ * optional bool enable_pedestrian = 4;
+ * @return {boolean}
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.getEnablePedestrian = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Cactus.AnalysisPicStreamStartReq} returns this
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.setEnablePedestrian = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional bool enable_vehicle = 5;
+ * @return {boolean}
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.getEnableVehicle = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Cactus.AnalysisPicStreamStartReq} returns this
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.setEnableVehicle = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional bool enable_plate = 6;
+ * @return {boolean}
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.getEnablePlate = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Cactus.AnalysisPicStreamStartReq} returns this
+ */
+proto.Cactus.AnalysisPicStreamStartReq.prototype.setEnablePlate = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
