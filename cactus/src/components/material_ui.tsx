@@ -935,6 +935,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
             <div>
                 <p>Video Analysis</p>
                 <div className='ImageShowArg'> 
+                  <label>Choose video file</label>
                   <input type="file" name="choose video file" id={this.chosefileId}  onChange={this.onChoseFileChange.bind(this)} accept=".mp4,.MP4"  ></input>
                   <label>extract_frame_num</label>
                   <select id="extract_frame_num"  name="extract_frame_num" onChange={this.onExtractFrameNumChange.bind(this)} >
@@ -1227,8 +1228,12 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         return (
           <div>
             <p>Image Analysis</p>
-            <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}  className='ImageShowArg' accept="image/*" />
-            <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
+            <div className='ImageShowArg'>
+                <label>Choose image file</label>
+                <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}   accept="image/*" />
+                <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
+            </div>
+
           </div>
         )
     
@@ -1283,8 +1288,10 @@ export  class  ImageShow_MFK extends React.Component<ImageShowArg> {
   public render(){
     if("" == this.props.showinfo.img){
       return (
-        // <p>empty image</p>
-        <input type="file" name="choose image file" onChange={this.onChange.bind(this)} className="ImageShowArg" accept="image/*" />
+        <div className="ImageShowArg">
+            <label>choose image file</label>
+            <input type="file" name="choose image file"  placeholder="choose image file" onChange={this.onChange.bind(this)}  accept="image/*" />
+        </div>
       )
     }else{
       return(
@@ -1348,7 +1355,11 @@ export  class  ImageShow_MFS extends React.Component<ImageShowArg> {
     if("" == this.props.showinfo.img){
       return (
         // <p>empty image</p>
-        <input type="file" name="choose image file" onChange={this.onChange.bind(this)} className="ImageShowArg" accept="image/*" />
+        <div className="ImageShowArg">
+            <label>choose image file</label>
+            <input type="file" name="choose image file"  placeholder="choose image file" onChange={this.onChange.bind(this)}  accept="image/*" />
+        </div>
+
       )
     }else{
       return(
