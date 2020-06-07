@@ -457,7 +457,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.diyheight= 720;
         this.FPS = 30;
         this.frameid =0;
-        this.channelname ="webtestchannel";
+        this.channelname ="webtestchannel_" + String(Date.now());
         this.video_loop = false;
         this.enable_pedestrian = true;
         this.enable_face = true;
@@ -496,7 +496,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         req.setEnableVehicle(this.enable_vehicle);
         req.setEnablePlate(this.enable_plate);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_configure.bind(this));
-        console.info("Send_Configure ,chnannlename=%s,en_pedestrian=%d,en_face=%d,en_vehicle=%d,en_plate=%d",this.channelname,this.enable_pedestrian,this.enable_face,this.enable_vehicle,this.enable_plate)       
+        console.info("Send_Configure ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate))       
     }
     
     Send_AnalysisPicStreamStart(){
@@ -510,7 +510,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         req.setEnableVehicle(this.enable_vehicle);
         req.setEnablePlate(this.enable_plate);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
-        console.info("AnalysisPicStreamStart ,chnannlename=%s,en_pedestrian=%d,en_face=%d,en_vehicle=%d,en_plate=%d",this.channelname,this.enable_pedestrian,this.enable_face,this.enable_vehicle,this.enable_plate)
+        console.info("Send_AnalysisPicStreamStart ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate))       
     }
 
     Rsp_AnalysisPicStreamStart(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
