@@ -128,6 +128,38 @@ export namespace PedestrianInfo {
   }
 }
 
+export class ComDetectInfo extends jspb.Message {
+  getClassid(): number;
+  setClassid(value: number): void;
+
+  getClassname(): string;
+  setClassname(value: string): void;
+
+  getId(): string;
+  setId(value: string): void;
+
+  getPos(): Position | undefined;
+  setPos(value?: Position): void;
+  hasPos(): boolean;
+  clearPos(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ComDetectInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ComDetectInfo): ComDetectInfo.AsObject;
+  static serializeBinaryToWriter(message: ComDetectInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ComDetectInfo;
+  static deserializeBinaryFromReader(message: ComDetectInfo, reader: jspb.BinaryReader): ComDetectInfo;
+}
+
+export namespace ComDetectInfo {
+  export type AsObject = {
+    classid: number,
+    classname: string,
+    id: string,
+    pos?: Position.AsObject,
+  }
+}
+
 export class AnalysisPicReq extends jspb.Message {
   getId(): number;
   setId(value: number): void;
@@ -175,6 +207,11 @@ export class AnalysisPicRsp extends jspb.Message {
   clearPedestrianInfosList(): void;
   addPedestrianInfos(value?: PedestrianInfo, index?: number): PedestrianInfo;
 
+  getComdetectInfosList(): Array<ComDetectInfo>;
+  setComdetectInfosList(value: Array<ComDetectInfo>): void;
+  clearComdetectInfosList(): void;
+  addComdetectInfos(value?: ComDetectInfo, index?: number): ComDetectInfo;
+
   getError(): string;
   setError(value: string): void;
 
@@ -192,6 +229,7 @@ export namespace AnalysisPicRsp {
     personInfosList: Array<PersonInfo.AsObject>,
     velicleInfosList: Array<VehicleInfo.AsObject>,
     pedestrianInfosList: Array<PedestrianInfo.AsObject>,
+    comdetectInfosList: Array<ComDetectInfo.AsObject>,
     error: string,
   }
 }

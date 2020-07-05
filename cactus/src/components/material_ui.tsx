@@ -1028,6 +1028,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
         let pedestrianInfoList = response.getPedestrianInfosList();
+        let comdetctList = response.getPedestrianInfosList();
 
         console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
 
@@ -1047,6 +1048,18 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
+
+        for(let i =0;i < comdetctList.length;i++){
+            let comdetctinfo = comdetctList[i];
+            let pos = comdetctinfo.getPedestrianpos();
+            let left = maxwidth* pos.getLeft();
+            let top =  maxheight* pos.getTop();
+            let width = maxwidth * pos.getWidth();
+            let height = maxheight * pos.getHeight();
+            canvas_context.strokeRect(left,top,width,height);
+            canvas_context.fillText("comdetect",left,top);
+        }
+
         for(let i =0;i < personinfolist.length;i++){
             let personinfo = personinfolist[i];
             let pos = personinfo.getFacepos();
