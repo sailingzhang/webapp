@@ -1022,15 +1022,16 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             console.log("grpc err=%s",err.message);
             return;
         }
+        console.log("enter,response=%s",response.toString())
         
         // let toImg = document.getElementById(this.toimgid);
         // let tocanvas = document.getElementById(this.tocanvasid); 
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
         let pedestrianInfoList = response.getPedestrianInfosList();
-        let comdetctList = response.getPedestrianInfosList();
+        let comdetctList = response.getComdetectInfosList();
 
-        console.log("Rsp_AnalysisPic,14:04,person'size=%d",personinfolist.length)
+        console.log("Rsp_AnalysisPic,14:04,person'size=%d,comdetlist'size=%d",personinfolist.length,comdetctList.length)
 
         this.width = this.tmpCanvas.width;
         this.height = this.tmpCanvas.height;
@@ -1051,7 +1052,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
         for(let i =0;i < comdetctList.length;i++){
             let comdetctinfo = comdetctList[i];
-            let pos = comdetctinfo.getPedestrianpos();
+            let pos = comdetctinfo.getPos();
             let left = maxwidth* pos.getLeft();
             let top =  maxheight* pos.getTop();
             let width = maxwidth * pos.getWidth();
