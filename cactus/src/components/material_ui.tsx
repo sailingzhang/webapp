@@ -459,10 +459,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.frameid =0;
         this.channelname ="webtestchannel_" + String(Date.now());
         this.video_loop = false;
-        this.enable_pedestrian = true;
+        this.enable_pedestrian = false;
         this.enable_face = true;
-        this.enable_vehicle = true;
-        this.enable_plate = true;
+        this.enable_vehicle = false;
+        this.enable_plate = false;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.video = document.getElementById(this.videoid) as HTMLVideoElement;
@@ -838,6 +838,10 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
 
     @action   
     onFunctionsChange(event: React.ChangeEvent<HTMLSelectElement>){
+        this.enable_face = false;
+        this.enable_pedestrian = false;
+        this.enable_plate = false;
+        this.enable_vehicle = false;
         let function_num = Number(event.target.value.trim());
         console.info("function_num=%d",function_num);
         switch(function_num){
@@ -956,22 +960,12 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                     <option selected >no</option>
                   </select>
                   <label>functions</label>
-                　　<select id='fuctions_pedestrian'  onChange={this.onFunctionsChange.bind(this)}>
+                　　<select id='function track enbal'  onChange={this.onFunctionsChange.bind(this)}>
                 　　　　<option  selected={this.enable_pedestrian} value={0} >enable_pedestrian</option>
-                　　　　<option selected={!this.enable_pedestrian} value={1} >disable_pedestrian</option>                                                                                                                                                      
-                　　</select>
-                　　<select id='fuctions_face' onChange={this.onFunctionsChange.bind(this)}>
                 　　　　<option  selected={this.enable_face} value={2} >enable_face</option>
-                　　　　<option selected={!this.enable_face} value={3} >disable_face</option>                                                                                                                                                         
-                　　</select>  
-                　　<select id='fuctions_vehicle' onChange={this.onFunctionsChange.bind(this)}>
                 　　　　<option  selected={this.enable_vehicle} value={4} >enable_vehicle</option>
-                　　　　<option selected={!this.enable_vehicle} value={5} >disable_vehicle</option>                                                                                                                                                     
-                　　</select>  
-                　　<select id='fuctions_plate'  onChange={this.onFunctionsChange.bind(this)}>
                 　　　　<option  selected={this.enable_plate} value={6} >enable_plate</option>
-                　　　　<option selected={!this.enable_plate} value={7} >disable_plate</option>                                                                                                                                                        
-                　　</select>  
+                　　</select>
                 </div>
                 
                 <video id={this.videoid} src={this.chosefileurl} loop={this.video_loop}  onPause={this.onPause.bind(this)}  onEnded={this.onEnd.bind(this)}  onLoadedMetadata={this.onLoadedMetadata.bind(this)}  onLoad={this.onload.bind(this)}  onPlay={this.onviedoplay.bind(this)} controls={true}  crossOrigin="Anonymous"></video>
