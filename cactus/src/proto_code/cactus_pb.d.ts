@@ -835,8 +835,14 @@ export namespace FaceNetConfigure {
 }
 
 export class CactusConfigure extends jspb.Message {
-  getModelserver(): string;
-  setModelserver(value: string): void;
+  getOpenvinomodelserver(): string;
+  setOpenvinomodelserver(value: string): void;
+
+  getTensorflowmodelserver(): string;
+  setTensorflowmodelserver(value: string): void;
+
+  getTensorrtmodelserver(): string;
+  setTensorrtmodelserver(value: string): void;
 
   getCactusserver(): string;
   setCactusserver(value: string): void;
@@ -892,7 +898,9 @@ export class CactusConfigure extends jspb.Message {
 
 export namespace CactusConfigure {
   export type AsObject = {
-    modelserver: string,
+    openvinomodelserver: string,
+    tensorflowmodelserver: string,
+    tensorrtmodelserver: string,
     cactusserver: string,
     facenetConfigure?: FaceNet_Configure.AsObject,
     facenetsimilarConfigure?: FaceNetSimilar_Configure.AsObject,

@@ -7226,8 +7226,10 @@ proto.Cactus.CactusConfigure.prototype.toObject = function(opt_includeInstance) 
  */
 proto.Cactus.CactusConfigure.toObject = function(includeInstance, msg) {
   var f, obj = {
-    modelserver: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    cactusserver: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    openvinomodelserver: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    tensorflowmodelserver: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    tensorrtmodelserver: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    cactusserver: jspb.Message.getFieldWithDefault(msg, 4, ""),
     facenetConfigure: (f = msg.getFacenetConfigure()) && proto.Cactus.FaceNet_Configure.toObject(includeInstance, f),
     facenetsimilarConfigure: (f = msg.getFacenetsimilarConfigure()) && proto.Cactus.FaceNetSimilar_Configure.toObject(includeInstance, f),
     stockpredict1Configure: (f = msg.getStockpredict1Configure()) && proto.Cactus.StockPredict1_Configure.toObject(includeInstance, f),
@@ -7236,7 +7238,7 @@ proto.Cactus.CactusConfigure.toObject = function(includeInstance, msg) {
     facedetectandidentifybypicMfsConfigure: (f = msg.getFacedetectandidentifybypicMfsConfigure()) && proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure.toObject(includeInstance, f),
     analysispicConfigure: (f = msg.getAnalysispicConfigure()) && proto.Cactus.AnalysisPic_Configure.toObject(includeInstance, f),
     permanentGroupidMapMap: (f = msg.getPermanentGroupidMapMap()) ? f.toObject(includeInstance, undefined) : [],
-    stockpredict1Modelname: jspb.Message.getFieldWithDefault(msg, 11, "")
+    stockpredict1Modelname: jspb.Message.getFieldWithDefault(msg, 13, "")
   };
 
   if (includeInstance) {
@@ -7275,54 +7277,62 @@ proto.Cactus.CactusConfigure.deserializeBinaryFromReader = function(msg, reader)
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setModelserver(value);
+      msg.setOpenvinomodelserver(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCactusserver(value);
+      msg.setTensorflowmodelserver(value);
       break;
     case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTensorrtmodelserver(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCactusserver(value);
+      break;
+    case 5:
       var value = new proto.Cactus.FaceNet_Configure;
       reader.readMessage(value,proto.Cactus.FaceNet_Configure.deserializeBinaryFromReader);
       msg.setFacenetConfigure(value);
       break;
-    case 4:
+    case 6:
       var value = new proto.Cactus.FaceNetSimilar_Configure;
       reader.readMessage(value,proto.Cactus.FaceNetSimilar_Configure.deserializeBinaryFromReader);
       msg.setFacenetsimilarConfigure(value);
       break;
-    case 5:
+    case 7:
       var value = new proto.Cactus.StockPredict1_Configure;
       reader.readMessage(value,proto.Cactus.StockPredict1_Configure.deserializeBinaryFromReader);
       msg.setStockpredict1Configure(value);
       break;
-    case 6:
+    case 8:
       var value = new proto.Cactus.FaceDetect_Mt_Configure;
       reader.readMessage(value,proto.Cactus.FaceDetect_Mt_Configure.deserializeBinaryFromReader);
       msg.setFacedetectMtConfigure(value);
       break;
-    case 7:
+    case 9:
       var value = new proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure;
       reader.readMessage(value,proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure.deserializeBinaryFromReader);
       msg.setFacedetectandidentifybypicMfkConfigure(value);
       break;
-    case 8:
+    case 10:
       var value = new proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure;
       reader.readMessage(value,proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure.deserializeBinaryFromReader);
       msg.setFacedetectandidentifybypicMfsConfigure(value);
       break;
-    case 9:
+    case 11:
       var value = new proto.Cactus.AnalysisPic_Configure;
       reader.readMessage(value,proto.Cactus.AnalysisPic_Configure.deserializeBinaryFromReader);
       msg.setAnalysispicConfigure(value);
       break;
-    case 10:
+    case 12:
       var value = msg.getPermanentGroupidMapMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "", "");
          });
       break;
-    case 11:
+    case 13:
       var value = /** @type {string} */ (reader.readString());
       msg.setStockpredict1Modelname(value);
       break;
@@ -7355,24 +7365,38 @@ proto.Cactus.CactusConfigure.prototype.serializeBinary = function() {
  */
 proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getModelserver();
+  f = message.getOpenvinomodelserver();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = message.getCactusserver();
+  f = message.getTensorflowmodelserver();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
+  f = message.getTensorrtmodelserver();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getCactusserver();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
   f = message.getFacenetConfigure();
   if (f != null) {
     writer.writeMessage(
-      3,
+      5,
       f,
       proto.Cactus.FaceNet_Configure.serializeBinaryToWriter
     );
@@ -7380,7 +7404,7 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getFacenetsimilarConfigure();
   if (f != null) {
     writer.writeMessage(
-      4,
+      6,
       f,
       proto.Cactus.FaceNetSimilar_Configure.serializeBinaryToWriter
     );
@@ -7388,7 +7412,7 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getStockpredict1Configure();
   if (f != null) {
     writer.writeMessage(
-      5,
+      7,
       f,
       proto.Cactus.StockPredict1_Configure.serializeBinaryToWriter
     );
@@ -7396,7 +7420,7 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getFacedetectMtConfigure();
   if (f != null) {
     writer.writeMessage(
-      6,
+      8,
       f,
       proto.Cactus.FaceDetect_Mt_Configure.serializeBinaryToWriter
     );
@@ -7404,7 +7428,7 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getFacedetectandidentifybypicMfkConfigure();
   if (f != null) {
     writer.writeMessage(
-      7,
+      9,
       f,
       proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure.serializeBinaryToWriter
     );
@@ -7412,7 +7436,7 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getFacedetectandidentifybypicMfsConfigure();
   if (f != null) {
     writer.writeMessage(
-      8,
+      10,
       f,
       proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure.serializeBinaryToWriter
     );
@@ -7420,19 +7444,19 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
   f = message.getAnalysispicConfigure();
   if (f != null) {
     writer.writeMessage(
-      9,
+      11,
       f,
       proto.Cactus.AnalysisPic_Configure.serializeBinaryToWriter
     );
   }
   f = message.getPermanentGroupidMapMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
+    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
   f = message.getStockpredict1Modelname();
   if (f.length > 0) {
     writer.writeString(
-      11,
+      13,
       f
     );
   }
@@ -7440,10 +7464,10 @@ proto.Cactus.CactusConfigure.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional string ModelServer = 1;
+ * optional string OpenvinoModelServer = 1;
  * @return {string}
  */
-proto.Cactus.CactusConfigure.prototype.getModelserver = function() {
+proto.Cactus.CactusConfigure.prototype.getOpenvinomodelserver = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -7452,16 +7476,16 @@ proto.Cactus.CactusConfigure.prototype.getModelserver = function() {
  * @param {string} value
  * @return {!proto.Cactus.CactusConfigure} returns this
  */
-proto.Cactus.CactusConfigure.prototype.setModelserver = function(value) {
+proto.Cactus.CactusConfigure.prototype.setOpenvinomodelserver = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional string CactusServer = 2;
+ * optional string TensorflowModelServer = 2;
  * @return {string}
  */
-proto.Cactus.CactusConfigure.prototype.getCactusserver = function() {
+proto.Cactus.CactusConfigure.prototype.getTensorflowmodelserver = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -7470,18 +7494,54 @@ proto.Cactus.CactusConfigure.prototype.getCactusserver = function() {
  * @param {string} value
  * @return {!proto.Cactus.CactusConfigure} returns this
  */
-proto.Cactus.CactusConfigure.prototype.setCactusserver = function(value) {
+proto.Cactus.CactusConfigure.prototype.setTensorflowmodelserver = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional FaceNet_Configure facenet_configure = 3;
+ * optional string TensorRtModelServer = 3;
+ * @return {string}
+ */
+proto.Cactus.CactusConfigure.prototype.getTensorrtmodelserver = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Cactus.CactusConfigure} returns this
+ */
+proto.Cactus.CactusConfigure.prototype.setTensorrtmodelserver = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string CactusServer = 4;
+ * @return {string}
+ */
+proto.Cactus.CactusConfigure.prototype.getCactusserver = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Cactus.CactusConfigure} returns this
+ */
+proto.Cactus.CactusConfigure.prototype.setCactusserver = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional FaceNet_Configure facenet_configure = 5;
  * @return {?proto.Cactus.FaceNet_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getFacenetConfigure = function() {
   return /** @type{?proto.Cactus.FaceNet_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.FaceNet_Configure, 3));
+    jspb.Message.getWrapperField(this, proto.Cactus.FaceNet_Configure, 5));
 };
 
 
@@ -7490,7 +7550,7 @@ proto.Cactus.CactusConfigure.prototype.getFacenetConfigure = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setFacenetConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
+  return jspb.Message.setWrapperField(this, 5, value);
 };
 
 
@@ -7508,17 +7568,17 @@ proto.Cactus.CactusConfigure.prototype.clearFacenetConfigure = function() {
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasFacenetConfigure = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
- * optional FaceNetSimilar_Configure facenetsimilar_configure = 4;
+ * optional FaceNetSimilar_Configure facenetsimilar_configure = 6;
  * @return {?proto.Cactus.FaceNetSimilar_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getFacenetsimilarConfigure = function() {
   return /** @type{?proto.Cactus.FaceNetSimilar_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.FaceNetSimilar_Configure, 4));
+    jspb.Message.getWrapperField(this, proto.Cactus.FaceNetSimilar_Configure, 6));
 };
 
 
@@ -7527,7 +7587,7 @@ proto.Cactus.CactusConfigure.prototype.getFacenetsimilarConfigure = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setFacenetsimilarConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
+  return jspb.Message.setWrapperField(this, 6, value);
 };
 
 
@@ -7545,17 +7605,17 @@ proto.Cactus.CactusConfigure.prototype.clearFacenetsimilarConfigure = function()
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasFacenetsimilarConfigure = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * optional StockPredict1_Configure stockpredict1_configure = 5;
+ * optional StockPredict1_Configure stockpredict1_configure = 7;
  * @return {?proto.Cactus.StockPredict1_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getStockpredict1Configure = function() {
   return /** @type{?proto.Cactus.StockPredict1_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.StockPredict1_Configure, 5));
+    jspb.Message.getWrapperField(this, proto.Cactus.StockPredict1_Configure, 7));
 };
 
 
@@ -7564,7 +7624,7 @@ proto.Cactus.CactusConfigure.prototype.getStockpredict1Configure = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setStockpredict1Configure = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
+  return jspb.Message.setWrapperField(this, 7, value);
 };
 
 
@@ -7582,17 +7642,17 @@ proto.Cactus.CactusConfigure.prototype.clearStockpredict1Configure = function() 
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasStockpredict1Configure = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
 /**
- * optional FaceDetect_Mt_Configure facedetect_mt_configure = 6;
+ * optional FaceDetect_Mt_Configure facedetect_mt_configure = 8;
  * @return {?proto.Cactus.FaceDetect_Mt_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getFacedetectMtConfigure = function() {
   return /** @type{?proto.Cactus.FaceDetect_Mt_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetect_Mt_Configure, 6));
+    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetect_Mt_Configure, 8));
 };
 
 
@@ -7601,7 +7661,7 @@ proto.Cactus.CactusConfigure.prototype.getFacedetectMtConfigure = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setFacedetectMtConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
+  return jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -7619,17 +7679,17 @@ proto.Cactus.CactusConfigure.prototype.clearFacedetectMtConfigure = function() {
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasFacedetectMtConfigure = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
 /**
- * optional FaceDetectAndIdentifyByPic_MFK_Configure facedetectandidentifybypic_mfk_configure = 7;
+ * optional FaceDetectAndIdentifyByPic_MFK_Configure facedetectandidentifybypic_mfk_configure = 9;
  * @return {?proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getFacedetectandidentifybypicMfkConfigure = function() {
   return /** @type{?proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure, 7));
+    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetectAndIdentifyByPic_MFK_Configure, 9));
 };
 
 
@@ -7638,7 +7698,7 @@ proto.Cactus.CactusConfigure.prototype.getFacedetectandidentifybypicMfkConfigure
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setFacedetectandidentifybypicMfkConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 7, value);
+  return jspb.Message.setWrapperField(this, 9, value);
 };
 
 
@@ -7656,17 +7716,17 @@ proto.Cactus.CactusConfigure.prototype.clearFacedetectandidentifybypicMfkConfigu
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasFacedetectandidentifybypicMfkConfigure = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.getField(this, 9) != null;
 };
 
 
 /**
- * optional FaceDetectAndIdentifyByPic_MFS_Configure facedetectandidentifybypic_mfs_configure = 8;
+ * optional FaceDetectAndIdentifyByPic_MFS_Configure facedetectandidentifybypic_mfs_configure = 10;
  * @return {?proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getFacedetectandidentifybypicMfsConfigure = function() {
   return /** @type{?proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure, 8));
+    jspb.Message.getWrapperField(this, proto.Cactus.FaceDetectAndIdentifyByPic_MFS_Configure, 10));
 };
 
 
@@ -7675,7 +7735,7 @@ proto.Cactus.CactusConfigure.prototype.getFacedetectandidentifybypicMfsConfigure
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setFacedetectandidentifybypicMfsConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
+  return jspb.Message.setWrapperField(this, 10, value);
 };
 
 
@@ -7693,17 +7753,17 @@ proto.Cactus.CactusConfigure.prototype.clearFacedetectandidentifybypicMfsConfigu
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasFacedetectandidentifybypicMfsConfigure = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.getField(this, 10) != null;
 };
 
 
 /**
- * optional AnalysisPic_Configure analysispic_configure = 9;
+ * optional AnalysisPic_Configure analysispic_configure = 11;
  * @return {?proto.Cactus.AnalysisPic_Configure}
  */
 proto.Cactus.CactusConfigure.prototype.getAnalysispicConfigure = function() {
   return /** @type{?proto.Cactus.AnalysisPic_Configure} */ (
-    jspb.Message.getWrapperField(this, proto.Cactus.AnalysisPic_Configure, 9));
+    jspb.Message.getWrapperField(this, proto.Cactus.AnalysisPic_Configure, 11));
 };
 
 
@@ -7712,7 +7772,7 @@ proto.Cactus.CactusConfigure.prototype.getAnalysispicConfigure = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
 */
 proto.Cactus.CactusConfigure.prototype.setAnalysispicConfigure = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 11, value);
 };
 
 
@@ -7730,19 +7790,19 @@ proto.Cactus.CactusConfigure.prototype.clearAnalysispicConfigure = function() {
  * @return {boolean}
  */
 proto.Cactus.CactusConfigure.prototype.hasAnalysispicConfigure = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 11) != null;
 };
 
 
 /**
- * map<string, string> permanent_groupid_map = 10;
+ * map<string, string> permanent_groupid_map = 12;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,string>}
  */
 proto.Cactus.CactusConfigure.prototype.getPermanentGroupidMapMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,string>} */ (
-      jspb.Message.getMapField(this, 10, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 12, opt_noLazyCreate,
       null));
 };
 
@@ -7757,11 +7817,11 @@ proto.Cactus.CactusConfigure.prototype.clearPermanentGroupidMapMap = function() 
 
 
 /**
- * optional string StockPredict1_ModelName = 11;
+ * optional string StockPredict1_ModelName = 13;
  * @return {string}
  */
 proto.Cactus.CactusConfigure.prototype.getStockpredict1Modelname = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
 
@@ -7770,7 +7830,7 @@ proto.Cactus.CactusConfigure.prototype.getStockpredict1Modelname = function() {
  * @return {!proto.Cactus.CactusConfigure} returns this
  */
 proto.Cactus.CactusConfigure.prototype.setStockpredict1Modelname = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
+  return jspb.Message.setProto3StringField(this, 13, value);
 };
 
 
