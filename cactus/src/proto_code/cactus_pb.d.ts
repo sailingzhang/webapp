@@ -212,6 +212,11 @@ export class AnalysisPicRsp extends jspb.Message {
   clearComdetectInfosList(): void;
   addComdetectInfos(value?: ComDetectInfo, index?: number): ComDetectInfo;
 
+  getSemanticSegmentationInfosList(): Array<number>;
+  setSemanticSegmentationInfosList(value: Array<number>): void;
+  clearSemanticSegmentationInfosList(): void;
+  addSemanticSegmentationInfos(value: number, index?: number): void;
+
   getError(): string;
   setError(value: string): void;
 
@@ -230,6 +235,7 @@ export namespace AnalysisPicRsp {
     velicleInfosList: Array<VehicleInfo.AsObject>,
     pedestrianInfosList: Array<PedestrianInfo.AsObject>,
     comdetectInfosList: Array<ComDetectInfo.AsObject>,
+    semanticSegmentationInfosList: Array<number>,
     error: string,
   }
 }

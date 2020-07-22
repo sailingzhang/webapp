@@ -2344,7 +2344,7 @@ proto.Cactus.AnalysisPicReq.prototype.setPicdata = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.Cactus.AnalysisPicRsp.repeatedFields_ = [2,3,4,5];
+proto.Cactus.AnalysisPicRsp.repeatedFields_ = [2,3,4,5,6];
 
 
 
@@ -2386,7 +2386,8 @@ proto.Cactus.AnalysisPicRsp.toObject = function(includeInstance, msg) {
     proto.Cactus.PedestrianInfo.toObject, includeInstance),
     comdetectInfosList: jspb.Message.toObjectList(msg.getComdetectInfosList(),
     proto.Cactus.ComDetectInfo.toObject, includeInstance),
-    error: jspb.Message.getFieldWithDefault(msg, 6, "")
+    semanticSegmentationInfosList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
+    error: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -2448,6 +2449,10 @@ proto.Cactus.AnalysisPicRsp.deserializeBinaryFromReader = function(msg, reader) 
       msg.addComdetectInfos(value);
       break;
     case 6:
+      var value = /** @type {!Array<number>} */ (reader.readPackedInt32());
+      msg.setSemanticSegmentationInfosList(value);
+      break;
+    case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setError(value);
       break;
@@ -2519,10 +2524,17 @@ proto.Cactus.AnalysisPicRsp.serializeBinaryToWriter = function(message, writer) 
       proto.Cactus.ComDetectInfo.serializeBinaryToWriter
     );
   }
+  f = message.getSemanticSegmentationInfosList();
+  if (f.length > 0) {
+    writer.writePackedInt32(
+      6,
+      f
+    );
+  }
   f = message.getError();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      7,
       f
     );
   }
@@ -2700,11 +2712,48 @@ proto.Cactus.AnalysisPicRsp.prototype.clearComdetectInfosList = function() {
 
 
 /**
- * optional string error = 6;
+ * repeated int32 semantic_segmentation_infos = 6;
+ * @return {!Array<number>}
+ */
+proto.Cactus.AnalysisPicRsp.prototype.getSemanticSegmentationInfosList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 6));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.Cactus.AnalysisPicRsp} returns this
+ */
+proto.Cactus.AnalysisPicRsp.prototype.setSemanticSegmentationInfosList = function(value) {
+  return jspb.Message.setField(this, 6, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.Cactus.AnalysisPicRsp} returns this
+ */
+proto.Cactus.AnalysisPicRsp.prototype.addSemanticSegmentationInfos = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Cactus.AnalysisPicRsp} returns this
+ */
+proto.Cactus.AnalysisPicRsp.prototype.clearSemanticSegmentationInfosList = function() {
+  return this.setSemanticSegmentationInfosList([]);
+};
+
+
+/**
+ * optional string error = 7;
  * @return {string}
  */
 proto.Cactus.AnalysisPicRsp.prototype.getError = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
 
@@ -2713,7 +2762,7 @@ proto.Cactus.AnalysisPicRsp.prototype.getError = function() {
  * @return {!proto.Cactus.AnalysisPicRsp} returns this
  */
 proto.Cactus.AnalysisPicRsp.prototype.setError = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
