@@ -1105,7 +1105,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         }
 
         console.log("instance_segmetationList.size=%d",instance_segmetationList.length)
-        let isdraw = false; 
+
+
+
         canvas_context.strokeStyle ='black';
         canvas_context.fillStyle='black';
         canvas_context.fillRect(0,0,maxwidth,maxheight);
@@ -1113,15 +1115,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         canvas_context.fillStyle='white';
 
 
-        for(let i = 0;i < 10;i++){
-            for(let j = 0;j < 8;j++){
-                console.log("i=%d,j=%d",i,j);
-            }
-        }
-
         
-        let DrawCanvas =  document.createElement("canvas");
-        
+      
         for(let i=0;i < instance_segmetationList.length;i++){
             let instance_seg_info = instance_segmetationList[i];
             let pos = instance_seg_info.getBoxpositions();
@@ -1129,38 +1124,90 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let top = Math.floor(maxheight * pos.getTop());
             let width =Math.floor(maxwidth * pos.getWidth());
             let height =Math.floor(maxheight * pos.getHeight());
-
             let mask = instance_seg_info.getMasksList();
             console.log("top=%d,left=%d,width=%d,height=%d,mask.size=%d",top,left,width,height,mask.length)
-            console.log(mask)
-            let index =0;
-            for(let ph = 0;ph < height;ph++){
-                for(let pw = 0;pw < width;pw++){
-                    // console.log("ph=%f,pw=%f",ph,pw)
-                    let ab_top = top +ph;
-                    let ab_left = left + pw;
-                    // index = pi*width + pj;
-                    let mask_value=  mask[index];
-                    console.log("ph=%d,pw=%d,mask_value=%d,index=%d,height=%f,width=%f",ph,pw,mask_value,index,height,width);
-                    if(0 == mask_value){
-                        // console.log("ab_left=%d,ab_top=%d",ab_left,ab_top);
-                        canvas_context.strokeStyle ='red';
-                        canvas_context.fillStyle='red';
-                        canvas_context.fillRect(ab_left,ab_top,1,1);
-                    }else if(255 == mask_value){
-                        canvas_context.strokeStyle ='white';
-                        canvas_context.fillStyle='white';
-                        canvas_context.fillRect(ab_left,ab_top,1,1);
-                    }else {
-                        canvas_context.strokeStyle ='green';
-                        canvas_context.fillStyle='green';
-                        canvas_context.fillRect(ab_left,ab_top,1,1);
-                        console.error("mask_value err,index=%d",index)
-                        return;   
+            // console.log(mask)
+
+            let mask_w = 14;
+            let mask_h = 14;
+            let maskchanvas = document.createElement("canvas");
+
+            maskchanvas.width = mask_w;
+            maskchanvas.height = mask_h;
+            let maskchanvas_context =  maskchanvas.getContext('2d');
+            maskchanvas_context.strokeStyle ='white';
+            maskchanvas_context.fillStyle='white';
+            // let mask_imagedata =  maskchanvas_context.getImageData(0, 0, mask_w, mask_h);
+            // var data = mask_imagedata.data;
+            // for(let d_i =0;d_i<mask.length;d_i++){
+            //     let v = 0;
+            //     if(0 <　mask[d_i]){
+            //         v = 255;
+            //     }
+            //     data[4*d_i]=v;
+            //     data[4*d_i+1] =v;
+            //     data[4*d_i+2] =v;
+            // }
+
+            for(let m_i =0; m_i <mask_h;m_i++){
+                for(let m_j =0; m_j <mask_w;m_j++){
+                    if(mask[m_i* mask_w+ m_j] > 0){
+                        maskchanvas_context.fillRect(m_j,m_i,1,1);
                     }
-                    index++;
+                    
                 }
             }
+
+            // maskchanvas_context.putImageData(mask_imagedata,0,0);
+            // maskchanvas_context.scale(width/mask_w,height/mask_h);
+            canvas_context.drawImage(maskchanvas,0,0,maskchanvas.width,maskchanvas.height,left,top,width,height);
+            console.log("2008,draw one,width=%d,height=%d,s_width=%d,s_height=%d",width,height,maskchanvas.width,maskchanvas.height);
+
+            // maskchanvas_context.strokeStyle ='black';
+            // maskchanvas_context.fillStyle='black';
+            // maskchanvas_context.fillRect(0,0,14,14);
+
+            // maskchanvas_context.strokeStyle ='white';
+            // maskchanvas_context.fillStyle='white';
+            // for(let mask_i =0;mask_i< mask_h;mask_i++){
+            //     for(let mask_j =0;mask_j < mask_w;mask_j++){
+            //         let index = mask_i*mask_h + mask_j;
+            //         if(0 < mask[index]){
+            //             maskchanvas_context.fillRect(mask_i,mask_j,1,1)
+            //         }
+                    
+            //     }
+            // }
+
+
+            // let index =0;
+            // for(let ph = 0;ph < height;ph++){
+            //     for(let pw = 0;pw < width;pw++){
+            //         // console.log("ph=%f,pw=%f",ph,pw)
+            //         let ab_top = top +ph;
+            //         let ab_left = left + pw;
+            //         // index = pi*width + pj;
+            //         let mask_value=  mask[index];
+            //         console.log("ph=%d,pw=%d,mask_value=%d,index=%d,height=%f,width=%f",ph,pw,mask_value,index,height,width);
+            //         if(0 == mask_value){
+            //             // console.log("ab_left=%d,ab_top=%d",ab_left,ab_top);
+            //             canvas_context.strokeStyle ='red';
+            //             canvas_context.fillStyle='red';
+            //             canvas_context.fillRect(ab_left,ab_top,1,1);
+            //         }else if(255 == mask_value){
+            //             canvas_context.strokeStyle ='white';
+            //             canvas_context.fillStyle='white';
+            //             canvas_context.fillRect(ab_left,ab_top,1,1);
+            //         }else {
+            //             canvas_context.strokeStyle ='green';
+            //             canvas_context.fillStyle='green';
+            //             canvas_context.fillRect(ab_left,ab_top,1,1);
+            //             console.error("mask_value err,index=%d",index)
+            //             return;   
+            //         }
+            //         index++;
+            //     }
+            // }
 
 
         }
