@@ -40,6 +40,7 @@ import {observable,action,autorun, configure, reaction} from 'mobx';
 import {CactusData,GraphViewShowTypeEnum,DetectAndClassifyImageInfo} from  "../data/cactus_data"
 // import { int32_t, Mat, readOpticalFlow } from "mirada";
 import { yellow } from "@material-ui/core/colors";
+import { Minimize } from "@material-ui/icons";
 
 
 
@@ -992,6 +993,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable srcimgid:string;
     @observable toimgid:string;
     @observable tocanvasid:string;
+    @observable toInstanceSegmentationCanvasId:string;
     @observable width:number;
     @observable height:number;
     @observable submitUrl:string;
@@ -999,12 +1001,14 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     userdata:CactusData;
     tmpCanvas:HTMLCanvasElement;
     toCanvas:HTMLCanvasElement;
+    toInstanceSegCanvas:HTMLCanvasElement;
     constructor(props:AnalysisPicArg){
         super(props);
         this.img=""
         this.srcimgid="srcimgid";
         this.toimgid="toimageid";
         this.tocanvasid="tocanvasid";
+        this.toInstanceSegmentationCanvasId="toInstanceSegId";
         this.width=100;
         this.height=100;
         this.userdata = props.cactusdata;
@@ -1029,6 +1033,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
         console.log("Rsp_AnalysisPic,14:04,person'size=%d,comdetlist'size=%d",personinfolist.length,comdetctList.length)
 
+        let original_canvas = document.createElement("canvas");
         this.width = this.tmpCanvas.width;
         this.height = this.tmpCanvas.height;
         if(this.tmpCanvas.height>720){
@@ -1038,10 +1043,20 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         }
         let maxwidth = this.toCanvas.width;
         let maxheight = this.toCanvas.height;
-        this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
+        this.toInstanceSegCanvas.width = maxwidth;
+        this.toInstanceSegCanvas.height = maxheight;
+        original_canvas.width = maxwidth;
+        original_canvas.height = maxheight;
 
-        // let canvas_context = this.tmpCanvas.getContext('2d');
+
+        
+        this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
+        this.toInstanceSegCanvas.getContext('2d').drawImage(this.toCanvas,0,0);
+        original_canvas.getContext('2d').drawImage(this.toCanvas,0,0);
+
         let canvas_context = this.toCanvas.getContext('2d');
+        let instanceseg_canvas_context = this.toInstanceSegCanvas.getContext('2d');
+        let origin_canvas_context = original_canvas.getContext('2d');
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
@@ -1108,14 +1123,12 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
 
 
-        canvas_context.strokeStyle ='black';
-        canvas_context.fillStyle='black';
-        canvas_context.fillRect(0,0,maxwidth,maxheight);
-        canvas_context.strokeStyle ='white';
-        canvas_context.fillStyle='white';
+        instanceseg_canvas_context.strokeStyle ='black';
+        instanceseg_canvas_context.fillStyle='black';
+        instanceseg_canvas_context.fillRect(0,0,maxwidth,maxheight);
+        instanceseg_canvas_context.strokeStyle ='white';
+        instanceseg_canvas_context.fillStyle='white';
 
-
-        
       
         for(let i=0;i < instance_segmetationList.length;i++){
             let instance_seg_info = instance_segmetationList[i];
@@ -1160,57 +1173,25 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
             // maskchanvas_context.putImageData(mask_imagedata,0,0);
             // maskchanvas_context.scale(width/mask_w,height/mask_h);
-            canvas_context.drawImage(maskchanvas,0,0,maskchanvas.width,maskchanvas.height,left,top,width,height);
-            console.log("2008,draw one,width=%d,height=%d,s_width=%d,s_height=%d",width,height,maskchanvas.width,maskchanvas.height);
-
-            // maskchanvas_context.strokeStyle ='black';
-            // maskchanvas_context.fillStyle='black';
-            // maskchanvas_context.fillRect(0,0,14,14);
-
-            // maskchanvas_context.strokeStyle ='white';
-            // maskchanvas_context.fillStyle='white';
-            // for(let mask_i =0;mask_i< mask_h;mask_i++){
-            //     for(let mask_j =0;mask_j < mask_w;mask_j++){
-            //         let index = mask_i*mask_h + mask_j;
-            //         if(0 < mask[index]){
-            //             maskchanvas_context.fillRect(mask_i,mask_j,1,1)
-            //         }
-                    
-            //     }
-            // }
-
-
-            // let index =0;
-            // for(let ph = 0;ph < height;ph++){
-            //     for(let pw = 0;pw < width;pw++){
-            //         // console.log("ph=%f,pw=%f",ph,pw)
-            //         let ab_top = top +ph;
-            //         let ab_left = left + pw;
-            //         // index = pi*width + pj;
-            //         let mask_value=  mask[index];
-            //         console.log("ph=%d,pw=%d,mask_value=%d,index=%d,height=%f,width=%f",ph,pw,mask_value,index,height,width);
-            //         if(0 == mask_value){
-            //             // console.log("ab_left=%d,ab_top=%d",ab_left,ab_top);
-            //             canvas_context.strokeStyle ='red';
-            //             canvas_context.fillStyle='red';
-            //             canvas_context.fillRect(ab_left,ab_top,1,1);
-            //         }else if(255 == mask_value){
-            //             canvas_context.strokeStyle ='white';
-            //             canvas_context.fillStyle='white';
-            //             canvas_context.fillRect(ab_left,ab_top,1,1);
-            //         }else {
-            //             canvas_context.strokeStyle ='green';
-            //             canvas_context.fillStyle='green';
-            //             canvas_context.fillRect(ab_left,ab_top,1,1);
-            //             console.error("mask_value err,index=%d",index)
-            //             return;   
-            //         }
-            //         index++;
-            //     }
-            // }
-
-
+            instanceseg_canvas_context.drawImage(maskchanvas,0,0,maskchanvas.width,maskchanvas.height,left,top,width,height);
+            console.log("2228,draw one,width=%d,height=%d,s_width=%d,s_height=%d",width,height,maskchanvas.width,maskchanvas.height);
         }
+
+        console.log("origin_w=%d,origin_h=%d,instance_w=%d,instance_h=%d",original_canvas.width,original_canvas.height,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
+        let origin_imagedata=origin_canvas_context.getImageData(0,0,original_canvas.width,original_canvas.height);
+        let instance_seg_imagedata = instanceseg_canvas_context.getImageData(0,0,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
+
+        let allpixnum = maxwidth*maxheight;
+        for(let pix_i = 0; pix_i < origin_imagedata.data.length;pix_i++){
+            instance_seg_imagedata.data[pix_i] = Math.min(instance_seg_imagedata.data[pix_i],origin_imagedata.data[pix_i]);
+            // instance_seg_imagedata.data[pix_i] =0;
+            // instance_seg_imagedata.data[pix_i]= origin_imagedata.data[pix_i];
+            // instance_seg_imagedata.data[pix_i+1]= origin_imagedata.data[pix_i+1];
+            // instance_seg_imagedata.data[pix_i+2]= origin_imagedata.data[pix_i+2];
+            // instance_seg_imagedata.data[pix_i+3]= origin_imagedata.data[pix_i+3];
+            
+        }
+        instanceseg_canvas_context.putImageData(instance_seg_imagedata,0,0);
 
 
    
@@ -1257,35 +1238,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
 
 
 
-    // imageConversion_tojpg(canv:HTMLCanvasElement){
-    //     let sendfun = this.Send_AnalysisPic.bind(this);
-    //     imageConversion.canvastoFile(canv,1).then(
-    //       function (blob:Blob) {
-    //         // console.log("imageConversion_tojpg");
-    //         let onloadfun = (e:ProgressEvent<FileReader>) => {
-    //           const pic = e.target.result;
-    //           if(pic instanceof ArrayBuffer){
-    //             let array = new Uint8Array(pic as ArrayBuffer, 0);   
-    //             let req = new CactusPb.AnalysisPicReq();
-    //             req.setId(11);
-    //             req.setGroupid("webtest");
-    //             req.setPicdata(array);
-    //             console.log("imageConversion_tojpg begin Send_AnalysisPic")
-    //             // this.Send_AnalysisPic(req);
-    //             sendfun(req);
-    //           }else{
-    //           }
-    //         }
-  
-    //       let  reader = new FileReader()
-    //       reader.onload= onloadfun;
-    //       reader.readAsArrayBuffer(blob)
-    //       }
-    //     )
-    //   }
-
     onChange(evt:React.ChangeEvent<HTMLInputElement>){
         this.toCanvas= document.getElementById(this.tocanvasid) as HTMLCanvasElement;
+        this.toInstanceSegCanvas = document.getElementById(this.toInstanceSegmentationCanvasId) as HTMLCanvasElement;
         let selectedFile:File = evt.target.files[0];
         console.log("select file..=%s",selectedFile.name)
         this.img = URL.createObjectURL(selectedFile)
@@ -1350,6 +1305,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 <label>Choose image file</label>
                 <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}   accept="image/*" />
                 <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
+                <canvas id={this.toInstanceSegmentationCanvasId} width={this.width} height={this.height}  ></canvas>
             </div>
 
           </div>
