@@ -1019,11 +1019,13 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         console.log("enter,response=%s",response.toString())
         
         // let toImg = document.getElementById(this.toimgid);
-        // let tocanvas = document.getElementById(this.tocanvasid); 
+        // let tocanvas = document.getElementById(this.tocanvasid);
+        
         let personinfolist =  response.getPersonInfosList();
         let vehicleinfolist = response.getVelicleInfosList();
         let pedestrianInfoList = response.getPedestrianInfosList();
         let comdetctList = response.getComdetectInfosList();
+        let instance_segmetationList = response.getInstanceSegmentationInfosList();
 
         console.log("Rsp_AnalysisPic,14:04,person'size=%d,comdetlist'size=%d",personinfolist.length,comdetctList.length)
 
@@ -1100,6 +1102,67 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let height = maxheight * pos.getHeight();
             canvas_context.strokeRect(left,top,width,height);
             canvas_context.fillText("pedestrian",left,top);
+        }
+
+        console.log("instance_segmetationList.size=%d",instance_segmetationList.length)
+        let isdraw = false; 
+        canvas_context.strokeStyle ='black';
+        canvas_context.fillStyle='black';
+        canvas_context.fillRect(0,0,maxwidth,maxheight);
+        canvas_context.strokeStyle ='white';
+        canvas_context.fillStyle='white';
+
+
+        for(let i = 0;i < 10;i++){
+            for(let j = 0;j < 8;j++){
+                console.log("i=%d,j=%d",i,j);
+            }
+        }
+
+        
+        let DrawCanvas =  document.createElement("canvas");
+        
+        for(let i=0;i < instance_segmetationList.length;i++){
+            let instance_seg_info = instance_segmetationList[i];
+            let pos = instance_seg_info.getBoxpositions();
+            let left = Math.floor(maxwidth *pos.getLeft());
+            let top = Math.floor(maxheight * pos.getTop());
+            let width =Math.floor(maxwidth * pos.getWidth());
+            let height =Math.floor(maxheight * pos.getHeight());
+
+            let mask = instance_seg_info.getMasksList();
+            console.log("top=%d,left=%d,width=%d,height=%d,mask.size=%d",top,left,width,height,mask.length)
+            console.log(mask)
+            let index =0;
+            for(let ph = 0;ph < height;ph++){
+                for(let pw = 0;pw < width;pw++){
+                    // console.log("ph=%f,pw=%f",ph,pw)
+                    let ab_top = top +ph;
+                    let ab_left = left + pw;
+                    // index = pi*width + pj;
+                    let mask_value=  mask[index];
+                    console.log("ph=%d,pw=%d,mask_value=%d,index=%d,height=%f,width=%f",ph,pw,mask_value,index,height,width);
+                    if(0 == mask_value){
+                        // console.log("ab_left=%d,ab_top=%d",ab_left,ab_top);
+                        canvas_context.strokeStyle ='red';
+                        canvas_context.fillStyle='red';
+                        canvas_context.fillRect(ab_left,ab_top,1,1);
+                    }else if(255 == mask_value){
+                        canvas_context.strokeStyle ='white';
+                        canvas_context.fillStyle='white';
+                        canvas_context.fillRect(ab_left,ab_top,1,1);
+                    }else {
+                        canvas_context.strokeStyle ='green';
+                        canvas_context.fillStyle='green';
+                        canvas_context.fillRect(ab_left,ab_top,1,1);
+                        console.error("mask_value err,index=%d",index)
+                        return;   
+                    }
+                    index++;
+                }
+            }
+
+
         }
 
 

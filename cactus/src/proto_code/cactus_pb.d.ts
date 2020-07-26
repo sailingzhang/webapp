@@ -160,6 +160,40 @@ export namespace ComDetectInfo {
   }
 }
 
+export class InstanceSegmentInfo extends jspb.Message {
+  getClassname(): string;
+  setClassname(value: string): void;
+
+  getScore(): number;
+  setScore(value: number): void;
+
+  getBoxpositions(): Position | undefined;
+  setBoxpositions(value?: Position): void;
+  hasBoxpositions(): boolean;
+  clearBoxpositions(): void;
+
+  getMasksList(): Array<number>;
+  setMasksList(value: Array<number>): void;
+  clearMasksList(): void;
+  addMasks(value: number, index?: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InstanceSegmentInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: InstanceSegmentInfo): InstanceSegmentInfo.AsObject;
+  static serializeBinaryToWriter(message: InstanceSegmentInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InstanceSegmentInfo;
+  static deserializeBinaryFromReader(message: InstanceSegmentInfo, reader: jspb.BinaryReader): InstanceSegmentInfo;
+}
+
+export namespace InstanceSegmentInfo {
+  export type AsObject = {
+    classname: string,
+    score: number,
+    boxpositions?: Position.AsObject,
+    masksList: Array<number>,
+  }
+}
+
 export class AnalysisPicReq extends jspb.Message {
   getId(): number;
   setId(value: number): void;
@@ -217,6 +251,11 @@ export class AnalysisPicRsp extends jspb.Message {
   clearSemanticSegmentationInfosList(): void;
   addSemanticSegmentationInfos(value: number, index?: number): void;
 
+  getInstanceSegmentationInfosList(): Array<InstanceSegmentInfo>;
+  setInstanceSegmentationInfosList(value: Array<InstanceSegmentInfo>): void;
+  clearInstanceSegmentationInfosList(): void;
+  addInstanceSegmentationInfos(value?: InstanceSegmentInfo, index?: number): InstanceSegmentInfo;
+
   getError(): string;
   setError(value: string): void;
 
@@ -236,6 +275,7 @@ export namespace AnalysisPicRsp {
     pedestrianInfosList: Array<PedestrianInfo.AsObject>,
     comdetectInfosList: Array<ComDetectInfo.AsObject>,
     semanticSegmentationInfosList: Array<number>,
+    instanceSegmentationInfosList: Array<InstanceSegmentInfo.AsObject>,
     error: string,
   }
 }
