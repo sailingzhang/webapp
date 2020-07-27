@@ -994,6 +994,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable toimgid:string;
     @observable tocanvasid:string;
     @observable toInstanceSegmentationCanvasId:string;
+    @observable backgroudImgId:string;
     @observable width:number;
     @observable height:number;
     @observable submitUrl:string;
@@ -1001,6 +1002,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     userdata:CactusData;
     tmpCanvas:HTMLCanvasElement;
     toCanvas:HTMLCanvasElement;
+    backgroudCanvas:HTMLCanvasElement;
     toInstanceSegCanvas:HTMLCanvasElement;
     constructor(props:AnalysisPicArg){
         super(props);
@@ -1009,11 +1011,30 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.toimgid="toimageid";
         this.tocanvasid="tocanvasid";
         this.toInstanceSegmentationCanvasId="toInstanceSegId";
+        this.backgroudImgId ="backgroudimgid"
         this.width=100;
         this.height=100;
         this.userdata = props.cactusdata;
         this.tmpCanvas =  document.createElement("canvas");
         this.submitUrl ="input image url";
+        this.backgroudCanvas = document.createElement("canvas");
+        this.backgroudCanvas.width = this.width;
+        this.backgroudCanvas.height = this.height;
+
+        // let b_context = this.backgroudCanvas.getContext("2d");
+        // let b_canvas = this.backgroudCanvas;
+        // let img = document.createElement("img");
+        // img.src = 'free.jpg';
+        // //图片加载完后，将其显示在canvas中
+        // img.onload = function(){
+        //   b_canvas.width = img.width;
+        //   b_canvas.height = img.height;
+        //   console.log("begin draw backgroud");
+        //   b_context.drawImage(img, 0, 0);
+        // // context.drawImage(this, 0, 0, 1080, 980)改变图片大小到1080*980
+        // };
+
+
     }
     Rsp_AnalysisPic(err: grpcWeb.Error, response: CactusPb.AnalysisPicRsp){
         if(null != err){
@@ -1045,8 +1066,11 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let maxheight = this.toCanvas.height;
         this.toInstanceSegCanvas.width = maxwidth;
         this.toInstanceSegCanvas.height = maxheight;
+        this.backgroudCanvas.width = maxwidth;
+        this.backgroudCanvas.height = maxheight;
         original_canvas.width = maxwidth;
         original_canvas.height = maxheight;
+
 
 
         
@@ -1057,6 +1081,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let canvas_context = this.toCanvas.getContext('2d');
         let instanceseg_canvas_context = this.toInstanceSegCanvas.getContext('2d');
         let origin_canvas_context = original_canvas.getContext('2d');
+        let backgroud_canvas_context= this.backgroudCanvas.getContext('2d');
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
@@ -1180,10 +1205,27 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         console.log("origin_w=%d,origin_h=%d,instance_w=%d,instance_h=%d",original_canvas.width,original_canvas.height,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
         let origin_imagedata=origin_canvas_context.getImageData(0,0,original_canvas.width,original_canvas.height);
         let instance_seg_imagedata = instanceseg_canvas_context.getImageData(0,0,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
+        let backgroud_imagedata= backgroud_canvas_context.getImageData(0,0,this.backgroudCanvas.width,this.backgroudCanvas.height);
 
-        let allpixnum = maxwidth*maxheight;
-        for(let pix_i = 0; pix_i < origin_imagedata.data.length;pix_i++){
-            instance_seg_imagedata.data[pix_i] = Math.min(instance_seg_imagedata.data[pix_i],origin_imagedata.data[pix_i]);
+        for(let pix_i = 0; pix_i < instance_seg_imagedata.data.length;pix_i+=4){
+            if(0 != instance_seg_imagedata.data[pix_i]){
+                instance_seg_imagedata.data[pix_i]= origin_imagedata.data[pix_i];
+                instance_seg_imagedata.data[pix_i+1]= origin_imagedata.data[pix_i+1];
+                instance_seg_imagedata.data[pix_i+2]= origin_imagedata.data[pix_i+2];
+                instance_seg_imagedata.data[pix_i+3]= origin_imagedata.data[pix_i+3];
+            }else{
+                instance_seg_imagedata.data[pix_i]= backgroud_imagedata.data[pix_i];
+                instance_seg_imagedata.data[pix_i+1]= backgroud_imagedata.data[pix_i+1];
+                instance_seg_imagedata.data[pix_i+2]= backgroud_imagedata.data[pix_i+2];
+                instance_seg_imagedata.data[pix_i+3]= backgroud_imagedata.data[pix_i+3];   
+
+                // instance_seg_imagedata.data[pix_i]= 0;
+                // instance_seg_imagedata.data[pix_i+1]= 0;
+                // instance_seg_imagedata.data[pix_i+2]= 0;
+                // instance_seg_imagedata.data[pix_i+3]= 0;  
+            }
+
+            // instance_seg_imagedata.data[pix_i] = Math.min(instance_seg_imagedata.data[pix_i],origin_imagedata.data[pix_i]);
             // instance_seg_imagedata.data[pix_i] =0;
             // instance_seg_imagedata.data[pix_i]= origin_imagedata.data[pix_i];
             // instance_seg_imagedata.data[pix_i+1]= origin_imagedata.data[pix_i+1];
@@ -1214,6 +1256,20 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         // this.imageConversion_tojpg(this.tmpCanvas);
 
     }
+
+    backgroudImgonload(event: React.SyntheticEvent<HTMLInputElement, Event>){
+      let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
+      console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
+      this.backgroudCanvas.width = srcImg.width;
+      this.backgroudCanvas.height = srcImg.height;
+      this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0);
+      // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
+      // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
+
+      // this.imageConversion_tojpg(this.tmpCanvas);
+
+  }
+
 
     // getarrbuf()
     getBlob(blob:Blob){
@@ -1306,6 +1362,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}   accept="image/*" />
                 <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
                 <canvas id={this.toInstanceSegmentationCanvasId} width={this.width} height={this.height}  ></canvas>
+                <img id={this.backgroudImgId} src="free.jpg" width={this.width} height={this.height} onLoad={this.backgroudImgonload.bind(this)}  />
             </div>
 
           </div>
