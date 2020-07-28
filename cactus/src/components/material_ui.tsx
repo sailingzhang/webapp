@@ -1012,7 +1012,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.toimgid="toimageid";
         this.tocanvasid="tocanvasid";
         this.toInstanceSegmentationCanvasId="toInstanceSegId";
-        this.backgroudImgId ="backgroudimgid"
         this.backgroudImg = document.createElement("img");
         this.backgroudImg.src='free.jpg';
         this.width=100;
@@ -1077,29 +1076,16 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.backgroudCanvas.height = maxheight;
         original_canvas.width = maxwidth;
         original_canvas.height = maxheight;
+        this.backgroudCanvas.getContext('2d').drawImage(this.backgroudImg, 0, 0,maxwidth,maxheight);
 
-        {
-          // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
-          let srcImg = this.backgroudImg;
-          // this.backgroudCanvas.width = srcImg.width;
-          // this.backgroudCanvas.height = srcImg.height;
-          this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0,maxwidth,maxheight);
-          // this.backgroudCanvas.width = maxwidth;
-          // this.backgroudCanvas.height =maxheight;
 
-        // let b_canvas = this.backgroudCanvas;
-        // let img = document.createElement("img");
-        // img.src = 'free.jpg';
-        // //图片加载完后，将其显示在canvas中
-        // img.onload = function(){
-        //   console.log("...begin draw backgroud,i_width=%d,i_height=%d",img.width,img.height);
-        //   b_canvas.getContext('2d').drawImage(img, 0, 0,maxwidth,maxheight);
-        // // context.drawImage(this, 0, 0, 1080, 980)改变图片大小到1080*980
-        // };
+
+          
+
         
 
 
-        }
+
 
 
 
@@ -1192,10 +1178,10 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
       
         for(let i=0;i < instance_segmetationList.length;i++){
             let instance_seg_info = instance_segmetationList[i];
-            // if("person" != instance_seg_info.getClassname()){
-            //   console.log("drop classname=%s",instance_seg_info.getClassname());
-            //   continue;
-            // }
+            if("person" != instance_seg_info.getClassname()){
+              console.log("drop classname=%s",instance_seg_info.getClassname());
+              continue;
+            }
             let pos = instance_seg_info.getBoxpositions();
             let left = Math.floor(maxwidth *pos.getLeft());
             let top = Math.floor(maxheight * pos.getTop());
@@ -1252,13 +1238,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 // instance_seg_imagedata.data[pix_i+2]= 207;
                 // instance_seg_imagedata.data[pix_i+3]= 205;  
             }
-
-            // instance_seg_imagedata.data[pix_i] = Math.min(instance_seg_imagedata.data[pix_i],origin_imagedata.data[pix_i]);
-            // instance_seg_imagedata.data[pix_i] =0;
-            // instance_seg_imagedata.data[pix_i]= origin_imagedata.data[pix_i];
-            // instance_seg_imagedata.data[pix_i+1]= origin_imagedata.data[pix_i+1];
-            // instance_seg_imagedata.data[pix_i+2]= origin_imagedata.data[pix_i+2];
-            // instance_seg_imagedata.data[pix_i+3]= origin_imagedata.data[pix_i+3];
             
         }
         instanceseg_canvas_context.putImageData(instance_seg_imagedata,0,0);
@@ -1284,30 +1263,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         // this.imageConversion_tojpg(this.tmpCanvas);
 
     }
-
-    backgroudImgonload(event: React.SyntheticEvent<HTMLInputElement, Event>){
-      console.log("enter");
-      // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
-      // console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
-      // this.backgroudCanvas.width = srcImg.width;
-      // this.backgroudCanvas.height = srcImg.height;
-      // this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0);
-      // // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
-      // // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
-
-      // // this.imageConversion_tojpg(this.tmpCanvas);
-
-      // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
-      // console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
-      // this.toCanvas.width = srcImg.width;
-      // this.toCanvas.height = srcImg.height;
-      // this.toCanvas.getContext('2d').drawImage(srcImg, 0, 0);
-      // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
-      // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
-
-      // this.imageConversion_tojpg(this.tmpCanvas);
-
-  }
 
 
     // getarrbuf()
@@ -1401,7 +1356,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 <input type="file"  name="choose image file"  onChange={this.onChange.bind(this)}   accept="image/*" />
                 <canvas id={this.tocanvasid} width={this.width} height={this.height}  ></canvas>
                 <canvas id={this.toInstanceSegmentationCanvasId} width={this.width} height={this.height}  ></canvas>
-                <img id={this.backgroudImgId} src="free.jpg" width={this.width} height={this.height} onLoad={this.backgroudImgonload.bind(this)}  />
+                {/* <img id={this.backgroudImgId} src="free.jpg" width={this.width} height={this.height} onLoad={this.backgroudImgonload.bind(this)}  /> */}
             </div>
 
           </div>
