@@ -995,6 +995,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     @observable tocanvasid:string;
     @observable toInstanceSegmentationCanvasId:string;
     @observable backgroudImgId:string;
+    @observable backgroudImg:HTMLImageElement;
     @observable width:number;
     @observable height:number;
     @observable submitUrl:string;
@@ -1012,6 +1013,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.tocanvasid="tocanvasid";
         this.toInstanceSegmentationCanvasId="toInstanceSegId";
         this.backgroudImgId ="backgroudimgid"
+        this.backgroudImg = document.createElement("img");
+        this.backgroudImg.src='free.jpg';
         this.width=100;
         this.height=100;
         this.userdata = props.cactusdata;
@@ -1020,19 +1023,21 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.backgroudCanvas = document.createElement("canvas");
         this.backgroudCanvas.width = this.width;
         this.backgroudCanvas.height = this.height;
+        
 
-        // let b_context = this.backgroudCanvas.getContext("2d");
         // let b_canvas = this.backgroudCanvas;
-        // let img = document.createElement("img");
-        // img.src = 'free.jpg';
+        // let to_canvas = this.toCanvas;
+        // // let img = document.createElement("img");
+        // let img = new Image();
         // //图片加载完后，将其显示在canvas中
         // img.onload = function(){
         //   b_canvas.width = img.width;
         //   b_canvas.height = img.height;
-        //   console.log("begin draw backgroud");
-        //   b_context.drawImage(img, 0, 0);
+        //   console.log("begin draw backgroud,i_width=%d,i_height=%d",img.width,img.height);
+        //   b_canvas.getContext('2d').drawImage(img, 0, 0,img.width,img.height);
         // // context.drawImage(this, 0, 0, 1080, 980)改变图片大小到1080*980
         // };
+        // img.src = 'free.jpg';
 
 
     }
@@ -1062,6 +1067,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             this.toCanvas.width = this.tmpCanvas.width * ratio;
             this.toCanvas.height = this.tmpCanvas.height * ratio;
         }
+
+
         let maxwidth = this.toCanvas.width;
         let maxheight = this.toCanvas.height;
         this.toInstanceSegCanvas.width = maxwidth;
@@ -1071,17 +1078,45 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         original_canvas.width = maxwidth;
         original_canvas.height = maxheight;
 
+        {
+          // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
+          let srcImg = this.backgroudImg;
+          // this.backgroudCanvas.width = srcImg.width;
+          // this.backgroudCanvas.height = srcImg.height;
+          this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0,maxwidth,maxheight);
+          // this.backgroudCanvas.width = maxwidth;
+          // this.backgroudCanvas.height =maxheight;
+
+        // let b_canvas = this.backgroudCanvas;
+        // let img = document.createElement("img");
+        // img.src = 'free.jpg';
+        // //图片加载完后，将其显示在canvas中
+        // img.onload = function(){
+        //   console.log("...begin draw backgroud,i_width=%d,i_height=%d",img.width,img.height);
+        //   b_canvas.getContext('2d').drawImage(img, 0, 0,maxwidth,maxheight);
+        // // context.drawImage(this, 0, 0, 1080, 980)改变图片大小到1080*980
+        // };
+        
+
+
+        }
+
+
+
 
 
         
         this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
         this.toInstanceSegCanvas.getContext('2d').drawImage(this.toCanvas,0,0);
         original_canvas.getContext('2d').drawImage(this.toCanvas,0,0);
+        
 
         let canvas_context = this.toCanvas.getContext('2d');
         let instanceseg_canvas_context = this.toInstanceSegCanvas.getContext('2d');
         let origin_canvas_context = original_canvas.getContext('2d');
         let backgroud_canvas_context= this.backgroudCanvas.getContext('2d');
+
+
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
@@ -1157,6 +1192,10 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
       
         for(let i=0;i < instance_segmetationList.length;i++){
             let instance_seg_info = instance_segmetationList[i];
+            // if("person" != instance_seg_info.getClassname()){
+            //   console.log("drop classname=%s",instance_seg_info.getClassname());
+            //   continue;
+            // }
             let pos = instance_seg_info.getBoxpositions();
             let left = Math.floor(maxwidth *pos.getLeft());
             let top = Math.floor(maxheight * pos.getTop());
@@ -1175,17 +1214,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let maskchanvas_context =  maskchanvas.getContext('2d');
             maskchanvas_context.strokeStyle ='white';
             maskchanvas_context.fillStyle='white';
-            // let mask_imagedata =  maskchanvas_context.getImageData(0, 0, mask_w, mask_h);
-            // var data = mask_imagedata.data;
-            // for(let d_i =0;d_i<mask.length;d_i++){
-            //     let v = 0;
-            //     if(0 <　mask[d_i]){
-            //         v = 255;
-            //     }
-            //     data[4*d_i]=v;
-            //     data[4*d_i+1] =v;
-            //     data[4*d_i+2] =v;
-            // }
 
             for(let m_i =0; m_i <mask_h;m_i++){
                 for(let m_j =0; m_j <mask_w;m_j++){
@@ -1202,7 +1230,7 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             console.log("2228,draw one,width=%d,height=%d,s_width=%d,s_height=%d",width,height,maskchanvas.width,maskchanvas.height);
         }
 
-        console.log("origin_w=%d,origin_h=%d,instance_w=%d,instance_h=%d",original_canvas.width,original_canvas.height,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
+        console.log("origin_w=%d,origin_h=%d,instance_w=%d,instance_h=%d,b_width=%d,b_height=%d",original_canvas.width,original_canvas.height,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height,this.backgroudCanvas.width,this.backgroudCanvas.height);
         let origin_imagedata=origin_canvas_context.getImageData(0,0,original_canvas.width,original_canvas.height);
         let instance_seg_imagedata = instanceseg_canvas_context.getImageData(0,0,this.toInstanceSegCanvas.width,this.toInstanceSegCanvas.height);
         let backgroud_imagedata= backgroud_canvas_context.getImageData(0,0,this.backgroudCanvas.width,this.backgroudCanvas.height);
@@ -1219,10 +1247,10 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
                 instance_seg_imagedata.data[pix_i+2]= backgroud_imagedata.data[pix_i+2];
                 instance_seg_imagedata.data[pix_i+3]= backgroud_imagedata.data[pix_i+3];   
 
-                // instance_seg_imagedata.data[pix_i]= 0;
-                // instance_seg_imagedata.data[pix_i+1]= 0;
-                // instance_seg_imagedata.data[pix_i+2]= 0;
-                // instance_seg_imagedata.data[pix_i+3]= 0;  
+                // instance_seg_imagedata.data[pix_i]= 204;
+                // instance_seg_imagedata.data[pix_i+1]= 232;
+                // instance_seg_imagedata.data[pix_i+2]= 207;
+                // instance_seg_imagedata.data[pix_i+3]= 205;  
             }
 
             // instance_seg_imagedata.data[pix_i] = Math.min(instance_seg_imagedata.data[pix_i],origin_imagedata.data[pix_i]);
@@ -1258,11 +1286,22 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
     }
 
     backgroudImgonload(event: React.SyntheticEvent<HTMLInputElement, Event>){
-      let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
-      console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
-      this.backgroudCanvas.width = srcImg.width;
-      this.backgroudCanvas.height = srcImg.height;
-      this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0);
+      console.log("enter");
+      // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
+      // console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
+      // this.backgroudCanvas.width = srcImg.width;
+      // this.backgroudCanvas.height = srcImg.height;
+      // this.backgroudCanvas.getContext('2d').drawImage(srcImg, 0, 0);
+      // // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
+      // // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
+
+      // // this.imageConversion_tojpg(this.tmpCanvas);
+
+      // let srcImg =  document.getElementById(this.backgroudImgId) as HTMLImageElement;
+      // console.log(" fuck get img width=%d,height=%d",srcImg.width,srcImg.height);
+      // this.toCanvas.width = srcImg.width;
+      // this.toCanvas.height = srcImg.height;
+      // this.toCanvas.getContext('2d').drawImage(srcImg, 0, 0);
       // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/jpeg", 0.9);
       // this.tmpCanvas.toBlob(this.getBlob.bind(this),"image/png", 1.0);
 
