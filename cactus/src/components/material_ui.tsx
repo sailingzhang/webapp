@@ -1191,8 +1191,8 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             console.log("top=%d,left=%d,width=%d,height=%d,mask.size=%d",top,left,width,height,mask.length)
             // console.log(mask)
 
-            let mask_w = 14;
-            let mask_h = 14;
+            let mask_w =Math.sqrt(mask.length);
+            let mask_h = mask_w;
             let maskchanvas = document.createElement("canvas");
 
             maskchanvas.width = mask_w;
