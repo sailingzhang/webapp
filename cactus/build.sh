@@ -2,7 +2,7 @@
 
 npx webpack
 appdir=/app/
-app_config_dir=/app_config/www
+app_config_dir=/app_config/www/cactus
 mkdir -p ${appdir}
 mkdir -p ${app_config_dir}
 
