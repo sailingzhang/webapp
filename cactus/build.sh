@@ -2,12 +2,18 @@
 
 npx webpack
 appdir=/app/www/cactus
-app_config_dir=/app_config/www/cactus
+buildappdir=/tmp/webappbuild/cactus
+
+
+sudo mkdir -p ${buildappdir}
 sudo mkdir -p ${appdir}
 # mkdir -p ${app_config_dir}
 
-sudo cp -rf  css ${appdir}
-sudo cp -rf  dist  ${appdir}
-sudo cp -rf  *.html  ${appdir}
-sudo cp -f  ../mime.types   ${appdir}
-sudo cp -f  ../nginx_static.conf    ${appdir}
+sudo cp -rf  css ${buildappdir}
+sudo cp -rf  dist  ${buildappdir}
+sudo cp -rf  *.html  ${buildappdir}
+sudo cp -f  ../mime.types   ${buildappdir}
+sudo cp -f  ../nginx_static.conf    ${buildappdir}
+
+
+sudo cp -rf ${buildappdir} /app/www/
