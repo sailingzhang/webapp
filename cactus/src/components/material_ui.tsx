@@ -434,6 +434,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
     @observable enable_face:boolean;
     @observable enable_vehicle:boolean;
     @observable enable_plate:boolean;
+    @observable enable_porno_classify:boolean;
     frameid:number
     diyheight:number;
     userdata:CactusData;
@@ -496,8 +497,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         req.setEnableFace(this.enable_face);
         req.setEnableVehicle(this.enable_vehicle);
         req.setEnablePlate(this.enable_plate);
+        req.setEnablePornoDetect(this.enable_porno_classify);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_configure.bind(this));
-        console.info("Send_Configure ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate))       
+        console.info("Send_Configure ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s,en_porno=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate),String(this.enable_porno_classify));       
     }
     
     Send_AnalysisPicStreamStart(){
@@ -510,8 +512,9 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         req.setEnableFace(this.enable_face);
         req.setEnableVehicle(this.enable_vehicle);
         req.setEnablePlate(this.enable_plate);
+        req.setEnablePornoDetect(this.enable_porno_classify);
         this.userdata.cactusClient.analysisPicStreamStart(req,metadata,this.Rsp_AnalysisPicStreamStart.bind(this));
-        console.info("Send_AnalysisPicStreamStart ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate))       
+        console.info("Send_AnalysisPicStreamStart ,chnannlename=%s,en_pedestrian=%s,en_face=%s,en_vehicle=%s,en_plate=%s,en_porno=%s",this.channelname,String(this.enable_pedestrian),String(this.enable_face),String(this.enable_vehicle),String(this.enable_plate),String(this.enable_porno_classify))       
     }
 
     Rsp_AnalysisPicStreamStart(err: grpcWeb.Error,rsp:CactusPb.AnalysisPicStreamStartRsp){
@@ -602,12 +605,19 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         let plateList = rsp.getLicenseplateTracksList();
         let pedestrianList = rsp.getPedestrianTracksList();
         let faceList = rsp.getFaceTracksList();
+        let classinfoList = rsp.getClassInfoList();
         let canvas_context = showdatainfo.dataCanvas.getContext('2d');
         // canvas_context.closePath();
         
         canvas_context.strokeStyle ='white';
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
+
+        for(let i =0;i < classinfoList.length;i++){
+          let w_text = classinfoList[i].getClassName()+":"+classinfoList[i].getScore().toString();
+          canvas_context.fillText(w_text,100,100);
+        }
+
         for(let i = 0;i < vehicleList.length;i++){
             let vehicle = vehicleList[i];
             let pos = vehicle.getPos();
@@ -843,6 +853,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         this.enable_pedestrian = false;
         this.enable_plate = false;
         this.enable_vehicle = false;
+        this.enable_porno_classify = false;
         let function_num = Number(event.target.value.trim());
         console.info("function_num=%d",function_num);
         switch(function_num){
@@ -869,6 +880,12 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                 break;
             case 7:
                 this.enable_plate = false;
+                break;
+            case 8:
+                this.enable_porno_classify = true;
+                break;
+            case 9:
+                this.enable_porno_classify = false;
                 break;
             default:
                 console.error("no such fucntin_numer=%d",function_num);
@@ -966,6 +983,7 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
                 　　　　<option  selected={this.enable_face} value={2} >enable_face</option>
                 　　　　<option  selected={this.enable_vehicle} value={4} >enable_vehicle</option>
                 　　　　<option  selected={this.enable_plate} value={6} >enable_plate</option>
+                      <option  selected={this.enable_porno_classify} value={8} >enable_porno</option>
                 　　</select>
                 </div>
                 
@@ -1055,8 +1073,9 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         let pedestrianInfoList = response.getPedestrianInfosList();
         let comdetctList = response.getComdetectInfosList();
         let instance_segmetationList = response.getInstanceSegmentationInfosList();
+        let classList = response.getClassInfoList();
 
-        console.log("Rsp_AnalysisPic,14:04,person'size=%d,comdetlist'size=%d",personinfolist.length,comdetctList.length)
+        console.log("Rsp_AnalysisPic,18:31,person'size=%d,comdetlist'size=%d,classlist'size=%d",personinfolist.length,comdetctList.length,classList.length)
 
         let original_canvas = document.createElement("canvas");
         this.width = this.tmpCanvas.width;
@@ -1079,19 +1098,6 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
         this.backgroudCanvas.getContext('2d').drawImage(this.backgroudImg, 0, 0,maxwidth,maxheight);
 
 
-
-          
-
-        
-
-
-
-
-
-
-
-
-        
         this.toCanvas.getContext('2d').drawImage(this.tmpCanvas,0,0,this.tmpCanvas.width,this.tmpCanvas.height,0,0,this.toCanvas.width,this.toCanvas.height);
         this.toInstanceSegCanvas.getContext('2d').drawImage(this.toCanvas,0,0);
         original_canvas.getContext('2d').drawImage(this.toCanvas,0,0);
@@ -1163,6 +1169,12 @@ export class AnalysisShow  extends React.Component<AnalysisPicArg>{
             let height = maxheight * pos.getHeight();
             canvas_context.strokeRect(left,top,width,height);
             canvas_context.fillText("pedestrian",left,top);
+        }
+
+        for(let i = 0;i < classList.length;i++){
+          let w_text = classList[i].getClassName()+":"+classList[i].getScore().toString();
+          console.log("1052_class w_text=%s",w_text);
+          canvas_context.fillText(w_text,100,100)
         }
 
         console.log("instance_segmetationList.size=%d",instance_segmetationList.length)

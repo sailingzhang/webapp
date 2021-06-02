@@ -256,6 +256,11 @@ export class AnalysisPicRsp extends jspb.Message {
   clearInstanceSegmentationInfosList(): void;
   addInstanceSegmentationInfos(value?: InstanceSegmentInfo, index?: number): InstanceSegmentInfo;
 
+  getClassInfoList(): Array<ClassInfo>;
+  setClassInfoList(value: Array<ClassInfo>): void;
+  clearClassInfoList(): void;
+  addClassInfo(value?: ClassInfo, index?: number): ClassInfo;
+
   getError(): string;
   setError(value: string): void;
 
@@ -276,7 +281,34 @@ export namespace AnalysisPicRsp {
     comdetectInfosList: Array<ComDetectInfo.AsObject>,
     semanticSegmentationInfosList: Array<number>,
     instanceSegmentationInfosList: Array<InstanceSegmentInfo.AsObject>,
+    classInfoList: Array<ClassInfo.AsObject>,
     error: string,
+  }
+}
+
+export class ClassInfo extends jspb.Message {
+  getModelName(): string;
+  setModelName(value: string): void;
+
+  getClassName(): string;
+  setClassName(value: string): void;
+
+  getScore(): number;
+  setScore(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ClassInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: ClassInfo): ClassInfo.AsObject;
+  static serializeBinaryToWriter(message: ClassInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ClassInfo;
+  static deserializeBinaryFromReader(message: ClassInfo, reader: jspb.BinaryReader): ClassInfo;
+}
+
+export namespace ClassInfo {
+  export type AsObject = {
+    modelName: string,
+    className: string,
+    score: number,
   }
 }
 
@@ -419,6 +451,9 @@ export class AnalysisPicStreamStartReq extends jspb.Message {
   getEnablePlate(): boolean;
   setEnablePlate(value: boolean): void;
 
+  getEnablePornoDetect(): boolean;
+  setEnablePornoDetect(value: boolean): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AnalysisPicStreamStartReq.AsObject;
   static toObject(includeInstance: boolean, msg: AnalysisPicStreamStartReq): AnalysisPicStreamStartReq.AsObject;
@@ -435,6 +470,7 @@ export namespace AnalysisPicStreamStartReq {
     enablePedestrian: boolean,
     enableVehicle: boolean,
     enablePlate: boolean,
+    enablePornoDetect: boolean,
   }
 }
 
@@ -550,6 +586,11 @@ export class AnalysisPicStreamPopRsp extends jspb.Message {
   clearPedestrianTracksList(): void;
   addPedestrianTracks(value?: PedestrianTrack, index?: number): PedestrianTrack;
 
+  getClassInfoList(): Array<ClassInfo>;
+  setClassInfoList(value: Array<ClassInfo>): void;
+  clearClassInfoList(): void;
+  addClassInfo(value?: ClassInfo, index?: number): ClassInfo;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): AnalysisPicStreamPopRsp.AsObject;
   static toObject(includeInstance: boolean, msg: AnalysisPicStreamPopRsp): AnalysisPicStreamPopRsp.AsObject;
@@ -567,6 +608,7 @@ export namespace AnalysisPicStreamPopRsp {
     vehicleTracksList: Array<VehicleTrack.AsObject>,
     licenseplateTracksList: Array<LicensePlateTrack.AsObject>,
     pedestrianTracksList: Array<PedestrianTrack.AsObject>,
+    classInfoList: Array<ClassInfo.AsObject>,
   }
 }
 
