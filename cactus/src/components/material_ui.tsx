@@ -613,9 +613,15 @@ export class AnalysisPicStreamShow extends React.Component<AnalysisPicStreamArg>
         canvas_context.fillStyle='white';
         canvas_context.font='18px bold white';
 
+        let hopeSet = new Set(["hentai","porn","sexy"]);
+        // let hopeArry =["hentai","porn","sexy"];
+
         for(let i =0;i < classinfoList.length;i++){
+          if(!hopeSet.has(classinfoList[i].getClassName())){
+            continue;
+          }
           let w_text = classinfoList[i].getClassName()+":"+classinfoList[i].getScore().toString();
-          canvas_context.fillText(w_text,100,100);
+          canvas_context.fillText(w_text,100,(i+1)*100);
         }
 
         for(let i = 0;i < vehicleList.length;i++){
